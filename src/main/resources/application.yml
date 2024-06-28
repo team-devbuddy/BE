@@ -11,6 +11,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+      naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
       hibernate:
         format_sql: true
@@ -28,6 +29,7 @@ spring:
               redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
               grand-type: authorization_code
               scope: profile_nickname
+
   #kakao provider 설정
         provider:
           kakao:
