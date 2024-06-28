@@ -1,4 +1,4 @@
-package com.ceos.beatbuddy.domain.user.entity;
+package com.ceos.beatbuddy.domain.member.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,5 +17,5 @@ public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String loginId;
-    private Preferences preferences;
+
 }

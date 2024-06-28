@@ -1,6 +1,6 @@
-package com.ceos.beatbuddy.domain.user.application;
+package com.ceos.beatbuddy.domain.member.application;
 
-import com.ceos.beatbuddy.domain.user.repository.MemberRepository;
+import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
