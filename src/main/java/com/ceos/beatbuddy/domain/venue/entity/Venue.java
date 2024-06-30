@@ -15,7 +15,6 @@ public class Venue {
     private String englishName;
     private String koreanName;
 
-
     @Transient
     private Vector featureVector;
 
