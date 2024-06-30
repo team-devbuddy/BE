@@ -1,15 +1,24 @@
 package com.ceos.beatbuddy.domain.member.application;
 
+import com.ceos.beatbuddy.domain.member.entity.Member;
+import com.ceos.beatbuddy.domain.member.entity.MemberGenre;
+import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
+import com.ceos.beatbuddy.domain.member.exception.MemberException;
+import com.ceos.beatbuddy.domain.member.repository.MemberGenreRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
+import com.ceos.beatbuddy.domain.vector.entity.Vector;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MemberGenreRepository memberGenreRepository;
 
     /**
      * loginId로 유저 식별자 조회
@@ -45,5 +54,19 @@ public class MemberService {
         //userService.onboard();
         //return userRepository.save(User.builder().loginId(loginId).build()); //TODO: save()의 반환값이 User인지 Long인지 확인 필요
         return null;
+    }
+
+
+    @Transactional
+    public Long addPreference(Long id, Map<String, Double> preferences) {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
+
+        Vector preferenceVector = Vector.fromPreferences(preferences);
+
+        MemberGenre memberGenre = MemberGenre.builder()
+                .member(member).preferenceVectorString(preferenceVector.toString())
+                .build();
+
+        return memberGenreRepository.save(memberGenre).getMemberGenreId();
     }
 }
