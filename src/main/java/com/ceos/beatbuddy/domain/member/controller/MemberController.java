@@ -13,9 +13,6 @@ import java.util.Map;
 public class MemberController {
     private final MemberService memberService;
 
-    @PostMapping("/prefer/{id}")
-    public ResponseEntity<Long> addPreference(@PathVariable Long id, @RequestBody Map<String, Double> preferences) {
-        return ResponseEntity.ok(memberService.addPreference(id, preferences));
-    }
+
 
 }

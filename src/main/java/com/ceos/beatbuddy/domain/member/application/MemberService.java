@@ -18,7 +18,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final MemberGenreRepository memberGenreRepository;
 
     /**
      * loginId로 유저 식별자 조회
@@ -56,17 +55,4 @@ public class MemberService {
         return null;
     }
 
-
-    @Transactional
-    public Long addPreference(Long id, Map<String, Double> preferences) {
-        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
-
-        Vector preferenceVector = Vector.fromPreferences(preferences);
-
-        MemberGenre memberGenre = MemberGenre.builder()
-                .member(member).preferenceVectorString(preferenceVector.toString())
-                .build();
-
-        return memberGenreRepository.save(memberGenre).getMemberGenreId();
-    }
 }
