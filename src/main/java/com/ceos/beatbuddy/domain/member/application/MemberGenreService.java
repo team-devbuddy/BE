@@ -27,7 +27,7 @@ public class MemberGenreService {
         Vector preferenceVector = Vector.fromPreferences(preferences);
 
         MemberGenre memberGenre = MemberGenre.builder()
-                .member(member).preferenceVectorString(preferenceVector.toString())
+                .member(member).genreVectorString(preferenceVector.toString())
                 .build();
 
         return memberGenreRepository.save(memberGenre).getMemberGenreId();

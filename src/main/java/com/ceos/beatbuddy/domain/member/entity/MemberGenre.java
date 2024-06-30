@@ -22,22 +22,22 @@ public class MemberGenre {
     private Member member;
 
     @Transient
-    private Vector preferenceVector;
+    private Vector genreVector;
 
     @Lob
-    private String preferenceVectorString;
+    private String genreVectorString;
 
     public void setPreferenceVector(Vector vector) {
-        this.preferenceVector = vector;
-        this.preferenceVectorString = vector.getElements().toString();
+        this.genreVector = vector;
+        this.genreVectorString = vector.getElements().toString();
     }
 
     public Vector getPreferenceVector() {
-        if (preferenceVector == null && preferenceVectorString != null) {
-            List<Double> elements = List.of(preferenceVectorString.replace("[", "").replace("]", "").split(","))
+        if (genreVector == null && genreVectorString != null) {
+            List<Double> elements = List.of(genreVectorString.replace("[", "").replace("]", "").split(","))
                     .stream().map(String::trim).map(Double::parseDouble).collect(Collectors.toList());
-            preferenceVector = new Vector(elements);
+            genreVector = new Vector(elements);
         }
-        return preferenceVector;
+        return genreVector;
     }
 }
