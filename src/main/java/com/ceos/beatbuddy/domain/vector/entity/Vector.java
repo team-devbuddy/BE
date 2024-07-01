@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Getter
 @AllArgsConstructor
 public class Vector {
-    private static final List<String> ALL_PREFERENCES = Arrays.asList(
+    private static final List<String> ALL_GENRES = Arrays.asList(
             "EDM", "HIPHOP_RANDB", "HOUSE", "SOUL_FUNK", "TECHNO", "K_POP"
     );
     private final List<Double> elements;
@@ -52,7 +52,7 @@ public class Vector {
 
     //PREFERENCE -> VECTOR
     public static Vector fromPreferences(Map<String, Double> preferenceMap) {
-        List<Double> elements = ALL_PREFERENCES.stream()
+        List<Double> elements = ALL_GENRES.stream()
                 .map(pref -> preferenceMap.getOrDefault(pref, 0.0))
                 .collect(Collectors.toList());
         return new Vector(elements);
