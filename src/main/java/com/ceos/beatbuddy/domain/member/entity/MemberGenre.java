@@ -19,7 +19,7 @@ public class MemberGenre extends BaseTimeEntity {
     private Long memberGenreId;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "memberId")
     private Member member;
 
     @Transient
