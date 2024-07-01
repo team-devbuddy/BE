@@ -13,8 +13,8 @@ import java.util.Map;
 public class MemberGenreController {
     private final MemberGenreService memberGenreService;
 
-    @PostMapping("/prefer/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<Long> addPreference(@PathVariable Long id, @RequestBody Map<String, Double> preferences) {
-        return ResponseEntity.ok(memberGenreService.addPreference(id, preferences));
+        return ResponseEntity.ok(memberGenreService.addGenreVector(id, preferences));
     }
 }
