@@ -21,8 +21,8 @@ public class MemberGenreService {
     private final MemberGenreRepository memberGenreRepository;
 
     @Transactional
-    public Long addGenreVector(Long id, Map<String, Double> preferences) {
-        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
+    public Long addGenreVector(Long memberId, Map<String, Double> preferences) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
 
         Vector preferenceVector = Vector.fromPreferences(preferences);
 
