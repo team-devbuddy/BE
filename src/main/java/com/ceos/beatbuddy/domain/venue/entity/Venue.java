@@ -1,13 +1,14 @@
 package com.ceos.beatbuddy.domain.venue.entity;
 
 import com.ceos.beatbuddy.domain.vector.entity.Vector;
+import com.ceos.beatbuddy.global.BaseTimeEntity;
 import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
-public class Venue {
+public class Venue extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
