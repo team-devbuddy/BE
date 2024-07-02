@@ -26,7 +26,8 @@ public class Member extends BaseTimeEntity {
     private String realName;
 
     private Gender gender;
-    private Region region;
+    @Convert(converter = RegionConverter.class)
+    private List<Region> regions;
 
     private LocalDate dateOfBirth;
 }
