@@ -3,8 +3,8 @@ package com.ceos.beatbuddy.domain.member.application;
 import com.ceos.beatbuddy.domain.member.dto.MemberVectorResponseDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.entity.MemberGenre;
-import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
-import com.ceos.beatbuddy.domain.member.exception.MemberException;
+import com.ceos.beatbuddy.domain.member.entity.MemberMood;
+import com.ceos.beatbuddy.domain.member.exception.*;
 import com.ceos.beatbuddy.domain.member.repository.MemberGenreRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
 import com.ceos.beatbuddy.domain.vector.entity.Vector;
@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -43,5 +44,26 @@ public class MemberGenreService {
     }
 
 
+    @Transactional
+    public MemberVectorResponseDTO deleteGenreVector(Long memberId, Long memberGenreId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
+        MemberGenre memberGenre = memberGenreRepository.findById(memberGenreId).orElseThrow(()->new MemberGenreException((MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST)));
+        List<MemberGenre> memberGenres = memberGenreRepository.findAllByMember(member);
+
+        if (memberGenres.size() <= 1) {
+            throw new MemberGenreException(MemberGenreErrorCode.MEMBER_GENRE_ONLY_ONE);
+        }
+
+        memberGenreRepository.delete(memberGenre);
+
+        return MemberVectorResponseDTO.builder()
+                .vectorString(memberGenre.getGenreVectorString())
+                .memberId(member.getMemberId())
+                .vectorId(memberGenre.getMemberGenreId())
+                .loginId(member.getLoginId())
+                .nickname(member.getNickname())
+                .realName(member.getRealName())
+                .build();
+    }
 
 }

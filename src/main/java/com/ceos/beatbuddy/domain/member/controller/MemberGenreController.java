@@ -18,4 +18,9 @@ public class MemberGenreController {
     public ResponseEntity<MemberVectorResponseDTO> addGenrePreference(@PathVariable Long memberId, @RequestBody Map<String, Double> preferences) {
         return ResponseEntity.ok(memberGenreService.addGenreVector(memberId, preferences));
     }
+
+    @DeleteMapping("/{memberId}/{memberGenreId}")
+    public ResponseEntity<MemberVectorResponseDTO> deleteGenrePreference(@PathVariable Long memberId, @PathVariable Long memberGenreId) {
+        return ResponseEntity.ok(memberGenreService.deleteGenreVector(memberId, memberGenreId));
+    }
 }
