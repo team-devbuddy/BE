@@ -12,6 +12,6 @@ import java.util.List;
 
 public interface VenueGenreRepository extends JpaRepository<VenueGenre, Long> {
 
-    @Query("SELECT vg FROM VenueGenre vg JOIN FETCH vg.venue v WHERE v.region = :region")
-    List<VenueGenre> findByVenueRegion(@Param("region") Region region);
+    @Query("SELECT vg FROM VenueGenre vg JOIN FETCH vg.venue v WHERE v.region IN :regions")
+    List<VenueGenre> findByVenueRegion(@Param("regions") List<Region> regions);
 }

@@ -36,7 +36,7 @@ public class RecommendService {
     public List<VenueResponseDTO> recommendVenuesByGenre(Long memberId, Long num) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(()->new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
         MemberGenre latestMemberGenre = memberGenreRepository.findLatestGenreByMember(member).orElseThrow(() -> new MemberGenreException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));;
-        List<VenueGenre> allVenueGenres = venueGenreRepository.findByVenueRegion(member.getRegion());
+        List<VenueGenre> allVenueGenres = venueGenreRepository.findByVenueRegion(member.getRegions());
 
         List<VenueGenre> recommendVenueGenres =  allVenueGenres.stream()
                 .sorted(Comparator.comparingDouble(v -> {
@@ -65,7 +65,7 @@ public class RecommendService {
     public List<VenueResponseDTO> recommendVenuesByMood(Long memberId, Long num) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(()->new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
         MemberMood latestMemberMood = memberMoodRepository.findLatestMoodByMember(member).orElseThrow(() -> new MemberMoodException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));;
-        List<VenueMood> allVenueMoods = venueMoodRepository.findByVenueRegion(member.getRegion());
+        List<VenueMood> allVenueMoods = venueMoodRepository.findByVenueRegion(member.getRegions());
 
         List<VenueMood> recommendVenueGenres =  allVenueMoods.stream()
                 .sorted(Comparator.comparingDouble(v -> {

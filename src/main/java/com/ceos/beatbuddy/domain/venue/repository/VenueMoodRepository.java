@@ -12,6 +12,6 @@ import java.util.Optional;
 
 public interface VenueMoodRepository extends JpaRepository<VenueMood, Long> {
 
-    @Query("SELECT vm FROM VenueMood vm JOIN FETCH vm.venue v WHERE v.region = :region")
-    List<VenueMood> findByVenueRegion(@Param("region") Region region);
+    @Query("SELECT vm FROM VenueMood vm JOIN FETCH vm.venue v WHERE v.region IN :regions")
+    List<VenueMood> findByVenueRegion(@Param("regions") List<Region> regions);
 }
