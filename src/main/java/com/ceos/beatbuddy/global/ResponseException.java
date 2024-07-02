@@ -1,5 +1,6 @@
 package com.ceos.beatbuddy.global;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 public class ResponseException  extends RuntimeException {
