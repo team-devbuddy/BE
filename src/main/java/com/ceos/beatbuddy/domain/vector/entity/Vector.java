@@ -16,6 +16,9 @@ public class Vector {
     private static final List<String> ALL_GENRES = Arrays.asList(
             "EDM", "HIPHOP_RANDB", "HOUSE", "SOUL_FUNK", "TECHNO", "K_POP"
     );
+    private static final List<String> ALL_MOODS = Arrays.asList(
+            "HIP", "DARK", "EXCITING", "FUNKY", "EXOTIC", "TRENDY", "TROPICAL", "CHILLY"
+    );
     private final List<Double> elements;
 
     public double cosineSimilarity(Vector other) {
@@ -50,9 +53,17 @@ public class Vector {
         return new Vector(elements);
     }
 
-    //PREFERENCE -> VECTOR
-    public static Vector fromPreferences(Map<String, Double> preferenceMap) {
+    //GENRE -> VECTOR
+    public static Vector fromGenres(Map<String, Double> preferenceMap) {
         List<Double> elements = ALL_GENRES.stream()
+                .map(pref -> preferenceMap.getOrDefault(pref, 0.0))
+                .collect(Collectors.toList());
+        return new Vector(elements);
+    }
+
+    //MOOD -> VECTOR
+    public static Vector fromMoods(Map<String, Double> preferenceMap) {
+        List<Double> elements = ALL_MOODS.stream()
                 .map(pref -> preferenceMap.getOrDefault(pref, 0.0))
                 .collect(Collectors.toList());
         return new Vector(elements);
@@ -62,7 +73,7 @@ public class Vector {
     public static Vector fromJson(String json) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Double> preferenceMap = mapper.readValue(json, Map.class);
-        return fromPreferences(preferenceMap);
+        return fromGenres(preferenceMap);
     }
 }
 
