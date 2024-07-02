@@ -8,10 +8,12 @@ import com.ceos.beatbuddy.domain.member.repository.MemberGenreRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberMoodRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
 import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
+import com.ceos.beatbuddy.domain.venue.entity.Venue;
 import com.ceos.beatbuddy.domain.venue.entity.VenueGenre;
 import com.ceos.beatbuddy.domain.venue.entity.VenueMood;
 import com.ceos.beatbuddy.domain.venue.repository.VenueGenreRepository;
 import com.ceos.beatbuddy.domain.venue.repository.VenueMoodRepository;
+import com.ceos.beatbuddy.domain.venue.repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +31,12 @@ public class RecommendService {
     private final MemberMoodRepository memberMoodRepository;
     private final VenueGenreRepository venueGenreRepository;
     private final VenueMoodRepository venueMoodRepository;
+    private final VenueRepository venueRepository;
 
     public List<VenueResponseDTO> recommendVenuesByGenre(Long memberId, Long num) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(()->new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
         MemberGenre latestMemberGenre = memberGenreRepository.findLatestGenreByMember(member).orElseThrow(() -> new MemberGenreException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));;
-        List<VenueGenre> allVenueGenres = venueGenreRepository.findAllWithVenue();
+        List<VenueGenre> allVenueGenres = venueGenreRepository.findByVenueRegion(member.getRegion());
 
         List<VenueGenre> recommendVenueGenres =  allVenueGenres.stream()
                 .sorted(Comparator.comparingDouble(v -> {
@@ -62,7 +65,7 @@ public class RecommendService {
     public List<VenueResponseDTO> recommendVenuesByMood(Long memberId, Long num) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(()->new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
         MemberMood latestMemberMood = memberMoodRepository.findLatestMoodByMember(member).orElseThrow(() -> new MemberMoodException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));;
-        List<VenueMood> allVenueMoods = venueMoodRepository.findAllWithVenue();
+        List<VenueMood> allVenueMoods = venueMoodRepository.findByVenueRegion(member.getRegion());
 
         List<VenueMood> recommendVenueGenres =  allVenueMoods.stream()
                 .sorted(Comparator.comparingDouble(v -> {
@@ -85,5 +88,9 @@ public class RecommendService {
 
         return recommendedVenues;
 
+    }
+
+    public List<Venue> findVenuesByMemberRegion(Member member) {
+        return venueRepository.findByRegion(member.getRegion());
     }
 }

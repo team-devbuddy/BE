@@ -1,5 +1,7 @@
 package com.ceos.beatbuddy.domain.member.entity;
 
+import com.ceos.beatbuddy.domain.member.constant.Gender;
+import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.vector.entity.Vector;
 import com.ceos.beatbuddy.global.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -18,7 +20,12 @@ public class Member extends BaseTimeEntity {
     private Long memberId;
     private String loginId;
 
+
     private String nickname;
+    private String realName;
+
+    private Gender gender;
+    private Region region;
 
 
 }

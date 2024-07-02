@@ -1,5 +1,6 @@
 package com.ceos.beatbuddy.domain.venue.entity;
 
+import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.vector.entity.Vector;
 import com.ceos.beatbuddy.global.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -21,5 +22,5 @@ public class Venue extends BaseTimeEntity {
     private String englishName;
     private String koreanName;
 
-
+    private Region region;
 }
