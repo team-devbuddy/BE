@@ -18,7 +18,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/onboarding/consent/{memberId}")
-    public ResponseEntity<Long> saveTermConsent(@PathVariable Long memberId, @RequestBody MemberConsentRequestDTO memberConsentRequestDTO) {
+    public ResponseEntity<MemberResponseDTO> saveTermConsent(@PathVariable Long memberId, @RequestBody MemberConsentRequestDTO memberConsentRequestDTO) {
         return ResponseEntity.ok(memberService.saveMemberConsent(memberId, memberConsentRequestDTO));
     }
 

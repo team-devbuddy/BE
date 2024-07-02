@@ -78,10 +78,17 @@ public class MemberService {
     }
 
     @Transactional
-    public Long saveMemberConsent(Long memberId, MemberConsentRequestDTO memberConsentRequestDTO) {
+    public MemberResponseDTO saveMemberConsent(Long memberId, MemberConsentRequestDTO memberConsentRequestDTO) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
         member.saveConsents(memberConsentRequestDTO.getIsLocationConsent(), memberConsentRequestDTO.getIsMarketingConsent());
-        return memberRepository.save(member).getMemberId();
+        memberRepository.save(member);
+        return MemberResponseDTO.builder()
+                .memberId(member.getMemberId())
+                .loginId(member.getLoginId())
+                .nickname(member.getNickname())
+                .isLocationConsent(member.isLocationConsent())
+                .isMarketingConsent(member.isMarketingConsent())
+                .build();
     }
 
     @Transactional
@@ -96,6 +103,8 @@ public class MemberService {
                 .memberId(member.getMemberId())
                 .loginId(member.getLoginId())
                 .nickname(member.getNickname())
+                .isLocationConsent(member.isLocationConsent())
+                .isMarketingConsent(member.isMarketingConsent())
                 .build();
     }
 }

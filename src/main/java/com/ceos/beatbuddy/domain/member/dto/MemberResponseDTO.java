@@ -10,4 +10,6 @@ public class MemberResponseDTO {
     private Long memberId;
     private String loginId;
     private String nickname;
+    private boolean isLocationConsent;
+    private boolean isMarketingConsent;
 }
