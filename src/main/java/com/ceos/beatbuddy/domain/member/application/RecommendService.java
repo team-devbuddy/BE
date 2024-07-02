@@ -90,7 +90,4 @@ public class RecommendService {
 
     }
 
-    public List<Venue> findVenuesByMemberRegion(Member member) {
-        return venueRepository.findByRegion(member.getRegion());
-    }
 }
