@@ -10,5 +10,5 @@ import java.util.Optional;
 
 public interface MemberGenreRepository extends JpaRepository<MemberGenre, Long> {
     @Query("SELECT mg FROM MemberGenre mg WHERE mg.member = :member ORDER BY mg.createdAt DESC LIMIT 1")
-    Optional<MemberGenre> findLatestByMember(@Param("member") Member member);
+    Optional<MemberGenre> findLatestGenreByMember(@Param("member") Member member);
 }

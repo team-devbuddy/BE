@@ -21,4 +21,9 @@ public class RecommendController {
         return ResponseEntity.ok(recommendService.recommendVenuesByGenre(memberId, 2L));
     }
 
+    @GetMapping("/mood/{memberId}")
+    public ResponseEntity<List<VenueResponseDTO>> recommendByMood(@PathVariable final Long memberId) {
+        return ResponseEntity.ok(recommendService.recommendVenuesByMood(memberId, 2L));
+    }
+
 }
