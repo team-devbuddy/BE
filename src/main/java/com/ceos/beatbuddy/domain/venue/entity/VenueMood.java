@@ -29,7 +29,7 @@ public class VenueMood extends BaseTimeEntity {
     @Lob
     private String moodVectorString;
 
-    public void setMoodVector(Vector vector) {
+    public void updateMoodVector(Vector vector) {
         this.moodVector = vector;
         this.moodVectorString = vector.getElements().toString();
     }
