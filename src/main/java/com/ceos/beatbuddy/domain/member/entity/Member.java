@@ -30,4 +30,18 @@ public class Member extends BaseTimeEntity {
     private List<Region> regions;
 
     private LocalDate dateOfBirth;
+
+    @Builder.Default
+    private boolean isLocationConsent = false;
+    @Builder.Default
+    private boolean isMarketingConsent = false;
+
+    public void saveConsents(Boolean isLocationConsent, Boolean isMarketingConsent) {
+        this.isLocationConsent = isLocationConsent;
+        this.isMarketingConsent = isMarketingConsent;
+    }
+
+    public void saveNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
