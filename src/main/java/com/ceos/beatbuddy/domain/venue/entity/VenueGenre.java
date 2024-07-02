@@ -28,7 +28,7 @@ public class VenueGenre extends BaseTimeEntity {
     @Lob
     private String genreVectorString;
 
-    public void setGenreVector(Vector vector) {
+    public void updateGenreVector(Vector vector) {
         this.genreVector = vector;
         this.genreVectorString = vector.getElements().toString();
     }
