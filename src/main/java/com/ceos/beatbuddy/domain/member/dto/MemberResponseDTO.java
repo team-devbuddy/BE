@@ -9,6 +9,7 @@ public class MemberResponseDTO {
 
     private Long memberId;
     private String loginId;
+    private String realName;
     private String nickname;
     private boolean isLocationConsent;
     private boolean isMarketingConsent;

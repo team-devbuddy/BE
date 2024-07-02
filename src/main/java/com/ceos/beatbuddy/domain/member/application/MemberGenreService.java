@@ -1,5 +1,6 @@
 package com.ceos.beatbuddy.domain.member.application;
 
+import com.ceos.beatbuddy.domain.member.dto.MemberVectorResponseDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.entity.MemberGenre;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
@@ -21,7 +22,7 @@ public class MemberGenreService {
     private final MemberGenreRepository memberGenreRepository;
 
     @Transactional
-    public Long addGenreVector(Long memberId, Map<String, Double> genres) {
+    public MemberVectorResponseDTO addGenreVector(Long memberId, Map<String, Double> genres) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
 
         Vector preferenceVector = Vector.fromGenres(genres);
@@ -30,20 +31,17 @@ public class MemberGenreService {
                 .member(member).genreVectorString(preferenceVector.toString())
                 .build();
 
-        return memberGenreRepository.save(memberGenre).getMemberGenreId();
-    }
-
-    @Transactional
-    public Long addMoodVector(Long memberId, Map<String, Double> moods) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
-
-        Vector preferenceVector = Vector.fromMoods(moods);
-
-        MemberGenre memberGenre = MemberGenre.builder()
-                .member(member).genreVectorString(preferenceVector.toString())
+        memberGenreRepository.save(memberGenre);
+        return MemberVectorResponseDTO.builder()
+                .vectorString(memberGenre.getGenreVectorString())
+                .memberId(member.getMemberId())
+                .vectorId(memberGenre.getMemberGenreId())
+                .loginId(member.getLoginId())
+                .nickname(member.getNickname())
+                .realName(member.getRealName())
                 .build();
-
-        return memberGenreRepository.save(memberGenre).getMemberGenreId();
     }
+
+
 
 }

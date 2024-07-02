@@ -1,4 +1,4 @@
-package com.ceos.beatbuddy.domain.member.dto;
+package com.ceos.beatbuddy.domain.member.dto.error;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

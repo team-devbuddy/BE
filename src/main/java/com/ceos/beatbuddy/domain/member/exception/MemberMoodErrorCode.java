@@ -1,7 +1,6 @@
 package com.ceos.beatbuddy.domain.member.exception;
 
-import com.ceos.beatbuddy.domain.member.dto.MemberGenreErrorCodeResponse;
-import com.ceos.beatbuddy.domain.member.dto.MemberMoodErrorCodeResponse;
+import com.ceos.beatbuddy.domain.member.dto.error.MemberMoodErrorCodeResponse;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
