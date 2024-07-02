@@ -38,7 +38,7 @@ public class RecommendService {
         List<VenueGenre> recommendVenueGenres =  allVenueGenres.stream()
                 .sorted(Comparator.comparingDouble(v -> {
                     try {
-                        return -latestMemberGenre.getPreferenceVector().cosineSimilarity(v.getPreferenceVector());
+                        return -latestMemberGenre.getGenreVector().cosineSimilarity(v.getPreferenceVector());
                     } catch (Exception e) {
                         e.printStackTrace();
                         return Double.MIN_VALUE;

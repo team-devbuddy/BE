@@ -21,10 +21,10 @@ public class MemberGenreService {
     private final MemberGenreRepository memberGenreRepository;
 
     @Transactional
-    public Long addGenreVector(Long memberId, Map<String, Double> preferences) {
+    public Long addGenreVector(Long memberId, Map<String, Double> genres) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
 
-        Vector preferenceVector = Vector.fromPreferences(preferences);
+        Vector preferenceVector = Vector.fromGenres(genres);
 
         MemberGenre memberGenre = MemberGenre.builder()
                 .member(member).genreVectorString(preferenceVector.toString())
@@ -32,4 +32,18 @@ public class MemberGenreService {
 
         return memberGenreRepository.save(memberGenre).getMemberGenreId();
     }
+
+    @Transactional
+    public Long addMoodVector(Long memberId, Map<String, Double> moods) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
+
+        Vector preferenceVector = Vector.fromMoods(moods);
+
+        MemberGenre memberGenre = MemberGenre.builder()
+                .member(member).genreVectorString(preferenceVector.toString())
+                .build();
+
+        return memberGenreRepository.save(memberGenre).getMemberGenreId();
+    }
+
 }

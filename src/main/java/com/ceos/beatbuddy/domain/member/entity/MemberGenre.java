@@ -28,12 +28,12 @@ public class MemberGenre extends BaseTimeEntity {
     @Lob
     private String genreVectorString;
 
-    public void setPreferenceVector(Vector vector) {
+    public void setGenreVector(Vector vector) {
         this.genreVector = vector;
         this.genreVectorString = vector.getElements().toString();
     }
 
-    public Vector getPreferenceVector() {
+    public Vector getGenreVector() {
         if (genreVector == null && genreVectorString != null) {
             List<Double> elements = List.of(genreVectorString.replace("[", "").replace("]", "").split(","))
                     .stream().map(String::trim).map(Double::parseDouble).collect(Collectors.toList());
