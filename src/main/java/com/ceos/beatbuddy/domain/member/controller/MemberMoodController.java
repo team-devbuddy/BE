@@ -20,4 +20,9 @@ public class MemberMoodController {
     public ResponseEntity<MemberVectorResponseDTO> addMoodPreference(@PathVariable Long memberId, @RequestBody Map<String, Double> preferences) {
         return ResponseEntity.ok(memberMoodService.addMoodVector(memberId, preferences));
     }
+
+    @DeleteMapping("/{memberId}/{memberMoodId}")
+    public ResponseEntity<MemberVectorResponseDTO> deleteMoodPreference(@PathVariable Long memberId, @PathVariable Long memberMoodId) {
+        return ResponseEntity.ok(memberMoodService.deleteMoodVector(memberId, memberMoodId));
+    }
 }
