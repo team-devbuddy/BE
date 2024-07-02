@@ -55,4 +55,15 @@ public class MemberService {
         return null;
     }
 
+    private void isDuplicate(Member member) {
+        if (memberRepository.existsDistinctByNickname(member.getNickname())) {
+            throw new MemberException(MemberErrorCode.NICKNAME_ALREADY_EXIST);
+        }
+        if (memberRepository.existsDistinctByLoginId(member.getLoginId())) {
+            throw new MemberException(MemberErrorCode.LOGINID_ALREADY_EXIST);
+        }
+    }
+
+
+
 }

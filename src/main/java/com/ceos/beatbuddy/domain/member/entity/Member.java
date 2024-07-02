@@ -7,6 +7,7 @@ import com.ceos.beatbuddy.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,5 +28,5 @@ public class Member extends BaseTimeEntity {
     private Gender gender;
     private Region region;
 
-
+    private LocalDate dateOfBirth;
 }
