@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VenueVectorResponseDTO {
-    Long venueId;
-    Long vectorId;
-    String englishName;
-    String koreanName;
-    Region region;
-    String vectorString;
+    private Long venueId;
+    private Long vectorId;
+    private String englishName;
+    private String koreanName;
+    private Region region;
+    private String vectorString;
 }

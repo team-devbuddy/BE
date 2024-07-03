@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class VenueErrorCodeResponse {
-    private HttpStatus status;
-    private String message;
+    private final HttpStatus status;
+    private final String message;
 
     public VenueErrorCodeResponse(HttpStatus httpStatus, String message) {
         this.status = httpStatus;

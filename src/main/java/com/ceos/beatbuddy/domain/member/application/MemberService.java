@@ -5,8 +5,8 @@ import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
 import com.ceos.beatbuddy.domain.member.dto.NicknameRequestDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
-import com.ceos.beatbuddy.domain.member.exception.MemberException;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
+import com.ceos.beatbuddy.global.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,28 +58,28 @@ public class MemberService {
 
     private void isDuplicate(String nickname) {
         if (memberRepository.existsDistinctByNickname(nickname)) {
-            throw new MemberException(MemberErrorCode.NICKNAME_ALREADY_EXIST);
+            throw new CustomException(MemberErrorCode.NICKNAME_ALREADY_EXIST);
         }
         if (memberRepository.existsDistinctByLoginId(nickname)) {
-            throw new MemberException(MemberErrorCode.LOGINID_ALREADY_EXIST);
+            throw new CustomException(MemberErrorCode.LOGINID_ALREADY_EXIST);
         }
     }
 
     private void validateNickname(String nickname) {
         if (nickname.length() > 12) {
-            throw new MemberException(MemberErrorCode.NICKNAME_OVER_LENGTH);
+            throw new CustomException(MemberErrorCode.NICKNAME_OVER_LENGTH);
         }
         if (nickname.contains(" ")) {
-            throw new MemberException(MemberErrorCode.NICKNAME_SPACE_EXIST);
+            throw new CustomException(MemberErrorCode.NICKNAME_SPACE_EXIST);
         }
         if (!NICKNAME_PATTERN.matcher(nickname).matches()) {
-            throw new MemberException(MemberErrorCode.NICKNAME_SYMBOL_EXIST);
+            throw new CustomException(MemberErrorCode.NICKNAME_SYMBOL_EXIST);
         }
     }
 
     @Transactional
     public MemberResponseDTO saveMemberConsent(Long memberId, MemberConsentRequestDTO memberConsentRequestDTO) {
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         member.saveConsents(memberConsentRequestDTO.getIsLocationConsent(), memberConsentRequestDTO.getIsMarketingConsent());
         memberRepository.save(member);
         return MemberResponseDTO.builder()
@@ -93,7 +93,7 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDTO saveAndCheckNickname(Long memberId, NicknameRequestDTO nicknameRequestDTO) {
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         String nickname = nicknameRequestDTO.getNickname();
         isDuplicate(nickname);
         validateNickname(nickname);

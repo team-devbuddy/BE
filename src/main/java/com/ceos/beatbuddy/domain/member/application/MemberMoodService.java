@@ -4,12 +4,11 @@ import com.ceos.beatbuddy.domain.member.dto.MemberVectorResponseDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.entity.MemberMood;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
-import com.ceos.beatbuddy.domain.member.exception.MemberException;
 import com.ceos.beatbuddy.domain.member.exception.MemberMoodErrorCode;
-import com.ceos.beatbuddy.domain.member.exception.MemberMoodException;
 import com.ceos.beatbuddy.domain.member.repository.MemberMoodRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
 import com.ceos.beatbuddy.domain.vector.entity.Vector;
+import com.ceos.beatbuddy.global.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,7 @@ public class MemberMoodService {
 
     @Transactional
     public MemberVectorResponseDTO addMoodVector(Long memberId, Map<String, Double> moods) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
 
         Vector preferenceVector = Vector.fromMoods(moods);
 
@@ -47,12 +46,12 @@ public class MemberMoodService {
 
     @Transactional
     public MemberVectorResponseDTO deleteMoodVector(Long memberId, Long memberMoodId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_EXIST));
-        MemberMood memberMood = memberMoodRepository.findById(memberMoodId).orElseThrow(()->new MemberMoodException((MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST)));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        MemberMood memberMood = memberMoodRepository.findById(memberMoodId).orElseThrow(()->new CustomException((MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST)));
         List<MemberMood> memberMoods = memberMoodRepository.findAllByMember(member);
 
         if (memberMoods.size() <= 1) {
-            throw new MemberMoodException(MemberMoodErrorCode.MEMBER_MOOD_ONLY_ONE);
+            throw new CustomException(MemberMoodErrorCode.MEMBER_MOOD_ONLY_ONE);
         }
 
         memberMoodRepository.delete(memberMood);

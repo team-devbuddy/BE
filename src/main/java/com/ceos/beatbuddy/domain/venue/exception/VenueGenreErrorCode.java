@@ -1,8 +1,10 @@
 package com.ceos.beatbuddy.domain.venue.exception;
 
 import com.ceos.beatbuddy.domain.venue.dto.VenueGenreErrorCodeResponse;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public enum VenueGenreErrorCode {
 
     INVALID_VENUE_GENRE_INFO(HttpStatus.BAD_REQUEST, "잘못된 베뉴 장르 정보입니다."),

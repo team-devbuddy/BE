@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class Vector {
     private static final List<String> ALL_GENRES = Arrays.asList(
-            "EDM", "HIPHOP_RANDB", "HOUSE", "SOUL_FUNK", "TECHNO", "K_POP"
+            "EDM", "HIPHOP_R&B", "HOUSE", "SOUL&FUNK", "TECHNO", "K-POP"
     );
     private static final List<String> ALL_MOODS = Arrays.asList(
             "HIP", "DARK", "EXCITING", "FUNKY", "EXOTIC", "TRENDY", "TROPICAL", "CHILLY"
