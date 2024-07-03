@@ -1,8 +1,10 @@
 package com.ceos.beatbuddy.domain.member.application;
 
+import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.member.dto.MemberConsentRequestDTO;
 import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
 import com.ceos.beatbuddy.domain.member.dto.NicknameRequestDTO;
+import com.ceos.beatbuddy.domain.member.dto.RegionRequestDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
@@ -11,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -107,4 +112,22 @@ public class MemberService {
                 .isMarketingConsent(member.isMarketingConsent())
                 .build();
     }
+
+    @Transactional
+    public MemberResponseDTO saveRegions(Long memberId, RegionRequestDTO regionRequestDTO) {
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        List<Region> regions = Arrays.stream(regionRequestDTO.getRegions().split(","))
+                .map(Region::fromText)
+                .collect(Collectors.toList());
+        member.saveRegions(regions);
+        memberRepository.save(member);
+        return MemberResponseDTO.builder()
+                .memberId(member.getMemberId())
+                .loginId(member.getLoginId())
+                .nickname(member.getNickname())
+                .isLocationConsent(member.isLocationConsent())
+                .isMarketingConsent(member.isMarketingConsent())
+                .build();
+    }
+
 }

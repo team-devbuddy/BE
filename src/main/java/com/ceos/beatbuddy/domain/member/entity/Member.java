@@ -45,4 +45,8 @@ public class Member extends BaseTimeEntity {
     public void saveNickname(String nickname) {
         this.nickname = nickname;
     }
+
+    public void saveRegions(List<Region> regions) {
+        this.regions = regions;
+    }
 }
