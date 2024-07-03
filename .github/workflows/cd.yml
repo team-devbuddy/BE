@@ -50,11 +50,11 @@ jobs:
         distribution: "corretto"
   
     - name: Make application.yml
-       run: |
-         cd ./src/main/resources
-         touch ./application.yml
-         echo "${{ secrets.APPLICATION }}" > ./application.yml
-       shell: bash	
+      run: |
+        cd ./src/main/resources
+        touch ./application.yml
+        echo "${{ secrets.APPLICATION }}" > ./application.yml
+      shell: bash
        
     - name: Build with Gradle
       run: |
@@ -62,21 +62,21 @@ jobs:
         ./gradlew clean build
 
     - name: Docker build & push to docker repo
-     run: |
+      run: |
        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
        docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO }}/beatbuddy .
        docker push ${{ secrets.DOCKER_REPO }}/beatbuddy
   
     - name: Deploy to server
-       uses: appleboy/ssh-action@1.0.3
-       id: deploy
-       with:
-         host: ${{ secrets.HOST }}
-         username: ubuntu
-         key: ${{ secrets.KEY }}
-         envs: GITHUB_SHA
-       script: |
-         sudo docker rm -f $(docker ps -qa)
-         sudo docker pull ${{ secrets.DOCKER_REPO }}/beatbuddy
-         docker-compose up -d
-         docker image prune -f
+      uses: appleboy/ssh-action@1.0.3
+      id: deploy
+      with:
+        host: ${{ secrets.HOST }}
+        username: ubuntu
+        key: ${{ secrets.KEY }}
+        envs: GITHUB_SHA
+      script: |
+        sudo docker rm -f $(docker ps -qa)
+        sudo docker pull ${{ secrets.DOCKER_REPO }}/beatbuddy
+        docker-compose up -d
+        docker image prune -f
