@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    Long findByLoginId(String loginId);
+    Member findByLoginId(String loginId);
     Optional<Member> findByMemberId(Long memberId);
     Boolean existsDistinctByNickname(String nickname);
     public Boolean existsDistinctByLoginId(String loginId);

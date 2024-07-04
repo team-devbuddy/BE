@@ -36,5 +36,9 @@ public class MemberController {
         return ResponseEntity.ok(memberService.saveRegions(memberId, regionRequestDTO));
     }
 
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
 
 }

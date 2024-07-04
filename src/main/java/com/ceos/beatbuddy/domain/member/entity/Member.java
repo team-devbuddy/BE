@@ -32,6 +32,8 @@ public class Member extends BaseTimeEntity {
 
     private LocalDate dateOfBirth;
 
+    private String role;
+
     @Builder.Default
     private boolean isLocationConsent = false;
     @Builder.Default

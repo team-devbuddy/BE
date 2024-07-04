@@ -2,8 +2,10 @@ package com.ceos.beatbuddy.domain.member.application;
 
 import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.member.dto.MemberConsentRequestDTO;
+import com.ceos.beatbuddy.domain.member.dto.MemberDto;
 import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
 import com.ceos.beatbuddy.domain.member.dto.NicknameRequestDTO;
+import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
 import com.ceos.beatbuddy.domain.member.dto.RegionRequestDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
@@ -26,20 +28,18 @@ public class MemberService {
     private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9가-힣._]*$");
 
     /**
-     * loginId로 유저 식별자 조회
-     * 유저가 존재하면 식별자 반환
-     * 유저가 존재하지 않으면 회원가입 처리 후 식별자 반환
+     * loginId로 유저 식별자 조회 유저가 존재하면 식별자 반환 유저가 존재하지 않으면 회원가입 처리 후 식별자 반환
      *
      * @param loginId
      * @return UserId
      */
-    public Long findOrCreateUser(String loginId) {
-        Long userId = memberRepository.findByLoginId(loginId);
+    public Oauth2MemberDto findOrCreateUser(String loginId) {
+        Member member = memberRepository.findByLoginId(loginId);
 
-        if (userId == null) {
-            return this.join(loginId);
+        if (member == null) {
+            return Oauth2MemberDto.of(this.join(loginId));
         } else {
-            return userId;
+            return Oauth2MemberDto.of(member);
         }
     }
 
@@ -54,11 +54,11 @@ public class MemberService {
      * @param loginId
      * @return UserId
      */
-    private Long join(String loginId) {
-        //userService.joinAgree();
-        //userService.onboard();
-        //return userRepository.save(User.builder().loginId(loginId).build()); //TODO: save()의 반환값이 User인지 Long인지 확인 필요
-        return null;
+    private Member join(String loginId) {
+        return memberRepository.save(
+                Member.builder()
+                        .loginId(loginId)
+                        .build());
     }
 
     private void isDuplicate(String nickname) {
@@ -84,8 +84,10 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDTO saveMemberConsent(Long memberId, MemberConsentRequestDTO memberConsentRequestDTO) {
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
-        member.saveConsents(memberConsentRequestDTO.getIsLocationConsent(), memberConsentRequestDTO.getIsMarketingConsent());
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        member.saveConsents(memberConsentRequestDTO.getIsLocationConsent(),
+                memberConsentRequestDTO.getIsMarketingConsent());
         memberRepository.save(member);
         return MemberResponseDTO.builder()
                 .memberId(member.getMemberId())
@@ -98,7 +100,8 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDTO saveAndCheckNickname(Long memberId, NicknameRequestDTO nicknameRequestDTO) {
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         String nickname = nicknameRequestDTO.getNickname();
         isDuplicate(nickname);
         validateNickname(nickname);
@@ -115,7 +118,8 @@ public class MemberService {
 
     @Transactional
     public MemberResponseDTO saveRegions(Long memberId, RegionRequestDTO regionRequestDTO) {
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         List<Region> regions = Arrays.stream(regionRequestDTO.getRegions().split(","))
                 .map(Region::fromText)
                 .collect(Collectors.toList());

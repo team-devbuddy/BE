@@ -1,6 +1,6 @@
 package com.ceos.beatbuddy.global.config.jwt;
 
-import com.ceos.beatbuddy.domain.user.dto.MemberDto;
+import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
 import com.ceos.beatbuddy.global.config.oauth.CustomOAuth2User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -52,7 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String username = tokenProvider.getUsername(token);
         String role = tokenProvider.getRole(token);
 
-        MemberDto memberDto = MemberDto.builder()
+        Oauth2MemberDto memberDto = Oauth2MemberDto.builder()
                 .role(role)
                 .name(username)
                 .build();

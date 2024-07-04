@@ -1,6 +1,6 @@
-package com.ceos.beatbuddy.domain.user.dto;
+package com.ceos.beatbuddy.domain.member.dto;
 
-import com.ceos.beatbuddy.domain.user.entity.Member;
+import com.ceos.beatbuddy.domain.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +17,7 @@ public class MemberDto {
 
     public static MemberDto of(Member member){
         return MemberDto.builder()
-                .name(member.getName())
+                //.name(member.getName())
                 .loginId(member.getLoginId())
                 .nickname(member.getNickname())
                 .role(member.getRole())
