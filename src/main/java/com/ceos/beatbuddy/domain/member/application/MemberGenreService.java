@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,6 +58,34 @@ public class MemberGenreService {
 
         memberGenreRepository.delete(memberGenre);
 
+        return MemberVectorResponseDTO.builder()
+                .vectorString(memberGenre.getGenreVectorString())
+                .memberId(member.getMemberId())
+                .vectorId(memberGenre.getMemberGenreId())
+                .loginId(member.getLoginId())
+                .nickname(member.getNickname())
+                .realName(member.getRealName())
+                .build();
+    }
+
+    public List<MemberVectorResponseDTO> getAllGenreVector(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        List<MemberGenre> memberGenres = memberGenreRepository.findAllByMember(member);
+        return memberGenres.stream()
+                .map(memberGenre -> MemberVectorResponseDTO.builder()
+                        .memberId(member.getMemberId())
+                        .vectorId(memberGenre.getMemberGenreId())
+                        .loginId(member.getLoginId())
+                        .nickname(member.getNickname())
+                        .realName(member.getRealName())
+                        .vectorString(memberGenre.getGenreVectorString())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public MemberVectorResponseDTO getLatestGenreVector(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        MemberGenre memberGenre = memberGenreRepository.findLatestGenreByMember(member).orElseThrow(()-> new CustomException((MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST)));
         return MemberVectorResponseDTO.builder()
                 .vectorString(memberGenre.getGenreVectorString())
                 .memberId(member.getMemberId())
