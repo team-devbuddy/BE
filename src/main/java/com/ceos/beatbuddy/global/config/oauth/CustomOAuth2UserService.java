@@ -29,7 +29,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             e.printStackTrace();
         }
 
-        switch (oAuth2Response.getProvider()) {
+        switch (request.getClientRegistration().getRegistrationId().toUpperCase()) {
             case "KAKAO":
                 oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
                 break;
@@ -38,8 +38,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         userId = oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId();
-        Oauth2MemberDto memberDto = memberService.findOrCreateUser(userId);
-
+        Oauth2MemberDto memberDto = memberService.findOrCreateUser(userId, oAuth2Response.getName());
 
         return new CustomOAuth2User(memberDto);
     }
