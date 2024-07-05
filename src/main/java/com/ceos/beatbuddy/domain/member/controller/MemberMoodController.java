@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,5 +25,15 @@ public class MemberMoodController {
     @DeleteMapping("/{memberId}/{memberMoodId}")
     public ResponseEntity<MemberVectorResponseDTO> deleteMoodPreference(@PathVariable Long memberId, @PathVariable Long memberMoodId) {
         return ResponseEntity.ok(memberMoodService.deleteMoodVector(memberId, memberMoodId));
+    }
+
+    @GetMapping("/all/{memberId}")
+    public ResponseEntity<List<MemberVectorResponseDTO>> getAllMoodPreference(@PathVariable Long memberId) {
+        return ResponseEntity.ok(memberMoodService.getAllMoodVector(memberId));
+    }
+
+    @GetMapping("/latest/{memberId}")
+    public ResponseEntity<MemberVectorResponseDTO> getLatestMoodPreference(@PathVariable Long memberId) {
+        return ResponseEntity.ok(memberMoodService.getLatestMoodVector(memberId));
     }
 }
