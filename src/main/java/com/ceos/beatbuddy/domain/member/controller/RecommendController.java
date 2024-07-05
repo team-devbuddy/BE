@@ -2,7 +2,6 @@ package com.ceos.beatbuddy.domain.member.controller;
 
 
 import com.ceos.beatbuddy.domain.member.application.RecommendService;
-import com.ceos.beatbuddy.domain.member.dto.MemberVectorResponseDTO;
 import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
 import io.swagger.v3.oas.annotations.Operation;
