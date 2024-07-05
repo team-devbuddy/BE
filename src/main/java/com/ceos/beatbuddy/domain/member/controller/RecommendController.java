@@ -26,4 +26,9 @@ public class RecommendController {
         return ResponseEntity.ok(recommendService.recommendVenuesByMood(memberId, 2L));
     }
 
+    @GetMapping("/bb-pick")
+    public ResponseEntity<List<VenueResponseDTO>> recommendByBBpick() {
+        return ResponseEntity.ok(recommendService.recommendByBBpick(5L));
+    }
+
 }
