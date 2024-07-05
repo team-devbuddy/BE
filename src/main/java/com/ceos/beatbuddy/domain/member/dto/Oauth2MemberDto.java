@@ -10,6 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Oauth2MemberDto {
 
+    private Long memberId;
     private String role;
     private String name;
     private String nickname;
@@ -17,7 +18,8 @@ public class Oauth2MemberDto {
 
     public static Oauth2MemberDto of(Member member){
         return Oauth2MemberDto.builder()
-                //.name(member.getName())
+                .memberId(member.getMemberId())
+                .name(member.getRealName())
                 .loginId(member.getLoginId())
                 .nickname(member.getNickname())
                 .role(member.getRole())
