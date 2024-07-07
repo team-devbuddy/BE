@@ -33,6 +33,10 @@ public class HeartbeatService {
     public HeartbeatResponseDTO addHeartbeat(Long memberId, Long venueId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         Venue venue = venueRepository.findById(venueId).orElseThrow(()->new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
+        boolean doesAlreadyExist = heartbeatRepository.findByMemberVenue(member, venue).isPresent();
+        if(doesAlreadyExist) {
+            throw new CustomException(HeartbeatErrorCode.HEARTBEAT_ALREADY_EXIST);
+        }
         Heartbeat heartbeat = Heartbeat.builder()
                 .member(member)
                 .venue(venue)
@@ -49,7 +53,7 @@ public class HeartbeatService {
     public HeartbeatResponseDTO deleteHeartbeat(Long memberId, Long venueId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         Venue venue = venueRepository.findById(venueId).orElseThrow(()->new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
-        Heartbeat heartbeat = heartbeatRepository.findByMemberVenue(member, venue).orElseThrow(()->new CustomException(HeartbeatErrorCode.HEARTBEAT_NOT_EXIST));
+        Heartbeat heartbeat = heartbeatRepository.findByMemberVenue(member, venue).orElseThrow(()->new CustomException(HeartbeatErrorCode.HEARTBEAT_ALREADY_EXIST));
 
         heartbeatRepository.delete(heartbeat);
 

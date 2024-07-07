@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum HeartbeatErrorCode {
 
+    HEARTBEAT_ALREADY_EXIST(HttpStatus.CONFLICT, "해당되는 Heartbeat가 이미 있습니다"),
     HEARTBEAT_NOT_EXIST(HttpStatus.NOT_FOUND, "해당되는 Heartbeat가 없습니다");
 
     private final HttpStatus httpStatus;
