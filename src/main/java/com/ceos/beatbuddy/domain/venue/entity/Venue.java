@@ -23,4 +23,6 @@ public class Venue extends BaseTimeEntity {
     private String koreanName;
 
     private Region region;
+    private String description;
+    private String address;
 }

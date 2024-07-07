@@ -35,4 +35,6 @@ public class HeartbeatController {
     public ResponseEntity<HeartbeatResponseDTO> getHeartbeat(@PathVariable Long memberId, @PathVariable Long venueId) {
         return ResponseEntity.ok(heartbeatService.getHeartbeat(memberId, venueId));
     }
+
+
 }
