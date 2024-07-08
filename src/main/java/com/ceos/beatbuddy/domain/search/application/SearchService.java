@@ -47,8 +47,7 @@ public class SearchService {
             Double expireAtDouble = Double.valueOf(expireAt);
 
             // 만료 시간을 Sorted Set에 저장
-            Boolean expire = redisTemplate.opsForZSet().add("expire", keyword, expireAtDouble);
-            System.out.println(expire);
+            redisTemplate.opsForZSet().add("expire", keyword, expireAtDouble);
         } catch (Exception e) {
             System.out.println(e.toString());
         }
