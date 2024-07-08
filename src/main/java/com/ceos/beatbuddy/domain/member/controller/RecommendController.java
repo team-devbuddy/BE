@@ -1,6 +1,7 @@
 package com.ceos.beatbuddy.domain.member.controller;
 
 
+import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
 import com.ceos.beatbuddy.domain.member.application.RecommendService;
 import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,6 @@ public class RecommendController {
     public ResponseEntity<List<VenueResponseDTO>> recommendByBBpick() {
         return ResponseEntity.ok(recommendService.recommendByBBpick(5L));
     }
+
 
 }

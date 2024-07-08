@@ -8,6 +8,7 @@ import com.ceos.beatbuddy.domain.member.dto.MemberVectorResponseDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
+import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
 import com.ceos.beatbuddy.domain.venue.entity.Venue;
 import com.ceos.beatbuddy.domain.venue.exception.VenueErrorCode;
 import com.ceos.beatbuddy.domain.venue.repository.VenueRepository;
@@ -87,5 +88,17 @@ public class HeartbeatService {
                 .venueId(venue.getVenueId())
                 .heartId(heartbeat.getHeartId())
                 .build();
+    }
+
+    public List<VenueResponseDTO> getHotChart(){
+        List<Venue> venues = heartbeatRepository.findVenuesByHeartbeatCount();
+        return venues.stream()
+                .map(venue -> VenueResponseDTO.builder()
+                        .venueId(venue.getVenueId())
+                        .koreanName(venue.getKoreanName())
+                        .englishName(venue.getEnglishName())
+                        .build())
+                .collect(Collectors.toList());
+
     }
 }

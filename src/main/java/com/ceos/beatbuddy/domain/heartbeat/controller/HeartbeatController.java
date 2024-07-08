@@ -3,6 +3,7 @@ package com.ceos.beatbuddy.domain.heartbeat.controller;
 
 import com.ceos.beatbuddy.domain.heartbeat.application.HeartbeatService;
 import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
+import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +37,9 @@ public class HeartbeatController {
         return ResponseEntity.ok(heartbeatService.getHeartbeat(memberId, venueId));
     }
 
+    @GetMapping("/hot-chart")
+    public ResponseEntity<List<VenueResponseDTO>> getHotChart() {
+        return ResponseEntity.ok(heartbeatService.getHotChart());
+    }
 
 }
