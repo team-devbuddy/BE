@@ -1,6 +1,7 @@
 package com.ceos.beatbuddy.domain.member.controller;
 
 
+import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
 import com.ceos.beatbuddy.domain.member.application.RecommendService;
 import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
@@ -61,5 +62,11 @@ public class RecommendController {
     public ResponseEntity<List<VenueResponseDTO>> recommendByMood(@PathVariable final Long memberId) {
         return ResponseEntity.ok(recommendService.recommendVenuesByMood(memberId, 2L));
     }
+
+    @GetMapping("/bb-pick")
+    public ResponseEntity<List<VenueResponseDTO>> recommendByBBpick() {
+        return ResponseEntity.ok(recommendService.recommendByBBpick(5L));
+    }
+
 
 }

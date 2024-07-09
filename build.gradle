@@ -63,6 +63,17 @@ dependencies {
     //spring health check
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    //Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // QueryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+
+    // Jakarta
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api:3.0.0'
+
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 

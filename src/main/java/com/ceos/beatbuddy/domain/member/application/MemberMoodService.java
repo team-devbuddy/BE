@@ -4,6 +4,7 @@ import com.ceos.beatbuddy.domain.member.dto.MemberVectorResponseDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.entity.MemberMood;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
+import com.ceos.beatbuddy.domain.member.exception.MemberGenreErrorCode;
 import com.ceos.beatbuddy.domain.member.exception.MemberMoodErrorCode;
 import com.ceos.beatbuddy.domain.member.repository.MemberMoodRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,6 +58,34 @@ public class MemberMoodService {
 
         memberMoodRepository.delete(memberMood);
 
+        return MemberVectorResponseDTO.builder()
+                .vectorString(memberMood.getMoodVectorString())
+                .memberId(member.getMemberId())
+                .vectorId(memberMood.getMemberMoodId())
+                .loginId(member.getLoginId())
+                .nickname(member.getNickname())
+                .realName(member.getRealName())
+                .build();
+    }
+
+    public List<MemberVectorResponseDTO> getAllMoodVector(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        List<MemberMood> memberMoods = memberMoodRepository.findAllByMember(member);
+        return memberMoods.stream()
+                .map(memberGenre -> MemberVectorResponseDTO.builder()
+                        .memberId(member.getMemberId())
+                        .vectorId(memberGenre.getMemberMoodId())
+                        .loginId(member.getLoginId())
+                        .nickname(member.getNickname())
+                        .realName(member.getRealName())
+                        .vectorString(memberGenre.getMoodVectorString())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public MemberVectorResponseDTO getLatestMoodVector(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        MemberMood memberMood = memberMoodRepository.findLatestMoodByMember(member).orElseThrow(()-> new CustomException((MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST)));
         return MemberVectorResponseDTO.builder()
                 .vectorString(memberMood.getMoodVectorString())
                 .memberId(member.getMemberId())

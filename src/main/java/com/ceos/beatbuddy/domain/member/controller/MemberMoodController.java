@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,5 +30,15 @@ public class MemberMoodController {
     @Operation(summary = "사용자 기존 분위기 선호도 삭제", description = "사용자의 기존 분위기 선호도를 삭제합니다")
     public ResponseEntity<MemberVectorResponseDTO> deleteMoodPreference(@PathVariable Long memberId, @PathVariable Long memberMoodId) {
         return ResponseEntity.ok(memberMoodService.deleteMoodVector(memberId, memberMoodId));
+    }
+
+    @GetMapping("/all/{memberId}")
+    public ResponseEntity<List<MemberVectorResponseDTO>> getAllMoodPreference(@PathVariable Long memberId) {
+        return ResponseEntity.ok(memberMoodService.getAllMoodVector(memberId));
+    }
+
+    @GetMapping("/latest/{memberId}")
+    public ResponseEntity<MemberVectorResponseDTO> getLatestMoodPreference(@PathVariable Long memberId) {
+        return ResponseEntity.ok(memberMoodService.getLatestMoodVector(memberId));
     }
 }
