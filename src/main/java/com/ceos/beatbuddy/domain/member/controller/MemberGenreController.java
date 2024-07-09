@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -56,5 +57,15 @@ public class MemberGenreController {
     })
     public ResponseEntity<MemberVectorResponseDTO> deleteGenrePreference(@PathVariable Long memberId, @PathVariable Long memberGenreId) {
         return ResponseEntity.ok(memberGenreService.deleteGenreVector(memberId, memberGenreId));
+    }
+
+    @GetMapping("/all/{memberId}")
+    public ResponseEntity<List<MemberVectorResponseDTO>> getAllGenrePreference(@PathVariable Long memberId) {
+        return ResponseEntity.ok(memberGenreService.getAllGenreVector(memberId));
+    }
+
+    @GetMapping("/latest/{memberId}")
+    public ResponseEntity<MemberVectorResponseDTO> getLatestGenrePreference(@PathVariable Long memberId) {
+        return ResponseEntity.ok(memberGenreService.getLatestGenreVector(memberId));
     }
 }
