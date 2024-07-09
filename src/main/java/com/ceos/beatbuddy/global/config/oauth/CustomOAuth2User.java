@@ -32,12 +32,18 @@ public class CustomOAuth2User implements OAuth2User {
         return collection;
     }
 
-    public String getLoginId() {
-        return memberDto.getLoginId();
-    }
-
     @Override
     public String getName() {
         return memberDto.getName();
     }
+
+    public String getUsername() {
+
+        return memberDto.getLoginId();
+    }
+
+    public Long getMemberId() {
+        return memberDto.getMemberId();
+    }
+
 }

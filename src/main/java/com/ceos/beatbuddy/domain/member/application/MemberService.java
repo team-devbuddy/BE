@@ -2,7 +2,6 @@ package com.ceos.beatbuddy.domain.member.application;
 
 import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.member.dto.MemberConsentRequestDTO;
-import com.ceos.beatbuddy.domain.member.dto.MemberDto;
 import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
 import com.ceos.beatbuddy.domain.member.dto.NicknameRequestDTO;
 import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
@@ -31,13 +30,14 @@ public class MemberService {
      * loginId로 유저 식별자 조회 유저가 존재하면 식별자 반환 유저가 존재하지 않으면 회원가입 처리 후 식별자 반환
      *
      * @param loginId
+     * @param name
      * @return UserId
      */
-    public Oauth2MemberDto findOrCreateUser(String loginId) {
+    @Transactional
+    public Oauth2MemberDto findOrCreateUser(String loginId, String name) {
         Member member = memberRepository.findByLoginId(loginId);
-
         if (member == null) {
-            return Oauth2MemberDto.of(this.join(loginId));
+            return Oauth2MemberDto.of(this.join(loginId, name));
         } else {
             return Oauth2MemberDto.of(member);
         }
@@ -52,12 +52,16 @@ public class MemberService {
      * 5. 유저 식별자 반환
      *
      * @param loginId
+     * @param name
      * @return UserId
      */
-    private Member join(String loginId) {
+    private Member join(String loginId, String name) {
         return memberRepository.save(
                 Member.builder()
                         .loginId(loginId)
+                        .realName(name)
+                        .role("USER")
+                        .nickname(name)
                         .build());
     }
 
