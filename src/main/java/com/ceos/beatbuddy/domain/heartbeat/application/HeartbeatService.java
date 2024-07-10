@@ -43,6 +43,9 @@ public class HeartbeatService {
                 .venue(venue)
                 .build();
         heartbeatRepository.save(heartbeat);
+
+        venue.addHeartbeatNum();
+        venueRepository.save(venue);
         return HeartbeatResponseDTO.builder()
                 .memberId(member.getMemberId())
                 .venueId(venue.getVenueId())
@@ -54,9 +57,12 @@ public class HeartbeatService {
     public HeartbeatResponseDTO deleteHeartbeat(Long memberId, Long venueId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         Venue venue = venueRepository.findById(venueId).orElseThrow(()->new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
-        Heartbeat heartbeat = heartbeatRepository.findByMemberVenue(member, venue).orElseThrow(()->new CustomException(HeartbeatErrorCode.HEARTBEAT_ALREADY_EXIST));
+        Heartbeat heartbeat = heartbeatRepository.findByMemberVenue(member, venue).orElseThrow(()->new CustomException(HeartbeatErrorCode.HEARTBEAT_NOT_EXIST));
 
         heartbeatRepository.delete(heartbeat);
+
+        venue.deleteHeartbeatNum();
+        venueRepository.save(venue);
 
         return HeartbeatResponseDTO.builder()
                 .memberId(member.getMemberId())
@@ -91,7 +97,7 @@ public class HeartbeatService {
     }
 
     public List<VenueResponseDTO> getHotChart(){
-        List<Venue> venues = heartbeatRepository.findVenuesByHeartbeatCount();
+        List<Venue> venues = venueRepository.sortByHeartbeatCount();
         return venues.stream()
                 .map(venue -> VenueResponseDTO.builder()
                         .venueId(venue.getVenueId())
@@ -99,6 +105,5 @@ public class HeartbeatService {
                         .englishName(venue.getEnglishName())
                         .build())
                 .collect(Collectors.toList());
-
     }
 }

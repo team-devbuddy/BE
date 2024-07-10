@@ -30,7 +30,6 @@ public class SearchService {
     private final SearchRepository searchRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
-    // 검색을 했을 때 해당 글목록 리스트를 출력하는 메서드
     @Transactional
     public Page<SearchQueryDTO> keywordSearch(SearchDTO.RequestDTO searchRequestDTO, Pageable pageable) {
 

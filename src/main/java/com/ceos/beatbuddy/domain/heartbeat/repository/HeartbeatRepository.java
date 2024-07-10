@@ -17,7 +17,4 @@ public interface HeartbeatRepository extends JpaRepository<Heartbeat, Long> {
     @Query("SELECT hb FROM Heartbeat hb WHERE hb.member = :member ORDER BY hb.createdAt DESC")
     List<Heartbeat> findByMember(@Param("member") Member member);
 
-    @Query("SELECT v FROM Heartbeat hb JOIN hb.venue v GROUP BY v.venueId ORDER BY COUNT(hb) DESC LIMIT 4")
-    List<Venue> findVenuesByHeartbeatCount();
-
 }

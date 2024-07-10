@@ -17,5 +17,8 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
 
     @Query("SELECT v.venueId FROM Venue v")
     List<Long> findAllIds();
+
+    @Query("SELECT v FROM Venue v ORDER BY v.heartbeatNum DESC LIMIT 10")
+    List<Venue> sortByHeartbeatCount();
 }
 

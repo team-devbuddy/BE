@@ -25,4 +25,17 @@ public class Venue extends BaseTimeEntity {
     private Region region;
     private String description;
     private String address;
+
+    @Builder.Default
+    private Long heartbeatNum = 0L;
+
+    public void addHeartbeatNum() {
+        this.heartbeatNum += 1;
+    }
+
+    public void deleteHeartbeatNum() {
+        if(this.heartbeatNum > 0) {
+            this.heartbeatNum -= 1;
+        }
+    }
 }
