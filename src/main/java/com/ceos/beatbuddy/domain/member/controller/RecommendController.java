@@ -3,9 +3,11 @@ package com.ceos.beatbuddy.domain.member.controller;
 
 import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
 import com.ceos.beatbuddy.domain.member.application.RecommendService;
+import com.ceos.beatbuddy.domain.search.dto.SearchRankResponseDTO;
 import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -64,6 +66,13 @@ public class RecommendController {
     }
 
     @GetMapping("/bb-pick")
+    @Operation(summary = "랜덤 추천 BeatBuddy Pick",
+            description = "취향 데이터가 없는 사용자에게 랜덤 추천 시스템")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "랜덤 추천 시스템 작동이 성공했습니다."
+                    , content = @Content(mediaType = "application/json"
+                    , array = @ArraySchema(schema = @Schema(implementation = VenueResponseDTO.class))))
+    })
     public ResponseEntity<List<VenueResponseDTO>> recommendByBBpick() {
         return ResponseEntity.ok(recommendService.recommendByBBpick(5L));
     }
