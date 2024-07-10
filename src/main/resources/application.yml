@@ -24,3 +24,9 @@ spring:
     redis:
       host: 127.0.0.1
       port: 6379
+
+  server:
+    forward-headers-strategy: native
+    tomcat:
+      remote-ip-header: x-forwarded-for
+      protocol-header: x-forwarded-proto
