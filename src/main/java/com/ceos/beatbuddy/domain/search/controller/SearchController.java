@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/search")
+@Tag(name = "Search Controller", description = "검색 컨트롤러\n"
+        + "사용자가 검색바에 검색하는 기능, 실시간 검색어 차트 조회 기능이 있습니다.")
 public class SearchController {
     private final RedisTemplate<String, String> redisTemplate;
     private final SearchService searchService;
