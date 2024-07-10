@@ -7,7 +7,7 @@ spring:
   jwt:
     secret: ${JWT_SECRET}
     redis:
-      host: 127.0.0.1
+      host: 3.38.250.131
       port: 6379
 
   jpa:
@@ -22,7 +22,7 @@ spring:
 
   cache:
     redis:
-      host: 127.0.0.1
+      host: 3.38.250.131
       port: 6379
 
   server:
