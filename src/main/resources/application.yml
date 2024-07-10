@@ -1,7 +1,7 @@
 spring:
   data:
     redis:
-      host: 127.0.0.1
+      host: 3.38.250.131
       port: 6379
       password: ${DB_PASSWORD}
   datasource:
@@ -11,6 +11,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jwt:
     secret: ${JWT_SECRET}
+  cache:
+    redis:
+      host: 3.38.250.131
+      port: 6379
+      password: ${DB_PASSWORD}
+
 
   jpa:
     show-sql: true
@@ -21,11 +27,6 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
-
-  cache:
-    redis:
-      host: 127.0.0.1
-      port: 6379
 
   server:
     forward-headers-strategy: native
