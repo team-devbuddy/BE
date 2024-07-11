@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -55,9 +56,19 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(createCookie("refresh", refresh));
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        objectMapper.writeValue(response.getWriter(), loginResponseDto);
 
-        response.sendRedirect("http://localhost:3000/onBoarding?access="+access);
+        String jsonResponse = objectMapper.writeValueAsString(loginResponseDto);
+        response.getWriter().write(jsonResponse);
+
+        HttpSession session = request.getSession();
+        session.setMaxInactiveInterval(600);
+
+        String redirectUrl = "http://localhost:3000/onBoarding?access=" + access;
+
+
+        if (!response.isCommitted()) {
+            response.sendRedirect(redirectUrl);
+        }
     }
 
     private Cookie createCookie(String key, String value) {
