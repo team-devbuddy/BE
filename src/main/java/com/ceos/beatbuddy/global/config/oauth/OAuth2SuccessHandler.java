@@ -52,13 +52,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .username(oAuth2User.getName())
                 .build();
 
-        response.setHeader("access", "Bearer " + access);
         response.addCookie(createCookie("refresh", refresh));
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         objectMapper.writeValue(response.getWriter(), loginResponseDto);
 
-        response.sendRedirect("http://localhost:3000/");
+        response.sendRedirect("http://localhost:3000/onBoarding?access="+access);
     }
 
     private Cookie createCookie(String key, String value) {
