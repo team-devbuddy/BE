@@ -29,7 +29,5 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
   server:
-    forward-headers-strategy: native
     tomcat:
-      remote-ip-header: x-forwarded-for
-      protocol-header: x-forwarded-proto
+      use-relative-redirects: true

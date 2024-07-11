@@ -52,7 +52,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .username(oAuth2User.getName())
                 .build();
 
-        response.setHeader("access", access);
+        response.setHeader("access", "Bearer " + access);
         response.addCookie(createCookie("refresh", refresh));
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

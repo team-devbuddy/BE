@@ -26,10 +26,12 @@ public class JwtFilter extends OncePerRequestFilter {
         String accessToken = request.getHeader("access");
 
         // access token이 없을 경우
-        if (accessToken == null) {
+        if (accessToken == null || !accessToken.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
             return;
         }
+
+        accessToken = accessToken.split(" ")[1];
 
         try{
             tokenProvider.isExpired(accessToken);

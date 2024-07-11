@@ -23,13 +23,12 @@ public class CustomClientRegistrationRepo {
     }
 
     private ClientRegistration kakaoClientRegistration() {
-        String redirectUriTemplate = "{baseUrl}/login/oauth2/code/{registrationId}";
         return ClientRegistration.withRegistrationId("kakao")
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri(redirectUriTemplate)
+                .redirectUri("https://beatbuddy.world/login/oauth2/code/kakao")
                 .authorizationUri("https://kauth.kakao.com/oauth/authorize")
                 .tokenUri("https://kauth.kakao.com/oauth/token")
                 .userInfoUri("https://kapi.kakao.com/v2/user/me")
