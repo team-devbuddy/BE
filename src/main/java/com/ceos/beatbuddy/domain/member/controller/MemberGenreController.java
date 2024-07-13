@@ -4,6 +4,7 @@ import com.ceos.beatbuddy.domain.member.application.MemberGenreService;
 import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
 import com.ceos.beatbuddy.domain.member.dto.MemberVectorResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
+import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class MemberGenreController {
     private final MemberGenreService memberGenreService;
 
-    @PostMapping("/{memberId}")
+    @PostMapping("")
     @Operation(summary = "사용자 장르 선호도 생성", description = "사용자의 새로운 장르 선호도를 생성합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "장르 선호도 생성에 성공하였습니다."
@@ -34,11 +35,12 @@ public class MemberGenreController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<MemberVectorResponseDTO> addGenrePreference(@PathVariable Long memberId, @RequestBody Map<String, Double> preferences) {
+    public ResponseEntity<MemberVectorResponseDTO> addGenrePreference(@RequestBody Map<String, Double> preferences) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberGenreService.addGenreVector(memberId, preferences));
     }
 
-    @DeleteMapping("/{memberId}/{memberGenreId}")
+    @DeleteMapping("/{memberGenreId}")
     @Operation(summary = "사용자 장르 선호도 삭제", description = "사용자의 기존 장르 선호도를 삭제합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "장르 선호도 삭제에 성공하였습니다.\n"
@@ -55,17 +57,20 @@ public class MemberGenreController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<MemberVectorResponseDTO> deleteGenrePreference(@PathVariable Long memberId, @PathVariable Long memberGenreId) {
+    public ResponseEntity<MemberVectorResponseDTO> deleteGenrePreference(@PathVariable Long memberGenreId) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberGenreService.deleteGenreVector(memberId, memberGenreId));
     }
 
-    @GetMapping("/all/{memberId}")
-    public ResponseEntity<List<MemberVectorResponseDTO>> getAllGenrePreference(@PathVariable Long memberId) {
+    @GetMapping("/all")
+    public ResponseEntity<List<MemberVectorResponseDTO>> getAllGenrePreference() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberGenreService.getAllGenreVector(memberId));
     }
 
-    @GetMapping("/latest/{memberId}")
-    public ResponseEntity<MemberVectorResponseDTO> getLatestGenrePreference(@PathVariable Long memberId) {
+    @GetMapping("/latest")
+    public ResponseEntity<MemberVectorResponseDTO> getLatestGenrePreference() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberGenreService.getLatestGenreVector(memberId));
     }
 }
