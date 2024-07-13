@@ -6,6 +6,8 @@ import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
 import com.ceos.beatbuddy.domain.member.dto.NicknameRequestDTO;
 import com.ceos.beatbuddy.domain.member.dto.RegionRequestDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
+import com.ceos.beatbuddy.global.config.jwt.CustomUserDetails;
+import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -26,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
 
-    @PostMapping("/onboarding/consent/{memberId}")
+    @PostMapping("/onboarding/consent")
     @Operation(summary = "사용자 약관 동의", description = "어플리케이션 약관 동의")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "약관 동의 저장 성공"
@@ -36,13 +40,13 @@ public class MemberController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<MemberResponseDTO> saveTermConsent(@PathVariable Long memberId,
-                                                             @RequestBody MemberConsentRequestDTO memberConsentRequestDTO) {
+    public ResponseEntity<MemberResponseDTO> saveTermConsent(@RequestBody MemberConsentRequestDTO memberConsentRequestDTO) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberService.saveMemberConsent(memberId, memberConsentRequestDTO));
     }
 
 
-    @PostMapping("/onboarding/nickname/{memberId}")
+    @PostMapping("/onboarding/nickname")
     @Operation(summary = "사용자 닉네임 설정", description = "사용자의 닉네임을 설정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "닉네임 설정에 성공하였습니다."
@@ -52,12 +56,12 @@ public class MemberController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<MemberResponseDTO> saveNickname(@PathVariable Long memberId,
-                                                          @RequestBody NicknameRequestDTO nicknameRequestDTO) {
+    public ResponseEntity<MemberResponseDTO> saveNickname(@RequestBody NicknameRequestDTO nicknameRequestDTO) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberService.saveAndCheckNickname(memberId, nicknameRequestDTO));
     }
 
-    @PostMapping("/onboarding/regions/{memberId}")
+    @PostMapping("/onboarding/regions")
     @Operation(summary = "사용자 관심지역 설정", description = "사용자의 관심지역을 설정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "관심지역 설정에 성공하였습니다."
@@ -67,9 +71,8 @@ public class MemberController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<MemberResponseDTO> saveRegions(@PathVariable Long memberId,
-                                                         @RequestBody RegionRequestDTO regionRequestDTO) {
-        ;
+    public ResponseEntity<MemberResponseDTO> saveRegions(@RequestBody RegionRequestDTO regionRequestDTO) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberService.saveRegions(memberId, regionRequestDTO));
     }
 

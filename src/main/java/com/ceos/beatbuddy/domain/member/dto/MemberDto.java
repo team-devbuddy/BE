@@ -10,6 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MemberDto {
 
+    private Long memberId;
     private String role;
     private String name;
     private String nickname;
@@ -18,6 +19,7 @@ public class MemberDto {
     public static MemberDto of(Member member){
         return MemberDto.builder()
                 //.name(member.getName())
+                .memberId(member.getMemberId())
                 .loginId(member.getLoginId())
                 .nickname(member.getNickname())
                 .role(member.getRole())

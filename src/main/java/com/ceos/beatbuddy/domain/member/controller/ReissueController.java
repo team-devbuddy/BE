@@ -86,9 +86,10 @@ public class ReissueController {
 
         String username = tokenProvider.getUsername(refresh);
         String role = tokenProvider.getRole(refresh);
+        Long memberId = tokenProvider.getMemberId(refresh);
 
-        String newAccess = tokenProvider.createToken("access", username, role, 1000 * 60 * 60 * 2L);
-        String newRefresh = tokenProvider.createToken("refresh", username, role, 1000 * 3600 * 24 * 14L);
+        String newAccess = tokenProvider.createToken("access", memberId, username, role, 1000 * 60 * 60 * 2L);
+        String newRefresh = tokenProvider.createToken("refresh", memberId, username, role, 1000 * 3600 * 24 * 14L);
 
         refreshTokenRepository.deleteByRefreshToken(refresh);
         saveRefreshToken(username, newRefresh);

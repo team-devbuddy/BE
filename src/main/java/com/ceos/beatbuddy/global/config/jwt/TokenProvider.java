@@ -18,6 +18,11 @@ public class TokenProvider {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), SIG.HS256.key().build().getAlgorithm());
     }
 
+    public Long getMemberId(String token) {
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("memberId", Long.class);
+    }
+
     public String getUsername(String token) {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
@@ -38,9 +43,10 @@ public class TokenProvider {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
-    public String createToken(String category, String username, String role, Long expiredMs) {
+    public String createToken(String category, Long memberId, String username, String role, Long expiredMs) {
 
         return Jwts.builder()
+                .claim("memberId", memberId)
                 .claim("category", category)
                 .claim("username", username)
                 .claim("role", role)
