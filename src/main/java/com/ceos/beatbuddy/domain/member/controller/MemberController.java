@@ -51,7 +51,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "닉네임 중복이 아니면 true를 반환합니다."
                     , content = @Content(mediaType = "application/json"
-                    , schema = @Schema(implementation = MemberResponseDTO.class))),
+                    , schema = @Schema(implementation = Boolean.class))),
             @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
@@ -66,7 +66,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용가능한 닉네임이면 true를 반환합니다."
                     , content = @Content(mediaType = "application/json"
-                    , schema = @Schema(implementation = MemberResponseDTO.class))),
+                    , schema = @Schema(implementation = Boolean.class))),
             @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
