@@ -46,10 +46,40 @@ public class MemberController {
     }
 
 
-    @PostMapping("/onboarding/nickname")
-    @Operation(summary = "사용자 닉네임 설정", description = "사용자의 닉네임을 설정")
+    @PostMapping("/onboarding/nickname/duplicate")
+    @Operation(summary = "사용자 닉네임 중복확인", description = "사용자가 입력한 닉네임 중복 여부 확인")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "닉네임 설정에 성공하였습니다."
+            @ApiResponse(responseCode = "200", description = "닉네임 중복이 아니면 true를 반환합니다."
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = MemberResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<Boolean> isNicknameDuplicate(@RequestBody NicknameRequestDTO nicknameRequestDTO) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.isDuplicate(memberId, nicknameRequestDTO));
+    }
+
+    @PostMapping("/onboarding/nickname/validate")
+    @Operation(summary = "사용자 닉네임 오류 확인", description = "사용자가 입력한 닉네임 사용 가능 확인")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용가능한 닉네임이면 true를 반환합니다."
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = MemberResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<Boolean> isNicknameValidate(@RequestBody NicknameRequestDTO nicknameRequestDTO) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.isValidate(memberId, nicknameRequestDTO));
+    }
+
+    @PostMapping("/onboarding/nickname")
+    @Operation(summary = "사용자 닉네임 저장", description = "사용자가 입력한 닉네임으로 저장")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "닉네임을 저장에 성공하면 유저의 정보를 반환합니다."
                     , content = @Content(mediaType = "application/json"
                     , schema = @Schema(implementation = MemberResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
@@ -58,8 +88,10 @@ public class MemberController {
     })
     public ResponseEntity<MemberResponseDTO> saveNickname(@RequestBody NicknameRequestDTO nicknameRequestDTO) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.saveAndCheckNickname(memberId, nicknameRequestDTO));
+        return ResponseEntity.ok(memberService.saveNickname(memberId, nicknameRequestDTO));
     }
+
+
 
     @PostMapping("/onboarding/regions")
     @Operation(summary = "사용자 관심지역 설정", description = "사용자의 관심지역을 설정")

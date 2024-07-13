@@ -65,16 +65,21 @@ public class MemberService {
                         .build());
     }
 
-    private void isDuplicate(String nickname) {
+
+    public Boolean isDuplicate(Long memberId, NicknameRequestDTO nicknameRequestDTO) {
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        String nickname = nicknameRequestDTO.getNickname();
         if (memberRepository.existsDistinctByNickname(nickname)) {
             throw new CustomException(MemberErrorCode.NICKNAME_ALREADY_EXIST);
         }
-        if (memberRepository.existsDistinctByLoginId(nickname)) {
-            throw new CustomException(MemberErrorCode.LOGINID_ALREADY_EXIST);
-        }
+        return true;
     }
 
-    private void validateNickname(String nickname) {
+    public Boolean isValidate(Long memberId, NicknameRequestDTO nicknameRequestDTO) {
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        String nickname = nicknameRequestDTO.getNickname();
         if (nickname.length() > 12) {
             throw new CustomException(MemberErrorCode.NICKNAME_OVER_LENGTH);
         }
@@ -84,6 +89,7 @@ public class MemberService {
         if (!NICKNAME_PATTERN.matcher(nickname).matches()) {
             throw new CustomException(MemberErrorCode.NICKNAME_SYMBOL_EXIST);
         }
+        return true;
     }
 
     @Transactional
@@ -103,12 +109,10 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponseDTO saveAndCheckNickname(Long memberId, NicknameRequestDTO nicknameRequestDTO) {
+    public MemberResponseDTO saveNickname(Long memberId, NicknameRequestDTO nicknameRequestDTO) {
         Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         String nickname = nicknameRequestDTO.getNickname();
-        isDuplicate(nickname);
-        validateNickname(nickname);
         member.saveNickname(nickname);
         memberRepository.save(member);
         return MemberResponseDTO.builder()
@@ -119,6 +123,10 @@ public class MemberService {
                 .isMarketingConsent(member.isMarketingConsent())
                 .build();
     }
+
+
+
+
 
     @Transactional
     public MemberResponseDTO saveRegions(Long memberId, RegionRequestDTO regionRequestDTO) {
