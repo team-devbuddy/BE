@@ -10,5 +10,5 @@ public class ArchiveRequestDTO {
 
     private Long memberGenreId;
     private Long memberMoodId;
-    private Long memberId;
+
 }
