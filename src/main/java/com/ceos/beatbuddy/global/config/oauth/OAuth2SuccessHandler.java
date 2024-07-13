@@ -40,9 +40,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
+        Long memberId = oAuth2User.getMemberId();
 
-        String access = tokenProvider.createToken("access", username, role, 1000 * 60 * 60 * 2L);
-        String refresh = tokenProvider.createToken("refresh", username, role, 1000 * 3600 * 24 * 14L);
+        String access = tokenProvider.createToken("access", memberId, username, role, 1000 * 60 * 60 * 2L);
+        String refresh = tokenProvider.createToken("refresh", memberId, username, role, 1000 * 3600 * 24 * 14L);
 
         saveRefreshToken(username, refresh);
 
@@ -50,6 +51,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .memberId(oAuth2User.getMemberId())
                 .loginId(oAuth2User.getUsername())
                 .username(oAuth2User.getName())
+                .accessToken(access)
+                .refreshToken(refresh)
                 .build();
 
         response.setHeader("access", "Bearer " + access);
