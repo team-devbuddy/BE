@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .addFilterAfter(new JwtFilter(tokenProvider), OAuth2LoginAuthenticationFilter.class)
                 // 경로에 대한 권한 부여
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/reissue","/swagger-ui/**","/v3/api-docs/**","/swagger-ui.html").permitAll()
+                        .requestMatchers("/reissue","/swagger-ui/**","/v3/api-docs/**","/swagger-ui.html","http://localhost:3000/**").permitAll()
                         .anyRequest().authenticated())
                 //oauth2
                 .oauth2Login(oath2 -> oath2
