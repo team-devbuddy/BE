@@ -52,7 +52,10 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "닉네임 중복이 아니면 true를 반환합니다."
                     , content = @Content(mediaType = "application/json"
                     , schema = @Schema(implementation = Boolean.class))),
-            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class))),
+            @ApiResponse(responseCode = "409", description = "중복된 닉네임입니다.",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
@@ -68,6 +71,9 @@ public class MemberController {
                     , content = @Content(mediaType = "application/json"
                     , schema = @Schema(implementation = Boolean.class))),
             @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class))),
+            @ApiResponse(responseCode = "400", description = "특수문자, 공백, 길이 조건에 위배되는 것이 있습니다.",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
