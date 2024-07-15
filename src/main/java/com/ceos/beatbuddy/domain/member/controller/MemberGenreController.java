@@ -3,6 +3,7 @@ package com.ceos.beatbuddy.domain.member.controller;
 import com.ceos.beatbuddy.domain.member.application.MemberGenreService;
 import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
 import com.ceos.beatbuddy.domain.member.dto.MemberVectorResponseDTO;
+import com.ceos.beatbuddy.domain.vector.dto.GenreRequestDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
 import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/member-genre")
@@ -35,9 +35,9 @@ public class MemberGenreController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<MemberVectorResponseDTO> addGenrePreference(@RequestBody Map<String, Double> preferences) {
+    public ResponseEntity<MemberVectorResponseDTO> addGenrePreference(@RequestBody GenreRequestDTO genreRequestDTO) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        return ResponseEntity.ok(memberGenreService.addGenreVector(memberId, preferences));
+        return ResponseEntity.ok(memberGenreService.addGenreVector(memberId, genreRequestDTO.getGenrePreferences()));
     }
 
     @DeleteMapping("/{memberGenreId}")
@@ -50,10 +50,7 @@ public class MemberGenreController {
             @ApiResponse(responseCode = "400", description = "장르 선호도가 1개밖에 없어서 삭제할 수 없습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class))),
-            @ApiResponse(responseCode = "404", description = "유저 장르 선호도가 존재하지 않습니다",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseTemplate.class))),
-            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+            @ApiResponse(responseCode = "404", description = "유저 장르 선호도가 존재하지 않습니다 or 요청한 유저가 존재하지 않습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
@@ -63,12 +60,30 @@ public class MemberGenreController {
     }
 
     @GetMapping("/all")
+    @Operation(summary = "사용자 장르 선호도 리스트 전체 조회", description = "사용자의 모든 장르 선호도를 리스트로 전부 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자의 장르 선호도 전체 조회에 성공했습니다"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = MemberResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class)))
+    })
     public ResponseEntity<List<MemberVectorResponseDTO>> getAllGenrePreference() {
         Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberGenreService.getAllGenreVector(memberId));
     }
 
     @GetMapping("/latest")
+    @Operation(summary = "사용자의 가장 최근 장르 선호도 1개 조회", description = "사용자의 모든 장르 선호도 중 가장 최근 것만 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자의 가장 최근 장르 선호도 조회에 성공했습니다"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = MemberResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class)))
+    })
     public ResponseEntity<MemberVectorResponseDTO> getLatestGenrePreference() {
         Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberGenreService.getLatestGenreVector(memberId));

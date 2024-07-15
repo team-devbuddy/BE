@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class Vector {
     private static final List<String> ALL_GENRES = Arrays.asList(
-            "EDM", "HIPHOP_R&B", "HOUSE", "SOUL&FUNK", "TECHNO", "K-POP"
+            "EDM", "HIPHOP_R&B", "HOUSE", "SOUL&FUNK", "TECHNO", "K-POP", "POP", "LATIN"
     );
     private static final List<String> ALL_MOODS = Arrays.asList(
             "HIP", "DARK", "EXCITING", "FUNKY", "EXOTIC", "TRENDY", "TROPICAL", "CHILLY"
@@ -69,11 +69,5 @@ public class Vector {
         return new Vector(elements);
     }
 
-    //JSON -> PREFERENCE
-    public static Vector fromJson(String json) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Double> preferenceMap = mapper.readValue(json, Map.class);
-        return fromGenres(preferenceMap);
-    }
 }
 

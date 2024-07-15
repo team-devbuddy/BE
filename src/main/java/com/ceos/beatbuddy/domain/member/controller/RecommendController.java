@@ -36,10 +36,7 @@ public class RecommendController {
             @ApiResponse(responseCode = "200", description = "장르별 추천 베뉴를 조회하는데 성공했습니다."
                     , content = @Content(mediaType = "application/json"
                     , schema = @Schema(implementation = VenueResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseTemplate.class))),
-            @ApiResponse(responseCode = "404", description = "유저의 장르 선호도가 존재하지 않습니다",
+            @ApiResponse(responseCode = "404", description = "\"요청한 유저가 존재하지 않습니다\" or \"유저의 장르 선호도가 존재하지 않습니다\"",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
@@ -56,10 +53,7 @@ public class RecommendController {
             @ApiResponse(responseCode = "200", description = "분위기별 추천 베뉴를 조회하는데 성공했습니다."
                     , content = @Content(mediaType = "application/json"
                     , schema = @Schema(implementation = VenueResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseTemplate.class))),
-            @ApiResponse(responseCode = "404", description = "유저의 분위기 선호도가 존재하지 않습니다",
+            @ApiResponse(responseCode = "404", description = "\"요청한 유저가 존재하지 않습니다\" or \"유저의 분위기 선호도가 존재하지 않습니다\"",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
