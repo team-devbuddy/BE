@@ -1,6 +1,7 @@
 package com.ceos.beatbuddy.domain.venue.controller;
 
-import com.ceos.beatbuddy.domain.search.dto.SearchResultDTO;
+
+import com.ceos.beatbuddy.domain.vector.dto.GenreRequestDTO;
 import com.ceos.beatbuddy.domain.venue.application.VenueGenreService;
 import com.ceos.beatbuddy.domain.venue.dto.VenueVectorResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
@@ -14,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequestMapping("/venue-genre")
@@ -37,8 +37,8 @@ public class VenueGenreController {
                     , schema = @Schema(implementation = ResponseTemplate.class)))
     })
     public ResponseEntity<VenueVectorResponseDTO> addGenrePreference(@PathVariable Long venueId,
-                                                                     @RequestBody Map<String, Double> preferences) {
-        return ResponseEntity.ok(venueGenreService.addGenreVector(venueId, preferences));
+                                                                     @RequestBody GenreRequestDTO genreRequestDTO) {
+        return ResponseEntity.ok(venueGenreService.addGenreVector(venueId, genreRequestDTO.getGenrePreferences()));
     }
 
     @PatchMapping("/{venueId}")
@@ -58,7 +58,7 @@ public class VenueGenreController {
                     , schema = @Schema(implementation = ResponseTemplate.class)))
     })
     public ResponseEntity<VenueVectorResponseDTO> updateGenrePreference(@PathVariable Long venueId,
-                                                                        @RequestBody Map<String, Double> preferences) {
-        return ResponseEntity.ok(venueGenreService.updateGenreVector(venueId, preferences));
+                                                                        @RequestBody GenreRequestDTO genreRequestDTO) {
+        return ResponseEntity.ok(venueGenreService.updateGenreVector(venueId, genreRequestDTO.getGenrePreferences()));
     }
 }

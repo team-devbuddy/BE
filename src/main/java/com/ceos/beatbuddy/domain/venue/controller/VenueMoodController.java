@@ -1,7 +1,7 @@
 package com.ceos.beatbuddy.domain.venue.controller;
 
 
-import com.ceos.beatbuddy.domain.venue.application.VenueGenreService;
+import com.ceos.beatbuddy.domain.vector.dto.MoodRequestDTO;
 import com.ceos.beatbuddy.domain.venue.application.VenueMoodService;
 import com.ceos.beatbuddy.domain.venue.dto.VenueVectorResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequestMapping("/venue-mood")
@@ -38,8 +37,8 @@ public class VenueMoodController {
                     , content = @Content(mediaType = "application/json"
                     , schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<VenueVectorResponseDTO> addGenrePreference(@PathVariable Long venueId, @RequestBody Map<String, Double> preferences) {
-        return ResponseEntity.ok(venueMoodService.addMoodVector(venueId, preferences));
+    public ResponseEntity<VenueVectorResponseDTO> addGenrePreference(@PathVariable Long venueId, @RequestBody MoodRequestDTO moodRequestDTO) {
+        return ResponseEntity.ok(venueMoodService.addMoodVector(venueId, moodRequestDTO.getMoodPreferences()));
     }
 
     @PatchMapping("/{venueId}")
@@ -58,7 +57,7 @@ public class VenueMoodController {
                     , content = @Content(mediaType = "application/json"
                     , schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<VenueVectorResponseDTO> updateGenrePreference(@PathVariable Long venueId, @RequestBody Map<String, Double> preferences) {
-        return ResponseEntity.ok(venueMoodService.updateMoodVector(venueId, preferences));
+    public ResponseEntity<VenueVectorResponseDTO> updateGenrePreference(@PathVariable Long venueId, @RequestBody MoodRequestDTO moodRequestDTO) {
+        return ResponseEntity.ok(venueMoodService.updateMoodVector(venueId, moodRequestDTO.getMoodPreferences()));
     }
 }
