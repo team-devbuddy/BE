@@ -35,13 +35,10 @@ public class ArchiveController {
             @ApiResponse(responseCode = "200", description = "아카이브에 저장 성공"
                     , content = @Content(mediaType = "application/json"
                     , schema = @Schema(implementation = ArchiveResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다 or 요청한 멤버 장르 벡터가 존재하지 않습니다 or 요청한 멤버 무드 벡터가 존재하지 않습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class))),
-            @ApiResponse(responseCode = "404", description = "요청한 멤버 장르 벡터가 존재하지 않습니다",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseTemplate.class))),
-            @ApiResponse(responseCode = "404", description = "요청한 멤버 무드 벡터가 존재하지 않습니다",
+            @ApiResponse(responseCode = "409", description = "이미 존재하는 조합의 아카이브입니다.",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
@@ -67,7 +64,7 @@ public class ArchiveController {
     }
 
     @PatchMapping("/{archiveId}")
-    @Operation(summary = "아카이브 정보 수정", description = "해당 아카이브 ID인 아카이브에서 정보 수정")
+    @Operation(summary = "아카이브 정보 수정", description = "해당 아카이브 ID인 아카이브에서 관심 지역, 무드, 장르 선호 정보 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아카이브 수정 성공"
                     , content = @Content(mediaType = "application/json"

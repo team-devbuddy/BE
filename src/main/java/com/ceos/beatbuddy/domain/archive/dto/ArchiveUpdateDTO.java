@@ -8,4 +8,5 @@ import lombok.Getter;
 public class ArchiveUpdateDTO {
     private String memberMoodVector;
     private String memberGenreVector;
+    private String regions;
 }

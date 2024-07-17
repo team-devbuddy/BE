@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,21 +44,28 @@ public class ArchiveService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         MemberMood memberMood = memberMoodRepository.findById(memberMoodId).orElseThrow(()-> new CustomException((MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST)));
         MemberGenre memberGenre = memberGenreRepository.findById(memberGenreId).orElseThrow(()-> new CustomException((MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST)));
+
+        boolean exists = archiveRepository.existsByMemberAndMemberMoodAndMemberGenre(member, memberMood, memberGenre);
+        if (exists) {
+            throw new CustomException(ArchiveErrorCode.ARCHIVE_ALREADY_EXIST);
+        }
         Archive archive = Archive.builder()
                 .memberMood(memberMood)
                 .memberGenre(memberGenre)
                 .member(member)
+                .regions(member.getRegions())
                 .build();
-        archiveRepository.save(archive);
+        Archive test = archiveRepository.save(archive);
 
-        return ArchiveDTO.builder()
+        ArchiveDTO newarchive = ArchiveDTO.builder()
                 .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
                 .memberMoodList(Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector()))
                 .updatedAt(archive.getUpdatedAt())
-                .regions(archive.getMember().getRegions())
+                .regions(archive.getRegions())
                 .memberId(member.getMemberId())
                 .archiveId(archive.getArchiveId())
                 .build();
+        return newarchive;
     }
 
     @Transactional
@@ -68,8 +76,8 @@ public class ArchiveService {
         return ArchiveDTO.builder()
                 .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
                 .memberMoodList(Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector()))
+                .regions(archive.getRegions())
                 .updatedAt(archive.getUpdatedAt())
-                .regions(archive.getMember().getRegions())
                 .memberId(archive.getMember().getMemberId())
                 .archiveId(archive.getArchiveId())
                 .build();
@@ -94,23 +102,23 @@ public class ArchiveService {
                 .moodVectorString(moodVector.toString())
                 .build();
 
+        List<Region> newRegions = Arrays.stream(archiveUpdateDTO.getRegions().split(","))
+                .map(Region::fromText)
+                .collect(Collectors.toList());
+
         memberGenreRepository.save(newMemberGenre);
         memberMoodRepository.save(newMemberMood);
 
-        Archive newArchive = Archive.builder()
-                .memberGenre(newMemberGenre)
-                .memberMood(newMemberMood)
-                .member(archive.getMember())
-                .build();
+        archive.updateArchive(newMemberGenre, newMemberMood, newRegions);
 
-        archiveRepository.save(newArchive);
+        archiveRepository.save(archive);
         return ArchiveDTO.builder()
-                .memberGenreList(Vector.getTrueGenreElements(newArchive.getMemberGenre().getGenreVector()))
-                .memberMoodList(Vector.getTrueMoodElements(newArchive.getMemberMood().getMoodVector()))
-                .regions(newArchive.getMember().getRegions())
-                .updatedAt(newArchive.getUpdatedAt())
-                .memberId(newArchive.getMember().getMemberId())
-                .archiveId(newArchive.getArchiveId())
+                .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
+                .memberMoodList(Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector()))
+                .regions(archive.getRegions())
+                .updatedAt(archive.getUpdatedAt())
+                .memberId(archive.getMember().getMemberId())
+                .archiveId(archive.getArchiveId())
                 .build();
     }
 
@@ -123,7 +131,7 @@ public class ArchiveService {
                 .map(archive -> {
                     List<String> trueGenreElements = Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector());
                     List<String> trueMoodElements = Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector());
-                    List<Region> regionElements = archive.getMember().getRegions();
+                    List<Region> regionElements = archive.getRegions();
                     List<String> regionStrings = regionElements.stream()
                             .map(Region::getText)
                             .collect(Collectors.toList());
