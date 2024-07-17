@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -67,6 +65,30 @@ public class Vector {
                 .map(pref -> preferenceMap.getOrDefault(pref, 0.0))
                 .collect(Collectors.toList());
         return new Vector(elements);
+    }
+
+    public static List<String> getTrueMoodElements(Vector vector) {
+        List<String> trueMoods = new ArrayList<>();
+        for (int i = 0; i < vector.elements.size(); i++) {
+            if (vector.elements.get(i) == 1.0) {
+                if (i < ALL_MOODS.size()) {
+                    trueMoods.add(ALL_MOODS.get(i));
+                } else {break;}
+            }
+        }
+        return trueMoods;
+    }
+
+    public static List<String> getTrueGenreElements(Vector vector) {
+        List<String> trueGenres = new ArrayList<>();
+        for (int i = 0; i < vector.elements.size(); i++) {
+            if (vector.elements.get(i) == 1.0) {
+                if (i < ALL_GENRES.size()) {
+                    trueGenres.add(ALL_MOODS.get(i));
+                } else {break;}
+            }
+        }
+        return trueGenres;
     }
 
 }

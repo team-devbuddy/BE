@@ -48,8 +48,10 @@ public class ArchiveService {
         archiveRepository.save(archive);
 
         return ArchiveResponseDTO.builder()
-                .memberGenreVector(memberGenre.getGenreVectorString())
-                .memberMoodVector(memberMood.getMoodVectorString())
+                .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
+                .memberMoodList(Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector()))
+                .updatedAt(archive.getUpdatedAt())
+                .regions(archive.getMember().getRegions())
                 .memberId(member.getMemberId())
                 .archiveId(archive.getArchiveId())
                 .build();
@@ -61,8 +63,10 @@ public class ArchiveService {
         archiveRepository.delete(archive);
 
         return ArchiveResponseDTO.builder()
-                .memberGenreVector(archive.getMemberGenre().getGenreVectorString())
-                .memberMoodVector(archive.getMemberMood().getMoodVectorString())
+                .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
+                .memberMoodList(Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector()))
+                .updatedAt(archive.getUpdatedAt())
+                .regions(archive.getMember().getRegions())
                 .memberId(archive.getMember().getMemberId())
                 .archiveId(archive.getArchiveId())
                 .build();
@@ -98,8 +102,10 @@ public class ArchiveService {
 
         archiveRepository.save(newArchive);
         return ArchiveResponseDTO.builder()
-                .memberGenreVector(newArchive.getMemberGenre().getGenreVectorString())
-                .memberMoodVector(newArchive.getMemberMood().getMoodVectorString())
+                .memberGenreList(Vector.getTrueGenreElements(newArchive.getMemberGenre().getGenreVector()))
+                .memberMoodList(Vector.getTrueMoodElements(newArchive.getMemberMood().getMoodVector()))
+                .regions(newArchive.getMember().getRegions())
+                .updatedAt(newArchive.getUpdatedAt())
                 .memberId(newArchive.getMember().getMemberId())
                 .archiveId(newArchive.getArchiveId())
                 .build();
@@ -111,10 +117,12 @@ public class ArchiveService {
 
         return archives.stream()
                 .map(archive -> ArchiveResponseDTO.builder()
-                        .memberGenreVector(archive.getMemberGenre().getGenreVectorString())
-                        .memberMoodVector(archive.getMemberMood().getMoodVectorString())
+                        .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
+                        .memberMoodList(Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector()))
                         .memberId(archive.getMember().getMemberId())
+                        .regions(archive.getMember().getRegions())
                         .archiveId(archive.getArchiveId())
+                        .updatedAt(archive.getUpdatedAt())
                         .build())
                 .collect(Collectors.toList());
     }
