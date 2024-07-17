@@ -2,11 +2,10 @@ package com.ceos.beatbuddy.domain.archive.controller;
 
 
 import com.ceos.beatbuddy.domain.archive.application.ArchiveService;
+import com.ceos.beatbuddy.domain.archive.dto.ArchiveDTO;
 import com.ceos.beatbuddy.domain.archive.dto.ArchiveRequestDTO;
 import com.ceos.beatbuddy.domain.archive.dto.ArchiveResponseDTO;
 import com.ceos.beatbuddy.domain.archive.dto.ArchiveUpdateDTO;
-import com.ceos.beatbuddy.domain.archive.entity.Archive;
-import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
 import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,7 +45,7 @@ public class ArchiveController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<ArchiveResponseDTO> addArchive(@RequestBody ArchiveRequestDTO archiveRequestDTO){
+    public ResponseEntity<ArchiveDTO> addArchive(@RequestBody ArchiveRequestDTO archiveRequestDTO){
         Long memberId = SecurityUtils.getCurrentMemberId();
         Long memberMoodId = archiveRequestDTO.getMemberMoodId();
         Long memberGenreId = archiveRequestDTO.getMemberGenreId();
@@ -63,7 +62,7 @@ public class ArchiveController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<ArchiveResponseDTO> deleteArchive(@PathVariable Long archiveId){
+    public ResponseEntity<ArchiveDTO> deleteArchive(@PathVariable Long archiveId){
         return ResponseEntity.ok(archiveService.deletePreferenceInArchive(archiveId));
     }
 
@@ -77,7 +76,7 @@ public class ArchiveController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<ArchiveResponseDTO> updateArchive(@PathVariable Long archiveId, @RequestBody ArchiveUpdateDTO archiveUpdateDTO) {
+    public ResponseEntity<ArchiveDTO> updateArchive(@PathVariable Long archiveId, @RequestBody ArchiveUpdateDTO archiveUpdateDTO) {
         return ResponseEntity.ok(archiveService.updatePreferenceInArchive(archiveId, archiveUpdateDTO));
     }
 

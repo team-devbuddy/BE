@@ -1,5 +1,6 @@
 package com.ceos.beatbuddy.domain.archive.application;
 
+import com.ceos.beatbuddy.domain.archive.dto.ArchiveDTO;
 import com.ceos.beatbuddy.domain.archive.dto.ArchiveRequestDTO;
 import com.ceos.beatbuddy.domain.archive.dto.ArchiveResponseDTO;
 import com.ceos.beatbuddy.domain.archive.dto.ArchiveUpdateDTO;
@@ -8,6 +9,7 @@ import com.ceos.beatbuddy.domain.archive.exception.ArchiveErrorCode;
 import com.ceos.beatbuddy.domain.archive.repository.ArchiveRepository;
 import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
 import com.ceos.beatbuddy.domain.heartbeat.entity.Heartbeat;
+import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.entity.MemberGenre;
 import com.ceos.beatbuddy.domain.member.entity.MemberMood;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +39,7 @@ public class ArchiveService {
     private final MemberGenreRepository memberGenreRepository;
 
     @Transactional
-    public ArchiveResponseDTO addPreferenceInArchive(Long memberId, Long memberMoodId, Long memberGenreId) {
+    public ArchiveDTO addPreferenceInArchive(Long memberId, Long memberMoodId, Long memberGenreId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         MemberMood memberMood = memberMoodRepository.findById(memberMoodId).orElseThrow(()-> new CustomException((MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST)));
         MemberGenre memberGenre = memberGenreRepository.findById(memberGenreId).orElseThrow(()-> new CustomException((MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST)));
@@ -47,7 +50,7 @@ public class ArchiveService {
                 .build();
         archiveRepository.save(archive);
 
-        return ArchiveResponseDTO.builder()
+        return ArchiveDTO.builder()
                 .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
                 .memberMoodList(Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector()))
                 .updatedAt(archive.getUpdatedAt())
@@ -58,11 +61,11 @@ public class ArchiveService {
     }
 
     @Transactional
-    public ArchiveResponseDTO deletePreferenceInArchive(Long archiveId) {
+    public ArchiveDTO deletePreferenceInArchive(Long archiveId) {
         Archive archive = archiveRepository.findById(archiveId).orElseThrow(()->new CustomException(ArchiveErrorCode.ARCHIVE_NOT_EXIST));
         archiveRepository.delete(archive);
 
-        return ArchiveResponseDTO.builder()
+        return ArchiveDTO.builder()
                 .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
                 .memberMoodList(Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector()))
                 .updatedAt(archive.getUpdatedAt())
@@ -74,7 +77,7 @@ public class ArchiveService {
 
 
     @Transactional
-    public ArchiveResponseDTO updatePreferenceInArchive(Long archiveId, ArchiveUpdateDTO archiveUpdateDTO) {
+    public ArchiveDTO updatePreferenceInArchive(Long archiveId, ArchiveUpdateDTO archiveUpdateDTO) {
         Archive archive = archiveRepository.findById(archiveId).orElseThrow(()->new CustomException(ArchiveErrorCode.ARCHIVE_NOT_EXIST));
         Vector genreVector = Vector.fromString(archiveUpdateDTO.getMemberGenreVector());
         Vector moodVector = Vector.fromString(archiveUpdateDTO.getMemberMoodVector());
@@ -101,7 +104,7 @@ public class ArchiveService {
                 .build();
 
         archiveRepository.save(newArchive);
-        return ArchiveResponseDTO.builder()
+        return ArchiveDTO.builder()
                 .memberGenreList(Vector.getTrueGenreElements(newArchive.getMemberGenre().getGenreVector()))
                 .memberMoodList(Vector.getTrueMoodElements(newArchive.getMemberMood().getMoodVector()))
                 .regions(newArchive.getMember().getRegions())
@@ -115,15 +118,26 @@ public class ArchiveService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         List<Archive> archives = archiveRepository.findByMember(member);
 
+
         return archives.stream()
-                .map(archive -> ArchiveResponseDTO.builder()
-                        .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
-                        .memberMoodList(Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector()))
-                        .memberId(archive.getMember().getMemberId())
-                        .regions(archive.getMember().getRegions())
-                        .archiveId(archive.getArchiveId())
-                        .updatedAt(archive.getUpdatedAt())
-                        .build())
+                .map(archive -> {
+                    List<String> trueGenreElements = Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector());
+                    List<String> trueMoodElements = Vector.getTrueMoodElements(archive.getMemberMood().getMoodVector());
+                    List<Region> regionElements = archive.getMember().getRegions();
+                    List<String> regionStrings = regionElements.stream()
+                            .map(Region::getText)
+                            .collect(Collectors.toList());
+                    List<String> preferenceList = new ArrayList<>(trueGenreElements);
+                    preferenceList.addAll(trueMoodElements);
+                    preferenceList.addAll(regionStrings);
+
+                    return ArchiveResponseDTO.builder()
+                            .preferenceList(preferenceList)
+                            .memberId(archive.getMember().getMemberId())
+                            .archiveId(archive.getArchiveId())
+                            .updatedAt(archive.getUpdatedAt())
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
