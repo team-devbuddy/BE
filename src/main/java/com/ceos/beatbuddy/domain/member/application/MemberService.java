@@ -5,11 +5,16 @@ import com.ceos.beatbuddy.domain.member.dto.MemberConsentRequestDTO;
 import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
 import com.ceos.beatbuddy.domain.member.dto.NicknameRequestDTO;
 import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
+import com.ceos.beatbuddy.domain.member.dto.OnboardingResponseDto;
 import com.ceos.beatbuddy.domain.member.dto.RegionRequestDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
+import com.ceos.beatbuddy.domain.member.repository.MemberGenreRepository;
+import com.ceos.beatbuddy.domain.member.repository.MemberMoodRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
 import com.ceos.beatbuddy.global.CustomException;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +29,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MemberMoodRepository memberMoodRepository;
+    private final MemberGenreRepository memberGenreRepository;
     private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9가-힣._]*$");
 
     /**
@@ -34,8 +41,9 @@ public class MemberService {
      * @return UserId
      */
     @Transactional
-    public Oauth2MemberDto findOrCreateUser(String loginId, String name) {
-        Member member = memberRepository.findByLoginId(loginId);
+    public Oauth2MemberDto findOrCreateUser(String loginId, String name) throws CustomException {
+        Member member = memberRepository.findByLoginId(loginId)
+                .orElse(null);
         if (member == null) {
             return Oauth2MemberDto.of(this.join(loginId, name));
         } else {
@@ -103,8 +111,8 @@ public class MemberService {
                 .memberId(member.getMemberId())
                 .loginId(member.getLoginId())
                 .nickname(member.getNickname())
-                .isLocationConsent(member.isLocationConsent())
-                .isMarketingConsent(member.isMarketingConsent())
+                .isLocationConsent(member.getIsLocationConsent())
+                .isMarketingConsent(member.getIsMarketingConsent())
                 .build();
     }
 
@@ -119,8 +127,8 @@ public class MemberService {
                 .memberId(member.getMemberId())
                 .loginId(member.getLoginId())
                 .nickname(member.getNickname())
-                .isLocationConsent(member.isLocationConsent())
-                .isMarketingConsent(member.isMarketingConsent())
+                .isLocationConsent(member.getIsLocationConsent())
+                .isMarketingConsent(member.getIsMarketingConsent())
                 .build();
     }
 
@@ -141,9 +149,53 @@ public class MemberService {
                 .memberId(member.getMemberId())
                 .loginId(member.getLoginId())
                 .nickname(member.getNickname())
-                .isLocationConsent(member.isLocationConsent())
-                .isMarketingConsent(member.isMarketingConsent())
+                .isLocationConsent(member.getIsLocationConsent())
+                .isMarketingConsent(member.getIsMarketingConsent())
                 .build();
     }
 
+    public OnboardingResponseDto isOnboarding(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+
+        return getOnboardingMap(member);
+    }
+
+    private OnboardingResponseDto getOnboardingMap(Member member) {
+        OnboardingResponseDto responseDto = new OnboardingResponseDto(); 
+
+        if (memberGenreRepository.existsByMember(member)) {
+            responseDto.setGenre();
+        }
+        else {
+            return responseDto;
+        }
+        if (memberMoodRepository.existsByMember(member)){
+            responseDto.setMood();
+        }
+        else {
+            return responseDto;
+        }
+        if(memberRepository.existsRegionsByMember(member))
+        {
+            responseDto.setRegion();
+        }
+        return responseDto;
+    }
+
+    public Boolean isTermConsent(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        if(member.getIsLocationConsent() && member.getIsMarketingConsent())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean getNicknameSet(Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(()-> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        return member.getSetNewNickname();
+    }
 }

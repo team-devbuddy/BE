@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 public enum ArchiveErrorCode {
 
 
+    ARCHIVE_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 해당 조합의 아카이브가 존재합니다."),
     ARCHIVE_NOT_EXIST(HttpStatus.NOT_FOUND, "선호 장르가 존재하지 않습니다");
 
     private final HttpStatus httpStatus;
