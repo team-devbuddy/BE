@@ -5,16 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
 public class Vector {
     private static final List<String> ALL_GENRES = Arrays.asList(
-            "EDM", "HIPHOP_R&B", "HOUSE", "SOUL&FUNK", "TECHNO", "K-POP"
+            "EDM", "HIPHOP_R&B", "HOUSE", "SOUL&FUNK", "TECHNO", "K-POP", "POP", "LATIN"
     );
     private static final List<String> ALL_MOODS = Arrays.asList(
             "HIP", "DARK", "EXCITING", "FUNKY", "EXOTIC", "TRENDY", "TROPICAL", "CHILLY"
@@ -69,11 +67,29 @@ public class Vector {
         return new Vector(elements);
     }
 
-    //JSON -> PREFERENCE
-    public static Vector fromJson(String json) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Double> preferenceMap = mapper.readValue(json, Map.class);
-        return fromGenres(preferenceMap);
+    public static List<String> getTrueMoodElements(Vector vector) {
+        List<String> trueMoods = new ArrayList<>();
+        for (int i = 0; i < vector.elements.size(); i++) {
+            if (vector.elements.get(i) == 1.0) {
+                if (i < ALL_MOODS.size()) {
+                    trueMoods.add(ALL_MOODS.get(i));
+                } else {break;}
+            }
+        }
+        return trueMoods;
     }
+
+    public static List<String> getTrueGenreElements(Vector vector) {
+        List<String> trueGenres = new ArrayList<>();
+        for (int i = 0; i < vector.elements.size(); i++) {
+            if (vector.elements.get(i) == 1.0) {
+                if (i < ALL_GENRES.size()) {
+                    trueGenres.add(ALL_MOODS.get(i));
+                } else {break;}
+            }
+        }
+        return trueGenres;
+    }
+
 }
 

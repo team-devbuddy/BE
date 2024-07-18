@@ -23,6 +23,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
         String accessToken = request.getHeader("access");
 
         // access token이 없을 경우
@@ -61,8 +62,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String username = tokenProvider.getUsername(accessToken);
         String role = tokenProvider.getRole(accessToken);
+        Long memberId = tokenProvider.getMemberId(accessToken);
 
         Oauth2MemberDto memberDto = Oauth2MemberDto.builder()
+                .memberId(memberId)
                 .role(role)
                 .loginId(username)
                 .build();

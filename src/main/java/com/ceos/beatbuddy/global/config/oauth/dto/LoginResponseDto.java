@@ -11,4 +11,6 @@ public class LoginResponseDto {
     private Long memberId;
     private String loginId;
     private String username;
+    private String accessToken;
+    private String refreshToken;
 }

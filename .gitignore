@@ -176,3 +176,5 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,java,gradle,intellij+all
 /docker-compose.yml
+
+src/main/java/com/ceos/beatbuddy/global/config/oauth/CustomClientRegistrationRepo.java

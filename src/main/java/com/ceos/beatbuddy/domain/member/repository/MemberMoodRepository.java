@@ -15,4 +15,6 @@ public interface MemberMoodRepository extends JpaRepository<MemberMood, Long> {
 
     @Query("SELECT mm FROM MemberMood mm WHERE mm.member = :member ORDER BY mm.createdAt DESC")
     List<MemberMood> findAllByMember(@Param("member") Member member);
+
+    boolean existsByMember(Member member);
 }
