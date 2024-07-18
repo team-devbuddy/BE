@@ -1,12 +1,8 @@
 package com.ceos.beatbuddy.domain.search.controller;
 
-import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
+import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.search.application.SearchService;
-import com.ceos.beatbuddy.domain.search.dto.SearchDTO;
-import com.ceos.beatbuddy.domain.search.dto.SearchQueryDTO;
-import com.ceos.beatbuddy.domain.search.dto.SearchRankResponseDTO;
-import com.ceos.beatbuddy.domain.search.dto.SearchResultDTO;
-import com.ceos.beatbuddy.global.ResponseTemplate;
+import com.ceos.beatbuddy.domain.search.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,15 +10,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,10 +58,27 @@ public class SearchController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "검색어 TOP10 차트 조회 성공"
                     , content = @Content(mediaType = "application/json"
-                    , array = @ArraySchema(schema = @Schema(implementation = SearchRankResponseDTO.class)))),
+                    , array = @ArraySchema(schema = @Schema(implementation = SearchRankResponseDTO.class))))
     })
     public List<SearchRankResponseDTO> searchRankList(){
         return searchService.searchRankList();
+    }
+
+    @GetMapping("/genre")
+    public ResponseEntity<List<SearchQueryDTO>> searchByGenre(@RequestBody SearchGenreDTO searchGenreDTO){
+        return ResponseEntity.ok(searchService.searchByGenre(searchGenreDTO.getGenre()));
+    }
+
+    @GetMapping("/region")
+    @Operation(summary = "지역 필터링 검색 기능", description = "지역 4개 중 1개 선택하여 입력하면 그 지역의 베뉴 리스트를 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "해당 지역 베뉴 조회 성공"
+                    , content = @Content(mediaType = "application/json"
+                    , array = @ArraySchema(schema = @Schema(implementation = SearchRankResponseDTO.class))))
+    })
+    public ResponseEntity<List<SearchQueryDTO>> searchByRegion(@RequestBody String regionString){
+        Region region = Region.fromText(regionString);
+        return ResponseEntity.ok(searchService.searchByRegion(region));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.ceos.beatbuddy.domain.vector.entity;
 import com.ceos.beatbuddy.domain.vector.exception.VectorErrorCode;
 import com.ceos.beatbuddy.domain.vector.exception.VectorException;
+import com.ceos.beatbuddy.global.CustomException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -91,5 +92,13 @@ public class Vector {
         return trueGenres;
     }
 
+    // 특정 장르의 인덱스 찾기
+    public static int getGenreIndex(String genre) {
+        int idx = ALL_GENRES.indexOf(genre);
+        if(idx==-1) {
+            throw new CustomException(VectorErrorCode.INDEX_NOT_EXIST);
+        }
+        else return idx;
+    }
 }
 
