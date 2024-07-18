@@ -3,6 +3,7 @@ package com.ceos.beatbuddy.domain.search.controller;
 import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.search.application.SearchService;
 import com.ceos.beatbuddy.domain.search.dto.*;
+import com.ceos.beatbuddy.global.ResponseTemplate;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -65,6 +66,15 @@ public class SearchController {
     }
 
     @GetMapping("/genre")
+    @Operation(summary = "장르 필터링 검색 기능", description = "장르를 입력하면 해당 장르를 포함하는 베뉴 리스트를 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "해당 장르 베뉴 조회 성공"
+                    , content = @Content(mediaType = "application/json"
+                    , array = @ArraySchema(schema = @Schema(implementation = SearchRankResponseDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "장르 리스트에 존재하지 않는 장르입니다"
+                    , content = @Content(mediaType = "application/json"
+                    , array = @ArraySchema(schema = @Schema(implementation = ResponseTemplate.class))))
+    })
     public ResponseEntity<List<SearchQueryDTO>> searchByGenre(@RequestBody SearchGenreDTO searchGenreDTO){
         return ResponseEntity.ok(searchService.searchByGenre(searchGenreDTO.getGenre()));
     }
