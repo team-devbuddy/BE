@@ -17,10 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,7 +30,7 @@ public class SearchController {
     private final RedisTemplate<String, String> redisTemplate;
     private final SearchService searchService;
 
-    @GetMapping("")
+    @PostMapping("")
     @Operation(summary = "검색바 검색 기능", description = "사용자가 검색바에 입력한 검색어를 기반으로 베뉴 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "검색어로 베뉴 조회 성공"
