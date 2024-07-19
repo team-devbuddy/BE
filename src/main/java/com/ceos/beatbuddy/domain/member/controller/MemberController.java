@@ -3,19 +3,17 @@ package com.ceos.beatbuddy.domain.member.controller;
 import com.ceos.beatbuddy.domain.member.application.MemberService;
 import com.ceos.beatbuddy.domain.member.dto.MemberConsentRequestDTO;
 import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
-import com.ceos.beatbuddy.domain.member.dto.NicknameRequestDTO;
+import com.ceos.beatbuddy.domain.member.dto.NicknameDTO;
 import com.ceos.beatbuddy.domain.member.dto.OnboardingResponseDto;
 import com.ceos.beatbuddy.domain.member.dto.RegionRequestDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
 import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
-import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -90,9 +88,9 @@ public class MemberController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<Boolean> isNicknameDuplicate(@RequestBody NicknameRequestDTO nicknameRequestDTO) {
+    public ResponseEntity<Boolean> isNicknameDuplicate(@RequestBody NicknameDTO nicknameDTO) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.isDuplicate(memberId, nicknameRequestDTO));
+        return ResponseEntity.ok(memberService.isDuplicate(memberId, nicknameDTO));
     }
 
     @PostMapping("/onboarding/nickname/validate")
@@ -108,9 +106,9 @@ public class MemberController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<Boolean> isNicknameValidate(@RequestBody NicknameRequestDTO nicknameRequestDTO) {
+    public ResponseEntity<Boolean> isNicknameValidate(@RequestBody NicknameDTO nicknameDTO) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.isValidate(memberId, nicknameRequestDTO));
+        return ResponseEntity.ok(memberService.isValidate(memberId, nicknameDTO));
     }
 
     @PostMapping("/onboarding/nickname")
@@ -123,9 +121,9 @@ public class MemberController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<MemberResponseDTO> saveNickname(@RequestBody NicknameRequestDTO nicknameRequestDTO) {
+    public ResponseEntity<MemberResponseDTO> saveNickname(@RequestBody NicknameDTO nicknameDTO) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.saveNickname(memberId, nicknameRequestDTO));
+        return ResponseEntity.ok(memberService.saveNickname(memberId, nicknameDTO));
     }
 
     @GetMapping("/onboarding/nickname")
@@ -156,6 +154,21 @@ public class MemberController {
     public ResponseEntity<MemberResponseDTO> saveRegions(@RequestBody RegionRequestDTO regionRequestDTO) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberService.saveRegions(memberId, regionRequestDTO));
+    }
+
+    @GetMapping("/nickname")
+    @Operation(summary = "사용자 닉네임 조회", description = "사용자의 닉네임을 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 닉네임 조회에 성공하였습니다."
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = MemberResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<NicknameDTO> getNickname() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.getNickname(memberId));
     }
 
 }
