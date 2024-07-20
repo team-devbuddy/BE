@@ -8,6 +8,7 @@ import com.ceos.beatbuddy.domain.member.dto.OnboardingResponseDto;
 import com.ceos.beatbuddy.domain.member.dto.RegionRequestDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
 import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,6 +18,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/members")
@@ -174,21 +177,20 @@ public class MemberController {
     @GetMapping("/certification")
     @Operation(summary = "사용자 성인인증 로직", description = "사용자의 성인 여부를 검사합니다.",
             externalDocs = @ExternalDocumentation(description = "성인인증을 위임한 서드파티인 포트원의 document입니다."
-    @ApiResponses({
                     + "통합인증 탭에서 준비하기, 요청하기, 완료정보 전달하기까지 구현해주시면 됩니다.", url = "https://developers.portone.io/docs/ko/etc/all/readme?v=v1"))
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "성인인증 성공"
                     , content = @Content(mediaType = "application/json"
                     , schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "400", description = "성인인증 실패, 실패한 사유 메시지가 전달됩니다."
-                    , schema = @Schema(implementation = ResponseTemplate.class)))
                     , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ResponseTemplate.class)))
     })
-        String token = memberService.getToken();
     public ResponseEntity<String> certification(@RequestBody String imp_uid) {
+        String token = memberService.getToken();
         ResponseEntity<Map> userData = memberService.getUserData(token, imp_uid);
         memberService.verifyUserData(userData, SecurityUtils.getCurrentMemberId());
         return ResponseEntity.ok("성인인증 성공!~");
-
     }
 
 }
