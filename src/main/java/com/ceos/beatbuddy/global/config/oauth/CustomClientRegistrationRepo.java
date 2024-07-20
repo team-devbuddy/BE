@@ -28,7 +28,7 @@ public class CustomClientRegistrationRepo {
                 .clientSecret(clientSecret)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("https://beatbuddy.world/login/oauth2/code/kakao")
+                .redirectUri("https://api.beatbuddy.world/login/oauth2/code/kakao")
                 .authorizationUri("https://kauth.kakao.com/oauth/authorize")
                 .tokenUri("https://kauth.kakao.com/oauth/token")
                 .userInfoUri("https://kapi.kakao.com/v2/user/me")
