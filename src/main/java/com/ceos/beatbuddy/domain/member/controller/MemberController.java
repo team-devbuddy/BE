@@ -164,7 +164,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자 닉네임 조회에 성공하였습니다."
                     , content = @Content(mediaType = "application/json"
-                    , schema = @Schema(implementation = MemberResponseDTO.class))),
+                    , schema = @Schema(implementation = NicknameDTO.class))),
             @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
