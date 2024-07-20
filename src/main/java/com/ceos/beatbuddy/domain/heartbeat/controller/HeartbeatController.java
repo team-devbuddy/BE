@@ -6,6 +6,7 @@ import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
 import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
 import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
+import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,7 +28,7 @@ import java.util.List;
 public class HeartbeatController {
     private final HeartbeatService heartbeatService;
 
-    @PostMapping("/{memberId}/{venueId}")
+    @PostMapping("/{venueId}")
     @Operation(summary = "하트비트 추가", description = "사용자가 베뉴에 하트비트 추가")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "하트비트 추가 성공"
@@ -43,11 +44,12 @@ public class HeartbeatController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<HeartbeatResponseDTO> addHeartbeat(@PathVariable Long memberId, @PathVariable Long venueId) {
+    public ResponseEntity<HeartbeatResponseDTO> addHeartbeat(@PathVariable Long venueId) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(heartbeatService.addHeartbeat(memberId, venueId));
     }
 
-    @DeleteMapping("/{memberId}/{venueId}")
+    @DeleteMapping("/{venueId}")
     @Operation(summary = "하트비트 삭제", description = "사용자가 베뉴에 하트비트 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "하트비트 삭제 성공"
@@ -63,11 +65,12 @@ public class HeartbeatController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<HeartbeatResponseDTO> deleteHeartbeat(@PathVariable Long memberId, @PathVariable Long venueId) {
+    public ResponseEntity<HeartbeatResponseDTO> deleteHeartbeat(@PathVariable Long venueId) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(heartbeatService.deleteHeartbeat(memberId, venueId));
     }
 
-    @GetMapping("/{memberId}/all")
+    @GetMapping("/all")
     @Operation(summary = "사용자의 전체 하트비트 리스트 조회", description = "사용자가 하트비트 누른 전체 베뉴 리스트 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "하트비트 전체 조회 성공"
@@ -77,12 +80,13 @@ public class HeartbeatController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<List<HeartbeatResponseDTO>> getAllHeartbeat(@PathVariable Long memberId) {
+    public ResponseEntity<List<HeartbeatResponseDTO>> getAllHeartbeat() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(heartbeatService.getAllHeartbeat(memberId));
     }
 
 
-    @GetMapping("/{memberId}/{venueId}")
+    @GetMapping("/{venueId}")
     @Operation(summary = "사용자가 하트비트를 누른 베뉴에 대한 조회", description = "사용자가 하트비트를 누른 베뉴에 대한 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "하트비트 조회 성공"
@@ -98,7 +102,8 @@ public class HeartbeatController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<HeartbeatResponseDTO> getHeartbeat(@PathVariable Long memberId, @PathVariable Long venueId) {
+    public ResponseEntity<HeartbeatResponseDTO> getHeartbeat(@PathVariable Long venueId) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(heartbeatService.getHeartbeat(memberId, venueId));
     }
 

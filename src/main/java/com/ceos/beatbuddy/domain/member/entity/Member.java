@@ -2,14 +2,12 @@ package com.ceos.beatbuddy.domain.member.entity;
 
 import com.ceos.beatbuddy.domain.member.constant.Gender;
 import com.ceos.beatbuddy.domain.member.constant.Region;
-import com.ceos.beatbuddy.domain.vector.entity.Vector;
 import com.ceos.beatbuddy.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Builder
@@ -35,9 +33,13 @@ public class Member extends BaseTimeEntity {
     private String role;
 
     @Builder.Default
-    private boolean isLocationConsent = false;
+    private Boolean setNewNickname = false;
     @Builder.Default
-    private boolean isMarketingConsent = false;
+    private Boolean isAdult= false;
+    @Builder.Default
+    private Boolean isLocationConsent = false;
+    @Builder.Default
+    private Boolean isMarketingConsent = false;
 
     public void saveConsents(Boolean isLocationConsent, Boolean isMarketingConsent) {
         this.isLocationConsent = isLocationConsent;
@@ -46,9 +48,15 @@ public class Member extends BaseTimeEntity {
 
     public void saveNickname(String nickname) {
         this.nickname = nickname;
+        this.setNewNickname = true;
     }
 
     public void saveRegions(List<Region> regions) {
         this.regions = regions;
     }
+
+    public void setAdultUser(){
+        this.isAdult = true;
+    }
+
 }

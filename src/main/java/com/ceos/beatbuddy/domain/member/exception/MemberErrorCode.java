@@ -13,6 +13,7 @@ public enum MemberErrorCode {
     INVALID_PASSWORD_INFO(HttpStatus.BAD_REQUEST, "잘못된 비밀번호입니다."),
     MEMBER_NOT_EXIST(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다"),
     REGION_NOT_EXIST(HttpStatus.NOT_FOUND, "존재하지 않는 지역입니다."),
+    REGION_FIELD_EMPTY(HttpStatus.NOT_FOUND, "관심 지역이 설정되어 있지 않습니다."),
     NICKNAME_OVER_LENGTH(HttpStatus.NOT_FOUND, "닉네임이 12자 초과입니다"),
     NICKNAME_SPACE_EXIST(HttpStatus.NOT_FOUND, "닉네임에 공백이 있습니다"),
     NICKNAME_SYMBOL_EXIST(HttpStatus.NOT_FOUND, "닉네임에 특수문자가 있습니다");

@@ -2,11 +2,13 @@ package com.ceos.beatbuddy.domain.search.dto;
 
 import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@Builder
 public class SearchQueryDTO {
 
     private Long venueId;
