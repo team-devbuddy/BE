@@ -15,7 +15,9 @@ public enum MemberErrorCode {
     REGION_NOT_EXIST(HttpStatus.NOT_FOUND, "존재하지 않는 지역입니다."),
     NICKNAME_OVER_LENGTH(HttpStatus.NOT_FOUND, "닉네임이 12자 초과입니다"),
     NICKNAME_SPACE_EXIST(HttpStatus.NOT_FOUND, "닉네임에 공백이 있습니다"),
-    NICKNAME_SYMBOL_EXIST(HttpStatus.NOT_FOUND, "닉네임에 특수문자가 있습니다");
+    NICKNAME_SYMBOL_EXIST(HttpStatus.NOT_FOUND, "닉네임에 특수문자가 있습니다"),
+    USERNAME_NOT_MATCH(HttpStatus.BAD_REQUEST, "인증한 성명과 유저의 이름이 일치하지 않습니다." ),
+    MEMBER_NOT_ADULT(HttpStatus.BAD_REQUEST,"인증한 유저는 성인이 아닙니다." );
 
     private final HttpStatus httpStatus;
     private final String message;
