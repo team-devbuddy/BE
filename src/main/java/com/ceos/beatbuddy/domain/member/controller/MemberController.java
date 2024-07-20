@@ -174,7 +174,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getNickname(memberId));
     }
 
-    @GetMapping("/certification")
+    @PostMapping("/certification")
     @Operation(summary = "사용자 성인인증 로직", description = "사용자의 성인 여부를 검사합니다.",
             externalDocs = @ExternalDocumentation(description = "성인인증을 위임한 서드파티인 포트원의 document입니다."
                     + "통합인증 탭에서 준비하기, 요청하기, 완료정보 전달하기까지 구현해주시면 됩니다.", url = "https://developers.portone.io/docs/ko/etc/all/readme?v=v1"))
