@@ -13,9 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,20 +33,13 @@ public class SearchController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "검색어로 베뉴 조회 성공"
                     , content = @Content(mediaType = "application/json"
-                    , schema = @Schema(implementation = SearchResultDTO.class)))
+                    , schema = @Schema(implementation = SearchResultDTO.class))),
+            @ApiResponse(responseCode = "400", description = "검색어가 입력되지 않아서 검색 실패"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public SearchResultDTO<SearchQueryDTO> searchList(@RequestBody SearchDTO.RequestDTO searchRequestDTO,
-                                                      @PageableDefault(size = 6) Pageable pageable
-    ) {
-        Page<SearchQueryDTO> pageResult = searchService.keywordSearch(searchRequestDTO, pageable);
-        SearchResultDTO<SearchQueryDTO> result = new SearchResultDTO<>(
-                pageResult.getTotalElements(),
-                pageResult.getTotalPages(),
-                pageResult.getSize(),
-                pageResult.getContent()
-        );
-
-        return result;
+    public ResponseEntity<List<SearchQueryResponseDTO>> searchList(@RequestBody SearchDTO.RequestDTO searchRequestDTO) {
+        return ResponseEntity.ok(searchService.keywordSearch(searchRequestDTO));
     }
 
     @GetMapping("/rank")
@@ -62,30 +53,5 @@ public class SearchController {
         return searchService.searchRankList();
     }
 
-    @GetMapping("/genre")
-    @Operation(summary = "장르 필터링 검색 기능", description = "장르를 입력하면 해당 장르를 포함하는 베뉴 리스트를 반환")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "해당 장르 베뉴 조회 성공"
-                    , content = @Content(mediaType = "application/json"
-                    , array = @ArraySchema(schema = @Schema(implementation = SearchRankResponseDTO.class)))),
-            @ApiResponse(responseCode = "404", description = "장르 리스트에 존재하지 않는 장르입니다"
-                    , content = @Content(mediaType = "application/json"
-                    , array = @ArraySchema(schema = @Schema(implementation = ResponseTemplate.class))))
-    })
-    public ResponseEntity<List<SearchQueryDTO>> searchByGenre(@RequestBody SearchGenreDTO searchGenreDTO){
-        return ResponseEntity.ok(searchService.searchByGenre(searchGenreDTO.getGenre()));
-    }
-
-    @GetMapping("/region")
-    @Operation(summary = "지역 필터링 검색 기능", description = "지역 4개 중 1개 선택하여 입력하면 그 지역의 베뉴 리스트를 반환")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "해당 지역 베뉴 조회 성공"
-                    , content = @Content(mediaType = "application/json"
-                    , array = @ArraySchema(schema = @Schema(implementation = SearchRankResponseDTO.class))))
-    })
-    public ResponseEntity<List<SearchQueryDTO>> searchByRegion(@RequestBody String regionString){
-        Region region = Region.fromText(regionString);
-        return ResponseEntity.ok(searchService.searchByRegion(region));
-    }
 
 }

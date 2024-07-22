@@ -85,7 +85,7 @@ public class Vector {
         for (int i = 0; i < vector.elements.size(); i++) {
             if (vector.elements.get(i) == 1.0) {
                 if (i < ALL_GENRES.size()) {
-                    trueGenres.add(ALL_MOODS.get(i));
+                    trueGenres.add(ALL_GENRES.get(i));
                 } else {break;}
             }
         }
@@ -100,5 +100,58 @@ public class Vector {
         }
         else return idx;
     }
+
+    public static int getMoodIndex(String mood) {
+        int idx = ALL_MOODS.indexOf(mood);
+        if(idx==-1) {
+            throw new CustomException(VectorErrorCode.INDEX_NOT_EXIST);
+        }
+        else return idx;
+    }
+
+    public static String inputGenreVector(List<String> inputGenre) {
+        // 벡터의 초기값을 0.0으로 설정
+        Double[] genreVector = new Double[ALL_GENRES.size()];
+        Arrays.fill(genreVector, 0.0);
+
+        // 입력된 장르에 대해 해당 인덱스의 값을 1.0으로 설정
+        for (String genre : inputGenre) {
+            int index = getGenreIndex(genre);
+            if(index==-1) {
+                throw new CustomException(VectorErrorCode.UNAVAILABLE_INPUT);
+            }
+            genreVector[index] = 1.0;
+        }
+
+        // 벡터를 문자열 형식으로 변환
+        String result = Arrays.stream(genreVector)
+                .map(String::valueOf)
+                .collect(Collectors.joining(", ", "[", "]"));
+
+        return result;
+    }
+
+    public static String inputMoodVector(List<String> inputMood) {
+        // 벡터의 초기값을 0.0으로 설정
+        Double[] moodVector = new Double[ALL_MOODS.size()];
+        Arrays.fill(moodVector, 0.0);
+
+        // 입력된 장르에 대해 해당 인덱스의 값을 1.0으로 설정
+        for (String mood : inputMood) {
+            int index = getMoodIndex(mood);
+            if(index==-1) {
+                throw new CustomException(VectorErrorCode.UNAVAILABLE_INPUT);
+            }
+            moodVector[index] = 1.0;
+        }
+
+        // 벡터를 문자열 형식으로 변환
+        String result = Arrays.stream(moodVector)
+                .map(String::valueOf)
+                .collect(Collectors.joining(", ", "[", "]"));
+
+        return result;
+    }
+
 }
 
