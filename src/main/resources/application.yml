@@ -51,4 +51,3 @@ cloud:
     swagger-ui:
       path: /swagger-ui.html
       url: https://api.beatbuddy.world/swagger-ui.html
-
