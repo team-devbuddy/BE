@@ -1,6 +1,9 @@
 package com.ceos.beatbuddy.domain.member.controller;
 
+import com.ceos.beatbuddy.domain.member.application.MemberService;
+import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.global.ResponseTemplate;
+import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import com.ceos.beatbuddy.global.config.jwt.TokenProvider;
 import com.ceos.beatbuddy.global.config.jwt.redis.RefreshToken;
 import com.ceos.beatbuddy.global.config.jwt.redis.RefreshTokenRepository;
@@ -20,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -28,7 +33,35 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReissueController {
 
     private final TokenProvider tokenProvider;
+    private final MemberService memberService;
     private final RefreshTokenRepository refreshTokenRepository;
+
+    @PostMapping("/refresh")
+    @Operation(summary = "리프레쉬 토큰 발급",
+            description = "Access 토큰으로 Refresh 토큰을 발급합니다")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "토큰을 발급하는데 성공했습니다.",
+                    headers = {
+                            @Header(name = "Set-Cookie", description = "새로운 Refresh 토큰입니다", schema = @Schema(type = "string"))
+                    }
+                            ),
+                            @ApiResponse(responseCode = "400", description = "잘못된 토큰입니다"
+                                    + "에러 메시지가 출력됩니다.",
+                                    content = @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = String.class))),
+                            @ApiResponse(responseCode = "404", description = "유저의 장르 선호도가 존재하지 않습니다",
+                                    content = @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<String> getRefreshToken(@RequestBody String access){
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        Member user = memberService.getUser(memberId);
+        String refresh = tokenProvider.createToken("refresh", memberId, user.getLoginId(), user.getRole(), 1000 * 3600 * 24 * 14L);
+        RefreshToken refreshToken = new RefreshToken(refresh, user.getLoginId());
+        refreshTokenRepository.save(refreshToken);
+
+        return ResponseEntity.ok().header("Set-Cookie", "refresh=" + refresh + "; Path=/; Max-Age=1209600; HttpOnly").body(refresh);
+    }
 
     @PostMapping("/reissue")
     @Operation(summary = "토큰 재발급",

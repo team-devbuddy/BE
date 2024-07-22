@@ -271,4 +271,9 @@ public class MemberService {
         return NicknameDTO.builder()
                 .nickname(member.getNickname()).build();
     }
+
+    public Member getUser(Long memberId) {
+        return memberRepository.findByMemberId(memberId)
+                .orElseThrow(()-> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+    }
 }
