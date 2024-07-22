@@ -3,7 +3,7 @@ package com.ceos.beatbuddy.domain.member.controller;
 import com.ceos.beatbuddy.domain.member.application.MemberService;
 import com.ceos.beatbuddy.domain.member.dto.MemberConsentRequestDTO;
 import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
-import com.ceos.beatbuddy.domain.member.dto.NicknameRequestDTO;
+import com.ceos.beatbuddy.domain.member.dto.NicknameDTO;
 import com.ceos.beatbuddy.domain.member.dto.OnboardingResponseDto;
 import com.ceos.beatbuddy.domain.member.dto.RegionRequestDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
@@ -15,10 +15,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/members")
@@ -90,9 +91,9 @@ public class MemberController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<Boolean> isNicknameDuplicate(@RequestBody NicknameRequestDTO nicknameRequestDTO) {
+    public ResponseEntity<Boolean> isNicknameDuplicate(@RequestBody NicknameDTO nicknameDTO) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.isDuplicate(memberId, nicknameRequestDTO));
+        return ResponseEntity.ok(memberService.isDuplicate(memberId, nicknameDTO));
     }
 
     @PostMapping("/onboarding/nickname/validate")
@@ -108,9 +109,9 @@ public class MemberController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<Boolean> isNicknameValidate(@RequestBody NicknameRequestDTO nicknameRequestDTO) {
+    public ResponseEntity<Boolean> isNicknameValidate(@RequestBody NicknameDTO nicknameDTO) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.isValidate(memberId, nicknameRequestDTO));
+        return ResponseEntity.ok(memberService.isValidate(memberId, nicknameDTO));
     }
 
     @PostMapping("/onboarding/nickname")
@@ -123,9 +124,9 @@ public class MemberController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<MemberResponseDTO> saveNickname(@RequestBody NicknameRequestDTO nicknameRequestDTO) {
+    public ResponseEntity<MemberResponseDTO> saveNickname(@RequestBody NicknameDTO nicknameDTO) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.saveNickname(memberId, nicknameRequestDTO));
+        return ResponseEntity.ok(memberService.saveNickname(memberId, nicknameDTO));
     }
 
     @GetMapping("/onboarding/nickname")
@@ -156,6 +157,40 @@ public class MemberController {
     public ResponseEntity<MemberResponseDTO> saveRegions(@RequestBody RegionRequestDTO regionRequestDTO) {
         Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberService.saveRegions(memberId, regionRequestDTO));
+    }
+
+    @GetMapping("/nickname")
+    @Operation(summary = "사용자 닉네임 조회", description = "사용자의 닉네임을 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 닉네임 조회에 성공하였습니다."
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = NicknameDTO.class))),
+            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<NicknameDTO> getNickname() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.getNickname(memberId));
+    }
+
+    @PostMapping("/certification")
+    @Operation(summary = "사용자 성인인증 로직", description = "사용자의 성인 여부를 검사합니다.",
+            externalDocs = @ExternalDocumentation(description = "성인인증을 위임한 서드파티인 포트원의 document입니다."
+                    + "통합인증 탭에서 준비하기, 요청하기, 완료정보 전달하기까지 구현해주시면 됩니다.", url = "https://developers.portone.io/docs/ko/etc/all/readme?v=v1"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "성인인증 성공"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "400", description = "성인인증 실패, 실패한 사유 메시지가 전달됩니다."
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<String> certification(@RequestBody String imp_uid) {
+        String token = memberService.getToken();
+        ResponseEntity<Map> userData = memberService.getUserData(token, imp_uid);
+        memberService.verifyUserData(userData, SecurityUtils.getCurrentMemberId());
+        return ResponseEntity.ok("성인인증 성공!~");
     }
 
 }

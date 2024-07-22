@@ -2,6 +2,7 @@ package com.ceos.beatbuddy.domain.venue.controller;
 
 
 import com.ceos.beatbuddy.domain.vector.dto.MoodRequestDTO;
+import com.ceos.beatbuddy.domain.vector.entity.Vector;
 import com.ceos.beatbuddy.domain.venue.application.VenueMoodService;
 import com.ceos.beatbuddy.domain.venue.dto.VenueVectorResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
@@ -12,8 +13,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController

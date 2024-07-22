@@ -1,22 +1,23 @@
 package com.ceos.beatbuddy.domain.search.application;
 
 
+import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.search.dto.SearchDTO;
-import com.ceos.beatbuddy.domain.search.dto.SearchQueryDTO;
+import com.ceos.beatbuddy.domain.search.dto.SearchQueryResponseDTO;
 import com.ceos.beatbuddy.domain.search.dto.SearchRankResponseDTO;
 import com.ceos.beatbuddy.domain.search.repository.SearchRepository;
+import com.ceos.beatbuddy.domain.vector.entity.Vector;
 import com.ceos.beatbuddy.domain.venue.entity.Venue;
+import com.ceos.beatbuddy.domain.venue.entity.VenueGenre;
+import com.ceos.beatbuddy.domain.venue.repository.VenueGenreRepository;
+import com.ceos.beatbuddy.domain.venue.repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -29,28 +30,31 @@ public class SearchService {
 
     private final SearchRepository searchRepository;
     private final RedisTemplate<String, String> redisTemplate;
+    private final VenueRepository venueRepository;
+    private final VenueGenreRepository venueGenreRepository;
 
     @Transactional
-    public Page<SearchQueryDTO> keywordSearch(SearchDTO.RequestDTO searchRequestDTO, Pageable pageable) {
+    public List<SearchQueryResponseDTO> keywordSearch(SearchDTO.RequestDTO searchRequestDTO) {
 
-        Page<SearchQueryDTO> venueList= searchRepository.keywordFilter(searchRequestDTO, pageable);
-        String keyword = searchRequestDTO.getKeyword().get(0);
+        List<SearchQueryResponseDTO> venueList= searchRepository.keywordFilter(searchRequestDTO);
+        List<String> keywords = searchRequestDTO.getKeyword();
 
-        Double score =0.0;
-        try {
-            // 검색을하면 해당검색어를 value에 저장하고, score를 1 준다
-            score = redisTemplate.opsForZSet().incrementScore("ranking", keyword,1.0);
+        for(String keyword: keywords){
+            Double score =0.0;
+            try {
+                // 검색을하면 해당검색어를 value에 저장하고, score를 1 준다
+                score = redisTemplate.opsForZSet().incrementScore("ranking", keyword,1.0);
 
-            // 만료 시간 설정 (현재 시간 + 24시간)
-            long expireAt = Instant.now().getEpochSecond() + 86400;
-            Double expireAtDouble = Double.valueOf(expireAt);
+                // 만료 시간 설정 (현재 시간 + 24시간)
+                long expireAt = Instant.now().getEpochSecond() + 86400;
+                Double expireAtDouble = Double.valueOf(expireAt);
 
-            // 만료 시간을 Sorted Set에 저장
-            redisTemplate.opsForZSet().add("expire", keyword, expireAtDouble);
-        } catch (Exception e) {
-            System.out.println(e.toString());
+                // 만료 시간을 Sorted Set에 저장
+                redisTemplate.opsForZSet().add("expire", keyword, expireAtDouble);
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
         }
-
 
         return venueList;
     }

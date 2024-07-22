@@ -30,6 +30,9 @@ public class Venue extends BaseTimeEntity {
     private Long heartbeatNum = 0L;
 
     public void addHeartbeatNum() {
+        if(this.heartbeatNum==null) {
+            this.heartbeatNum = 1L;
+        }
         this.heartbeatNum += 1;
     }
 

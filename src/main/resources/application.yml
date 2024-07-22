@@ -16,8 +16,6 @@ spring:
       host: 3.38.250.131
       port: 6379
       password: ${DB_PASSWORD}
-
-
   jpa:
     show-sql: true
     hibernate:
@@ -27,7 +25,30 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
-
   server:
     tomcat:
       use-relative-redirects: true
+
+iamport:
+  api:
+    ID: ${IAMPORT_API_ID}
+    key: ${IAMPORT_API_KEY}
+    secret: ${IAMPORT_API_SECRET}
+
+cloud:
+  aws:
+    s3:
+      bucket: beatbuddy-image
+    credentials:
+      access-key: ${S3_ACCESS}
+      secret-key: ${S3_SECRET}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+  springdoc:
+    swagger-ui:
+      path: /swagger-ui.html
+      url: https://api.beatbuddy.world/swagger-ui.html
+
