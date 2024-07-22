@@ -1,7 +1,8 @@
 package com.ceos.beatbuddy.global.config.oauth;
 
-import com.ceos.beatbuddy.domain.user.application.MemberService;
-import com.ceos.beatbuddy.domain.user.dto.MemberDto;
+import com.ceos.beatbuddy.domain.member.application.MemberService;
+import com.ceos.beatbuddy.domain.member.dto.MemberDto;
+import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
 import com.ceos.beatbuddy.global.config.oauth.dto.KakaoResponse;
 import com.ceos.beatbuddy.global.config.oauth.dto.OAuth2Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +29,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             e.printStackTrace();
         }
 
-        switch (oAuth2Response.getProvider()) {
+        switch (request.getClientRegistration().getRegistrationId().toUpperCase()) {
             case "KAKAO":
                 oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
                 break;
@@ -37,8 +38,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         userId = oAuth2Response.getProvider() + "_" + oAuth2Response.getProviderId();
-        MemberDto memberDto = memberService.findOrCreateUser(userId, oAuth2Response.getName());
-
+        Oauth2MemberDto memberDto = memberService.findOrCreateUser(userId, oAuth2Response.getName());
 
         return new CustomOAuth2User(memberDto);
     }

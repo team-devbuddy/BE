@@ -1,4 +1,9 @@
 spring:
+  data:
+    redis:
+      host: 3.38.250.131
+      port: 6379
+      password: ${DB_PASSWORD}
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -6,34 +11,44 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jwt:
     secret: ${JWT_SECRET}
-
+  cache:
+    redis:
+      host: 3.38.250.131
+      port: 6379
+      password: ${DB_PASSWORD}
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
+  server:
+    tomcat:
+      use-relative-redirects: true
 
-  #kakao Oath2 설정
-  spring:
-    security:
-      oauth2:
-        client:
-          registration:
-            kakao:
-              client-id: ${KAKAO_CLIENT_ID}
-              client-secret: ${KAKAO_CLIENT_SECRET}
-              redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
-              grand-type: authorization_code
-              scope: profile_nickname
+iamport:
+  api:
+    ID: ${IAMPORT_API_ID}
+    key: ${IAMPORT_API_KEY}
+    secret: ${IAMPORT_API_SECRET}
 
-  #kakao provider 설정
-        provider:
-          kakao:
-            authorization-uri: https://kauth.kakao.com/oauth/authorize
-            token-uri: https://kauth.kakao.com/oauth/token
-            user-info-uri: https://kapi.kakao.com/v2/user/me
-            user-name-attribute: id
+cloud:
+  aws:
+    s3:
+      bucket: beatbuddy-image
+    credentials:
+      access-key: ${S3_ACCESS}
+      secret-key: ${S3_SECRET}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+  springdoc:
+    swagger-ui:
+      path: /swagger-ui.html
+      url: https://api.beatbuddy.world/swagger-ui.html
+

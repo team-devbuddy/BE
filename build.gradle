@@ -24,18 +24,6 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
-}
-
-bootJar {
-    dependsOn asciidoctor
-    copy {
-        from "${asciidoctor.outputDir}"
-        into 'BOOT-INF/classes/static/docs'
-    }
-}
-
 dependencies {
     // Spring Boot Data JPA for database access
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -72,32 +60,51 @@ dependencies {
     //Oath2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-    //spring rest docs
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-
     //spring health check
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    //Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // QueryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+
+
+    // Jakarta
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 }
 
 test {
     useJUnitPlatform()
 }
+// Querydsl 설정부
+def generated = 'src/main/generated'
 
-asciidoctor {
-    inputs.dir snippetsDir
-    dependsOn test
+// querydsl QClass 파일 생성 위치를 지정
+tasks.withType(JavaCompile) {
+    options.getGeneratedSourceOutputDirectory().set(file(generated))
 }
 
-asciidoctor.doFirst {
-    delete file('src/main/resources/static/docs')
+// java source set 에 querydsl QClass 위치 추가
+sourceSets {
+    main.java.srcDirs += [ generated ]
 }
 
-task copyDocument(type: Copy) {
-    dependsOn asciidoctor
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
+// gradle clean 시에 QClass 디렉토리 삭제
+clean {
+    delete file(generated)
 }
 
-build {
-    dependsOn copyDocument
-}
+
+

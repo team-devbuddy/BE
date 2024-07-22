@@ -146,6 +146,9 @@ $RECYCLE.BIN/
 **/build/
 !src/**/build/
 
+# Ignore the test folder
+src/test/
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
@@ -168,4 +171,10 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+# QueryDSL
+/src/main/generated/
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,java,gradle,intellij+all
+/docker-compose.yml
+
+src/main/java/com/ceos/beatbuddy/global/config/oauth/CustomClientRegistrationRepo.java

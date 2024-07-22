@@ -1,13 +1,14 @@
 package com.ceos.beatbuddy.global.config.jwt;
 
-import com.ceos.beatbuddy.domain.user.dto.MemberDto;
+import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
 import com.ceos.beatbuddy.global.config.oauth.CustomOAuth2User;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,39 +23,51 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String authorization = null;
-        Cookie[] cookies = request.getCookies();
 
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("Authorization")) {
-                    authorization = cookie.getValue();
-                }
-            }
-        }
+        String accessToken = request.getHeader("access");
 
-        if (authorization == null) {
-            System.out.println("token is null");
+        // access token이 없을 경우
+        if (accessToken == null || !accessToken.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
-
             return;
         }
 
-        String token = authorization;
+        accessToken = accessToken.split(" ")[1];
 
-        if (tokenProvider.isExpired(token)) {
-            System.out.println("token is expired");
-            filterChain.doFilter(request, response);
+        try{
+            tokenProvider.isExpired(accessToken);
+        }
+        catch (ExpiredJwtException e) {
+            PrintWriter writer = response.getWriter();
+            writer.print("access token expired");
 
+            //response status code
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        String username = tokenProvider.getUsername(token);
-        String role = tokenProvider.getRole(token);
+        String category = tokenProvider.getCategory(accessToken);
 
-        MemberDto memberDto = MemberDto.builder()
+        if (!category.equals("access")) {
+
+            //response body
+            PrintWriter writer = response.getWriter();
+            writer.print("invalid access token");
+
+            //response status code
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+
+        String username = tokenProvider.getUsername(accessToken);
+        String role = tokenProvider.getRole(accessToken);
+        Long memberId = tokenProvider.getMemberId(accessToken);
+
+        Oauth2MemberDto memberDto = Oauth2MemberDto.builder()
+                .memberId(memberId)
                 .role(role)
-                .name(username)
+                .loginId(username)
                 .build();
 
         CustomOAuth2User oAuth2User = new CustomOAuth2User(memberDto);

@@ -1,10 +1,15 @@
 package com.ceos.beatbuddy.global.config.oauth;
 
 import com.ceos.beatbuddy.global.config.jwt.TokenProvider;
+import com.ceos.beatbuddy.global.config.jwt.redis.RefreshToken;
+import com.ceos.beatbuddy.global.config.jwt.redis.RefreshTokenRepository;
+import com.ceos.beatbuddy.global.config.oauth.dto.LoginResponseDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,6 +24,8 @@ import org.springframework.stereotype.Component;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void onAuthenticationSuccess(
@@ -28,25 +35,57 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     ) throws IOException, ServletException {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
-        String userName = oAuth2User.getName();
+        String username = oAuth2User.getUsername();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
+        Long memberId = oAuth2User.getMemberId();
 
-        String token = tokenProvider.createToken(userName, role, 60*60*60L);
+        String access = tokenProvider.createToken("access", memberId, username, role, 1000 * 60 * 60 * 2L);
+        String refresh = tokenProvider.createToken("refresh", memberId, username, role, 1000 * 3600 * 24 * 14L);
 
-        response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("http://localhost:3000/");
+        saveRefreshToken(username, refresh);
+
+        LoginResponseDto loginResponseDto = LoginResponseDto.builder()
+                .memberId(oAuth2User.getMemberId())
+                .loginId(oAuth2User.getUsername())
+                .username(oAuth2User.getName())
+                .accessToken(access)
+                .refreshToken(refresh)
+                .build();
+
+        response.addCookie(createCookie("refresh", refresh));
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String jsonResponse = objectMapper.writeValueAsString(loginResponseDto);
+        response.getWriter().write(jsonResponse);
+
+        HttpSession session = request.getSession();
+        session.setMaxInactiveInterval(600);
+
+        String redirectUrl = "http://localhost:3000/login/oauth2/callback/kakao?access=" + access;
+
+
+        if (!response.isCommitted()) {
+            response.sendRedirect(redirectUrl);
+        }
     }
 
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60*60*60);
-        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24 * 14);
         cookie.setHttpOnly(true);
 
         return cookie;
+    }
+
+    private void saveRefreshToken(String username, String refresh) {
+
+        RefreshToken refreshToken = new RefreshToken(refresh, username);
+
+        refreshTokenRepository.save(refreshToken);
     }
 }

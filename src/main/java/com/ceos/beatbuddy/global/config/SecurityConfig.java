@@ -37,15 +37,8 @@ public class SecurityConfig {
     private final TokenProvider tokenProvider;
     private final CustomClientRegistrationRepo customClientRegistrationRepo;
 
-    private static final String BASE_URI = "/login/oath2/code/*";
-    private static final String BE_LOCAL_URL = "http://localhost:8080";
+    private static final String BaseUri = "https://beatbuddy.world/**";
     private static final String FE_LOCAL_URL = "http://localhost:3000";
-    private static final String OAUTH2 = "/oauth2/**";
-
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder(8); // default value 10에서 강도 낮춤
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -62,14 +55,13 @@ public class SecurityConfig {
                 .addFilterAfter(new JwtFilter(tokenProvider), OAuth2LoginAuthenticationFilter.class)
                 // 경로에 대한 권한 부여
                 .authorizeHttpRequests((auth) -> auth
-                        .anyRequest().permitAll())
-//                        .requestMatchers(OAUTH2).permitAll()
+                        .requestMatchers("/reissue","/swagger-ui/**","/v3/api-docs/**","/swagger-ui.html","http://localhost:3000/**").permitAll()
+                        .anyRequest().authenticated())
                 //oauth2
                 .oauth2Login(oath2 -> oath2
-                                .loginPage("/login")
-                                .clientRegistrationRepository(customClientRegistrationRepo.clientRegistrationRepository())
-                                .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
-                                .successHandler(oAuth2SuccessHandler)
+                        .clientRegistrationRepository(customClientRegistrationRepo.clientRegistrationRepository())
+                        .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
                 );
 
         return http.build();
@@ -86,8 +78,8 @@ public class SecurityConfig {
     private CorsConfiguration getDefaultCorsConfiguration() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(asList(
-                BE_LOCAL_URL,
-                FE_LOCAL_URL));
+                FE_LOCAL_URL,
+                BaseUri));
         config.setAllowedHeaders(singletonList("*")); //모든 종류의 HTTP 헤더를 허용하도록 설정
         config.setAllowedMethods(singletonList("*")); //모든 종류의 HTTP 메소드를 허용하도록 설정
         config.setAllowCredentials(true); //인증 정보와 관련된 요청을 허용

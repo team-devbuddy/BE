@@ -10,7 +10,7 @@ public class KakaoResponse implements OAuth2Response {
 
     @Override
     public String getProvider() {
-        return "NAVER";
+        return "KAKAO";
     }
 
     @Override
@@ -20,6 +20,6 @@ public class KakaoResponse implements OAuth2Response {
 
     @Override
     public String getName() {
-        return attribute.get("name").toString();
+        return ((Map<String, String>) attribute.get("properties")).get("nickname").toString();
     }
 }
