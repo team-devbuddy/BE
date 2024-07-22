@@ -179,3 +179,4 @@ gradle-app.setting
 
 src/main/java/com/ceos/beatbuddy/global/config/oauth/CustomClientRegistrationRepo.java
 /src/main/java/com/ceos/beatbuddy/global/InitDb.java
+src/main/java/com/ceos/beatbuddy/global/config/oauth/OAuth2SuccessHandler.java
