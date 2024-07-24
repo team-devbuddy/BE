@@ -1,13 +1,12 @@
 package com.ceos.beatbuddy.domain.venue.entity;
 
 import com.ceos.beatbuddy.domain.member.constant.Region;
-import com.ceos.beatbuddy.domain.vector.entity.Vector;
+import com.ceos.beatbuddy.domain.venue.dto.VenueRequestDTO;
 import com.ceos.beatbuddy.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Builder
@@ -22,9 +21,16 @@ public class Venue extends BaseTimeEntity {
     private String englishName;
     private String koreanName;
 
+    @Enumerated
     private Region region;
     private String description;
     private String address;
+    private String insta;
+    private String operationHours;
+
+    private String logoUrl;
+    @ElementCollection
+    private List<String> backgroundUrl;
 
     @Builder.Default
     private Long heartbeatNum = 0L;
@@ -40,5 +46,19 @@ public class Venue extends BaseTimeEntity {
         if(this.heartbeatNum > 0) {
             this.heartbeatNum -= 1;
         }
+    }
+
+    public static Venue of(VenueRequestDTO request, String  logoUrl, List<String> backgroundUrl){
+        return Venue.builder()
+                .englishName(request.getEnglishName())
+                .koreanName(request.getKoreanName())
+                .region(request.getRegion())
+                .address(request.getAddress())
+                .description(request.getDescription())
+                .logoUrl(logoUrl)
+                .backgroundUrl(backgroundUrl)
+                .operationHours(request.getOperationHours())
+                .insta(request.getInsta())
+                .build();
     }
 }

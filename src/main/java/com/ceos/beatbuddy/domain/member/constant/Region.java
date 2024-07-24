@@ -6,17 +6,19 @@ import lombok.Getter;
 
 public enum Region {
 
-    TYPE1(0, "HONGDAE"),
-    TYPE2(1, "ITAEWON"),
-    TYPE3(2, "SINSA"),
-    TYPE4(3, "APGUJEONG");
+    TYPE1(0, "HONGDAE", "홍대"),
+    TYPE2(1, "ITAEWON", "이태원"),
+    TYPE3(2, "GANGNAM/SINSA", "강남/신사"),
+    TYPE4(3, "APGUJEONG", "압구정");
 
     private Integer idx;
     private String text;
+    private String korText;
 
-    Region(Integer idx, String text) {
+    Region(Integer idx, String text, String korText) {
         this.idx = idx;
         this.text = text;
+        this.korText = korText;
     }
 
     @JsonCreator
@@ -38,6 +40,10 @@ public enum Region {
         return text;
     }
 
+    private String getKorText() {
+        return korText;
+    }
+
     public String toText() {
         return text;
     }
@@ -45,6 +51,15 @@ public enum Region {
     public static Region fromIdx(Integer idx) {
         for (Region region : Region.values()) {
             if (region.getIdx().equals(idx)) {
+                return region;
+            }
+        }
+        return null;
+    }
+
+    public static Region fromKorText(String korText) {
+        for (Region region : Region.values()) {
+            if (region.getKorText().equals(korText)) {
                 return region;
             }
         }
