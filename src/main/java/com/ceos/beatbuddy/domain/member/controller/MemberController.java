@@ -132,7 +132,7 @@ public class MemberController {
     @GetMapping("/onboarding/nickname")
     @Operation(summary = "사용자 닉네임 설정 여부", description = "사용자가 닉네임을 설정했는 지 여부를 확인")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "용자 닉네임 설정 여부 확인 성공",
+            @ApiResponse(responseCode = "200", description = "사용자 닉네임 설정 여부 확인 성공",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Boolean.class))),
             @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
@@ -173,6 +173,22 @@ public class MemberController {
         Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(memberService.getNickname(memberId));
     }
+    @GetMapping("/certification")
+    @Operation(summary = "사용자 성인인증 여부 조회", description = "사용자가 성인인증 여부를 조회합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "사용자 성인인증 여부 확인 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Boolean.class))),
+            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<Boolean> getCertificationSet() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.getCertification(memberId));
+    }
+
+
 
     @PostMapping("/certification")
     @Operation(summary = "사용자 성인인증 로직", description = "사용자의 성인 여부를 검사합니다.",

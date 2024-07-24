@@ -149,9 +149,6 @@ public class MemberService {
     }
 
 
-
-
-
     @Transactional
     public MemberResponseDTO saveRegions(Long memberId, RegionRequestDTO regionRequestDTO) {
         Member member = memberRepository.findByMemberId(memberId)
@@ -228,22 +225,19 @@ public class MemberService {
     }
 
     private OnboardingResponseDto getOnboardingMap(Member member) {
-        OnboardingResponseDto responseDto = new OnboardingResponseDto(); 
+        OnboardingResponseDto responseDto = new OnboardingResponseDto();
 
         if (memberGenreRepository.existsByMember(member)) {
             responseDto.setGenre();
-        }
-        else {
+        } else {
             return responseDto;
         }
-        if (memberMoodRepository.existsByMember(member)){
+        if (memberMoodRepository.existsByMember(member)) {
             responseDto.setMood();
-        }
-        else {
+        } else {
             return responseDto;
         }
-        if(memberRepository.existsRegionsByMember(member))
-        {
+        if (memberRepository.existsRegionsByMember(member)) {
             responseDto.setRegion();
         }
         return responseDto;
@@ -252,8 +246,7 @@ public class MemberService {
     public Boolean isTermConsent(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
-        if(member.getIsLocationConsent() && member.getIsMarketingConsent())
-        {
+        if (member.getIsLocationConsent() && member.getIsMarketingConsent()) {
             return true;
         }
         return false;
@@ -261,19 +254,26 @@ public class MemberService {
 
     public Boolean getNicknameSet(Long memberId) {
         Member member = memberRepository.findByMemberId(memberId)
-                .orElseThrow(()-> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         return member.getSetNewNickname();
     }
 
     public NicknameDTO getNickname(Long memberId) {
         Member member = memberRepository.findByMemberId(memberId)
-                .orElseThrow(()-> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         return NicknameDTO.builder()
                 .nickname(member.getNickname()).build();
     }
 
     public Member getUser(Long memberId) {
         return memberRepository.findByMemberId(memberId)
-                .orElseThrow(()-> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+    }
+
+    public Boolean getCertification(Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
+                () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+
+        return member.getIsAdult();
     }
 }
