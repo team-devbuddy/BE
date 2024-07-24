@@ -288,6 +288,7 @@ public class MemberService {
         return member.getIsAdult();
     }
 
+    @Transactional
     public void tempVerify(Long memberId) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(
                 () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
