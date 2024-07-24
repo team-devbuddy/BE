@@ -8,16 +8,21 @@ import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
 import com.ceos.beatbuddy.domain.member.dto.OnboardingResponseDto;
 import com.ceos.beatbuddy.domain.member.dto.RegionRequestDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
+import com.ceos.beatbuddy.domain.member.entity.MemberGenre;
+import com.ceos.beatbuddy.domain.member.entity.MemberMood;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
+import com.ceos.beatbuddy.domain.member.exception.MemberGenreErrorCode;
+import com.ceos.beatbuddy.domain.member.exception.MemberMoodErrorCode;
 import com.ceos.beatbuddy.domain.member.repository.MemberGenreRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberMoodRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
+import com.ceos.beatbuddy.domain.vector.entity.Vector;
 import com.ceos.beatbuddy.global.CustomException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -27,8 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
@@ -282,5 +285,19 @@ public class MemberService {
                 () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
 
         return member.getIsAdult();
+    }
+
+    public List<String> getPreferences(Long memberId){
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
+                () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+
+        MemberGenre memberGenre = memberGenreRepository.findLatestGenreByMember(member).orElseThrow(()->new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
+        MemberMood memberMood = memberMoodRepository.findLatestMoodByMember(member).orElseThrow(()->new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
+        List<String> trueGenreElements = Vector.getTrueGenreElements(memberGenre.getGenreVector());
+        List<String> trueMoodElements = Vector.getTrueMoodElements(memberMood.getMoodVector());
+        List<String> preferenceList = new ArrayList<>(trueGenreElements);
+        preferenceList.addAll(trueMoodElements);
+
+        return preferenceList;
     }
 }

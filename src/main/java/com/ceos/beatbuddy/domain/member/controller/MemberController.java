@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -191,6 +192,21 @@ public class MemberController {
         ResponseEntity<Map> userData = memberService.getUserData(token, imp_uid);
         memberService.verifyUserData(userData, SecurityUtils.getCurrentMemberId());
         return ResponseEntity.ok("성인인증 성공!~");
+    }
+
+    @GetMapping("/preferences")
+    @Operation(summary = "사용자 취향 리스트 반환", description = "사용자가 가장 최근에 설정한 장르, 무드 취향 리스트를 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자 취향 리스트 조회에 성공했습니다."
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = MemberResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다 or 유저가 설정한 장르 취향이 존재하지 않습니다 or 유저가 설정한 무드 취향이 존재하지 않습니다",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<List<String>> getPreferences() {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.getPreferences(memberId));
     }
 
 }
