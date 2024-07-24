@@ -227,6 +227,13 @@ public class MemberService {
     private OnboardingResponseDto getOnboardingMap(Member member) {
         OnboardingResponseDto responseDto = new OnboardingResponseDto();
 
+        if (member.getIsAdult()) {
+            responseDto.setAdultCert();
+        }
+        else{
+            return responseDto;
+        }
+
         if (memberGenreRepository.existsByMember(member)) {
             responseDto.setGenre();
         } else {

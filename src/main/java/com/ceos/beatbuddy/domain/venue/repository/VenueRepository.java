@@ -1,7 +1,6 @@
 package com.ceos.beatbuddy.domain.venue.repository;
 
 
-import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.venue.entity.Venue;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
