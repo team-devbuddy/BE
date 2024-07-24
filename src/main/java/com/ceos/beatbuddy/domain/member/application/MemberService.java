@@ -43,10 +43,10 @@ public class MemberService {
     private final MemberGenreRepository memberGenreRepository;
     private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9가-힣._]*$");
 
-    @Value("{iamport.api.key}")
+    @Value("${iamport.api.key}")
     private String imp_key;
 
-    @Value("{iamport.api.secret}")
+    @Value("${iamport.api.secret}")
     private String imp_secret;
 
     /**
@@ -181,7 +181,9 @@ public class MemberService {
         HttpEntity<Map<String, String>> tokenEntity = new HttpEntity<>(tokenRequest, headers);
         ResponseEntity<Map> tokenResponse = restTemplate.exchange(tokenUrl, HttpMethod.POST, tokenEntity, Map.class);
 
-        return tokenResponse.getBody().get("access_token").toString();
+        Map body = tokenResponse.getBody();
+        Map response = (Map) body.get("response");
+        return response.get("access_token").toString();
     }
 
     public ResponseEntity<Map> getUserData(String token, String imp_uid) {
@@ -191,10 +193,13 @@ public class MemberService {
                 .toUriString();
 
         HttpHeaders certificationHeaders = new HttpHeaders();
-        certificationHeaders.set("Authorization", token);
+        certificationHeaders.set("Authorization", "Bearer "+token);
 
         HttpEntity<String> certificationEntity = new HttpEntity<>(certificationHeaders);
-        return restTemplate.exchange(certificationUrl, HttpMethod.GET, certificationEntity, Map.class);
+        ResponseEntity<Map> exchange = restTemplate.exchange(certificationUrl, HttpMethod.GET, certificationEntity,
+                Map.class);
+
+        return exchange;
     }
 
     public void verifyUserData(ResponseEntity<Map> userData, Long memberId) {
@@ -229,8 +234,7 @@ public class MemberService {
 
         if (member.getIsAdult()) {
             responseDto.setAdultCert();
-        }
-        else{
+        } else {
             return responseDto;
         }
 
@@ -282,5 +286,11 @@ public class MemberService {
                 () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
 
         return member.getIsAdult();
+    }
+
+    public void tempVerify(Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
+                () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        member.setAdultUser();
     }
 }
