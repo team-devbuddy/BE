@@ -85,17 +85,37 @@ public class HeartbeatService {
                 .build();
     }
 
-    public List<HeartbeatResponseDTO> getAllHeartbeat(Long memberId) {
+    public List<VenueResponseDTO> getAllHeartbeat(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         List<Heartbeat> heartbeats = heartbeatRepository.findByMember(member);
 
         return heartbeats.stream()
-                .map(heartBeat -> HeartbeatResponseDTO.builder()
-                        .memberId(member.getMemberId())
-                        .venueId(heartBeat.getVenue().getVenueId())
-                        .heartId(heartBeat.getHeartId())
-                        .build())
+                .map(heartBeat -> {
+                    Venue venue = heartBeat.getVenue();
+                    VenueGenre venueGenre = venueGenreRepository.findByVenue(venue)
+                            .orElseThrow(()-> new CustomException(VenueGenreErrorCode.VENUE_GENRE_NOT_EXIST));
+                    List<String> trueGenreElements = Vector.getTrueGenreElements(venueGenre.getGenreVector());
+
+                    VenueMood venueMood = venueMoodRepository.findByVenue(venue)
+                            .orElseThrow(()->new CustomException(VenueMoodErrorCode.VENUE_MOOD_NOT_EXIST));
+                    List<String> trueMoodElements = Vector.getTrueMoodElements(venueMood.getMoodVector());
+                    String region = venue.getRegion().getText();
+
+                    List<String> tagList = new ArrayList<>(trueGenreElements);
+                    tagList.addAll(trueMoodElements);
+                    tagList.add(region);
+
+                    return VenueResponseDTO.builder()
+                            .isHeartbeat(true)
+                            .koreanName(heartBeat.getVenue().getKoreanName())
+                            .englishName(heartBeat.getVenue().getEnglishName())
+                            .venueId(heartBeat.getVenue().getVenueId())
+                            .tagList(tagList)
+                            .heartbeatNum(heartBeat.getVenue().getHeartbeatNum())
+                            .build();
+                })
                 .collect(Collectors.toList());
+
     }
 
     public HeartbeatResponseDTO getHeartbeat(Long memberId, Long venueId) {
@@ -110,8 +130,9 @@ public class HeartbeatService {
                 .build();
     }
 
-    public List<VenueResponseDTO> getHotChart(){
+    public List<VenueResponseDTO> getHotChart(Long memberId){
         List<Venue> venues = venueRepository.sortByHeartbeatCount();
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
 
         return venues.stream()
                 .map(venue -> {
@@ -132,6 +153,7 @@ public class HeartbeatService {
                             .koreanName(venue.getKoreanName())
                             .englishName(venue.getEnglishName())
                             .heartbeatNum(venue.getHeartbeatNum())
+                            .isHeartbeat(heartbeatRepository.findByMemberVenue(member, venue).isPresent())
                             .build();
                 })
                 .collect(Collectors.toList());

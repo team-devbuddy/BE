@@ -80,32 +80,32 @@ public class HeartbeatController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<List<HeartbeatResponseDTO>> getAllHeartbeat() {
+    public ResponseEntity<List<VenueResponseDTO>> getAllHeartbeat() {
         Long memberId = SecurityUtils.getCurrentMemberId();
         return ResponseEntity.ok(heartbeatService.getAllHeartbeat(memberId));
     }
 
 
-    @GetMapping("/{venueId}")
-    @Operation(summary = "사용자가 하트비트를 누른 베뉴에 대한 조회", description = "사용자가 하트비트를 누른 베뉴에 대한 조회")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "하트비트 조회 성공"
-                    , content = @Content(mediaType = "application/json"
-                    , schema = @Schema(implementation = HeartbeatResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseTemplate.class))),
-            @ApiResponse(responseCode = "404", description = "요청한 베뉴가 존재하지 않습니다",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseTemplate.class))),
-            @ApiResponse(responseCode = "404", description = "유저가 해당 베뉴에 하트비트를 추가하지 않은 상태입니다",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseTemplate.class)))
-    })
-    public ResponseEntity<HeartbeatResponseDTO> getHeartbeat(@PathVariable Long venueId) {
-        Long memberId = SecurityUtils.getCurrentMemberId();
-        return ResponseEntity.ok(heartbeatService.getHeartbeat(memberId, venueId));
-    }
+//    @GetMapping("/{venueId}")
+//    @Operation(summary = "사용자가 하트비트를 누른 베뉴에 대한 조회", description = "사용자가 하트비트를 누른 베뉴에 대한 조회")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "하트비트 조회 성공"
+//                    , content = @Content(mediaType = "application/json"
+//                    , schema = @Schema(implementation = HeartbeatResponseDTO.class))),
+//            @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
+//                    content = @Content(mediaType = "application/json",
+//                            schema = @Schema(implementation = ResponseTemplate.class))),
+//            @ApiResponse(responseCode = "404", description = "요청한 베뉴가 존재하지 않습니다",
+//                    content = @Content(mediaType = "application/json",
+//                            schema = @Schema(implementation = ResponseTemplate.class))),
+//            @ApiResponse(responseCode = "404", description = "유저가 해당 베뉴에 하트비트를 추가하지 않은 상태입니다",
+//                    content = @Content(mediaType = "application/json",
+//                            schema = @Schema(implementation = ResponseTemplate.class)))
+//    })
+//    public ResponseEntity<HeartbeatResponseDTO> getHeartbeat(@PathVariable Long venueId) {
+//        Long memberId = SecurityUtils.getCurrentMemberId();
+//        return ResponseEntity.ok(heartbeatService.getHeartbeat(memberId, venueId));
+//    }
 
     @GetMapping("/hot-chart")
     @Operation(summary = "HOT chart", description = "하트비트 개수 TOP 10 베뉴 내림차순 정렬")
@@ -115,7 +115,8 @@ public class HeartbeatController {
                     , array = @ArraySchema(schema = @Schema(implementation = VenueResponseDTO.class))))
     })
     public ResponseEntity<List<VenueResponseDTO>> getHotChart() {
-        return ResponseEntity.ok(heartbeatService.getHotChart());
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(heartbeatService.getHotChart(memberId));
     }
 
 }
