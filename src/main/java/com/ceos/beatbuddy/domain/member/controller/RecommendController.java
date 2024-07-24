@@ -62,17 +62,6 @@ public class RecommendController {
         return ResponseEntity.ok(recommendService.recommendVenuesByMood(memberId, 2L));
     }
 
-    @GetMapping("/bb-pick")
-    @Operation(summary = "랜덤 추천 BeatBuddy Pick",
-            description = "취향 데이터가 없는 사용자에게 랜덤 추천 시스템")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "랜덤 추천 시스템 작동이 성공했습니다."
-                    , content = @Content(mediaType = "application/json"
-                    , array = @ArraySchema(schema = @Schema(implementation = VenueResponseDTO.class))))
-    })
-    public ResponseEntity<List<VenueResponseDTO>> recommendByBBpick() {
-        return ResponseEntity.ok(recommendService.recommendByBBpick(5L));
-    }
 
 
 }
