@@ -43,6 +43,7 @@ public class VenueInfoService {
                 .orElseThrow(() -> new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
     }
 
+    @Transactional
     public Long deleteVenueInfo(Long venueId) {
         Venue venue = venueRepository.findById(venueId)
                 .orElseThrow(() -> new CustomException(VenueErrorCode.VENUE_NOT_EXIST));

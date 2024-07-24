@@ -20,8 +20,8 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
     @Query("SELECT v FROM Venue v ORDER BY v.heartbeatNum DESC LIMIT 10")
     List<Venue> sortByHeartbeatCount();
 
-    @Query("SELECT v FROM Venue v WHERE v.region = :region")
-    Long deleteByVenueId(Long venueId);
+    @Query("SELECT v FROM Venue v WHERE v.venueId = :venueId")
+    Long deleteByVenueId(@Param("venueId")Long venueId);
 
 }
 
