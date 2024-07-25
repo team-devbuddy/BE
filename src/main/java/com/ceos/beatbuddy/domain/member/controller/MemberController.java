@@ -187,7 +187,7 @@ public class MemberController {
                     , schema = @Schema(implementation = ResponseTemplate.class)))
     })
     public ResponseEntity<String> certification(@RequestBody String imp_uid) {
-        String token = memberService.getToken();
+//        String token = memberService.getToken();
 //        ResponseEntity<Map> userData = memberService.getUserData(token, imp_uid);
 //        memberService.verifyUserData(userData, SecurityUtils.getCurrentMemberId());
         // 테스트 환경에서는 성인인증을 통과하도록 설정
