@@ -14,19 +14,30 @@ public class OnboardingResponseDto {
     @Schema(description = "지역 선택 여부")
     private boolean Region;
 
+    @Schema(description = "성인 인증 여부")
+    private boolean AdultCert;
+
+
     public OnboardingResponseDto() {
-        this.Genre =false;
-        this.Mood =false;
-        this.Region =false;
+        this.Genre = false;
+        this.Mood = false;
+        this.Region = false;
+        this.AdultCert = false;
     }
 
-    public void setGenre(){
+    public void setGenre() {
         this.Genre = true;
     }
-    public void setMood(){
+
+    public void setMood() {
         this.Mood = true;
     }
-    public void setRegion(){
+
+    public void setRegion() {
         this.Region = true;
+    }
+
+    public void setAdultCert() {
+        this.AdultCert = true;
     }
 }

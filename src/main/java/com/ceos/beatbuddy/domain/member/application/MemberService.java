@@ -8,16 +8,21 @@ import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
 import com.ceos.beatbuddy.domain.member.dto.OnboardingResponseDto;
 import com.ceos.beatbuddy.domain.member.dto.RegionRequestDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
+import com.ceos.beatbuddy.domain.member.entity.MemberGenre;
+import com.ceos.beatbuddy.domain.member.entity.MemberMood;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
+import com.ceos.beatbuddy.domain.member.exception.MemberGenreErrorCode;
+import com.ceos.beatbuddy.domain.member.exception.MemberMoodErrorCode;
 import com.ceos.beatbuddy.domain.member.repository.MemberGenreRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberMoodRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
+import com.ceos.beatbuddy.domain.vector.entity.Vector;
 import com.ceos.beatbuddy.global.CustomException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -27,8 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
@@ -43,10 +46,10 @@ public class MemberService {
     private final MemberGenreRepository memberGenreRepository;
     private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9가-힣._]*$");
 
-    @Value("{iamport.api.key}")
+    @Value("${iamport.api.key}")
     private String imp_key;
 
-    @Value("{iamport.api.secret}")
+    @Value("${iamport.api.secret}")
     private String imp_secret;
 
     /**
@@ -181,7 +184,9 @@ public class MemberService {
         HttpEntity<Map<String, String>> tokenEntity = new HttpEntity<>(tokenRequest, headers);
         ResponseEntity<Map> tokenResponse = restTemplate.exchange(tokenUrl, HttpMethod.POST, tokenEntity, Map.class);
 
-        return tokenResponse.getBody().get("access_token").toString();
+        Map body = tokenResponse.getBody();
+        Map response = (Map) body.get("response");
+        return response.get("access_token").toString();
     }
 
     public ResponseEntity<Map> getUserData(String token, String imp_uid) {
@@ -191,10 +196,13 @@ public class MemberService {
                 .toUriString();
 
         HttpHeaders certificationHeaders = new HttpHeaders();
-        certificationHeaders.set("Authorization", token);
+        certificationHeaders.set("Authorization", "Bearer "+token);
 
         HttpEntity<String> certificationEntity = new HttpEntity<>(certificationHeaders);
-        return restTemplate.exchange(certificationUrl, HttpMethod.GET, certificationEntity, Map.class);
+        ResponseEntity<Map> exchange = restTemplate.exchange(certificationUrl, HttpMethod.GET, certificationEntity,
+                Map.class);
+
+        return exchange;
     }
 
     public void verifyUserData(ResponseEntity<Map> userData, Long memberId) {
@@ -226,6 +234,12 @@ public class MemberService {
 
     private OnboardingResponseDto getOnboardingMap(Member member) {
         OnboardingResponseDto responseDto = new OnboardingResponseDto();
+
+        if (member.getIsAdult()) {
+            responseDto.setAdultCert();
+        } else {
+            return responseDto;
+        }
 
         if (memberGenreRepository.existsByMember(member)) {
             responseDto.setGenre();
@@ -275,5 +289,26 @@ public class MemberService {
                 () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
 
         return member.getIsAdult();
+    }
+
+    @Transactional
+    public void tempVerify(Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
+                () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        member.setAdultUser();
+    }
+
+    public List<String> getPreferences(Long memberId){
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
+                () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+
+        MemberGenre memberGenre = memberGenreRepository.findLatestGenreByMember(member).orElseThrow(()->new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
+        MemberMood memberMood = memberMoodRepository.findLatestMoodByMember(member).orElseThrow(()->new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
+        List<String> trueGenreElements = Vector.getTrueGenreElements(memberGenre.getGenreVector());
+        List<String> trueMoodElements = Vector.getTrueMoodElements(memberMood.getMoodVector());
+        List<String> preferenceList = new ArrayList<>(trueGenreElements);
+        preferenceList.addAll(trueMoodElements);
+
+        return preferenceList;
     }
 }

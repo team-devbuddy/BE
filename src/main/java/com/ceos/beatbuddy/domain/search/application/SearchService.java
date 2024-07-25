@@ -34,9 +34,9 @@ public class SearchService {
     private final VenueGenreRepository venueGenreRepository;
 
     @Transactional
-    public List<SearchQueryResponseDTO> keywordSearch(SearchDTO.RequestDTO searchRequestDTO) {
+    public List<SearchQueryResponseDTO> keywordSearch(SearchDTO.RequestDTO searchRequestDTO, Long memberId) {
 
-        List<SearchQueryResponseDTO> venueList= searchRepository.keywordFilter(searchRequestDTO);
+        List<SearchQueryResponseDTO> venueList= searchRepository.keywordFilter(searchRequestDTO, memberId);
         List<String> keywords = searchRequestDTO.getKeyword();
 
         for(String keyword: keywords){

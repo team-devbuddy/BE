@@ -4,6 +4,7 @@ import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.search.application.SearchService;
 import com.ceos.beatbuddy.domain.search.dto.*;
 import com.ceos.beatbuddy.global.ResponseTemplate;
+import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -39,7 +40,8 @@ public class SearchController {
                     , schema = @Schema(implementation = ResponseTemplate.class)))
     })
     public ResponseEntity<List<SearchQueryResponseDTO>> searchList(@RequestBody SearchDTO.RequestDTO searchRequestDTO) {
-        return ResponseEntity.ok(searchService.keywordSearch(searchRequestDTO));
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(searchService.keywordSearch(searchRequestDTO, memberId));
     }
 
     @GetMapping("/rank")

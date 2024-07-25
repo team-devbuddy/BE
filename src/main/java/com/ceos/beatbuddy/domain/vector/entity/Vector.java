@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class Vector {
     private static final List<String> ALL_GENRES = Arrays.asList(
-            "EDM", "HIPHOP_R&B", "HOUSE", "SOUL&FUNK", "TECHNO", "K-POP", "POP", "LATIN"
+            "EDM", "HIPHOP", "HOUSE", "SOUL&FUNK", "TECHNO", "K-POP", "POP", "LATIN", "R&B", "ROCK"
     );
     private static final List<String> ALL_MOODS = Arrays.asList(
-            "HIP", "DARK", "EXCITING", "FUNKY", "EXOTIC", "TRENDY", "TROPICAL", "CHILLY"
+            "PUB", "CLUB", "DEEP", "CHILL", "LIGHT", "HUNTING", "EXOTIC", "ROOFTOP"
     );
     private final List<Double> elements;
 

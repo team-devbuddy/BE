@@ -135,51 +135,6 @@ public class RecommendService {
 
     }
 
-    public List<VenueResponseDTO> recommendByBBpick(Long num) {
-        long count = venueRepository.count();
-        if (count == 0) {
-            throw new CustomException(VenueErrorCode.VENUE_NOT_EXIST);
-        }
 
-        List<Long> venueIds = venueRepository.findAllIds();
-        if (num > venueIds.size()) {
-            throw new CustomException(VenueErrorCode.VENUE_OVER_REQUEST);
-        }
-
-        List<Long> randomIds = ThreadLocalRandom.current()
-                .ints(0, venueIds.size())
-                .distinct()
-                .limit(num)
-                .mapToObj(venueIds::get)
-                .collect(Collectors.toList());
-
-
-        List<Venue> venues = venueRepository.findAllById(randomIds);
-        return venues.stream().
-                map(venue -> {
-
-                    VenueGenre venueGenre = venueGenreRepository.findByVenue(venue).orElseThrow(()->new CustomException(VenueGenreErrorCode.VENUE_GENRE_NOT_EXIST));
-                    List<String> trueGenreElements = Vector.getTrueGenreElements(venueGenre.getGenreVector());
-
-                    VenueMood venueMood = venueMoodRepository.findByVenue(venue).orElseThrow(()->new CustomException(VenueMoodErrorCode.VENUE_MOOD_NOT_EXIST));
-                    List<String> trueMoodElements = Vector.getTrueMoodElements(venueMood.getMoodVector());
-                    String region = venue.getRegion().getText();
-
-                    List<String> tagList = new ArrayList<>(trueGenreElements);
-                    tagList.addAll(trueMoodElements);
-                    tagList.add(region);
-
-                    return VenueResponseDTO.builder()
-                            .tagList(tagList)
-                            .venueId(venue.getVenueId())
-                            .koreanName(venue.getKoreanName())
-                            .englishName(venue.getEnglishName())
-                            .heartbeatNum(venue.getHeartbeatNum())
-                            .build();
-                })
-                .collect(Collectors.toList());
-
-
-    }
 
 }
