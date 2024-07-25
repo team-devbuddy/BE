@@ -10,7 +10,6 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@Builder
 public class SearchQueryResponseDTO {
 
     private LocalDateTime currentDate;
@@ -19,15 +18,19 @@ public class SearchQueryResponseDTO {
     private String koreanName;
     private List<String> tagList;
     private Long heartbeatNum;
+    private Boolean isHeartbeat;
+    private String logoUrl;
 
     @QueryProjection
-    public SearchQueryResponseDTO(LocalDateTime currentDate, Long venueId, String englishName, String koreanName, List<String> tagList, Long heartbeatNum) {
+    public SearchQueryResponseDTO(LocalDateTime currentDate, Long venueId, String englishName, String koreanName, List<String> tagList, Long heartbeatNum, boolean isHeartbeat, String logoUrl) {
         this.currentDate = currentDate;
         this.venueId = venueId;
         this.englishName = englishName;
         this.koreanName = koreanName;
         this.tagList = tagList;
         this.heartbeatNum = heartbeatNum;
+        this.isHeartbeat = isHeartbeat;
+        this.logoUrl = logoUrl;
     }
 
 

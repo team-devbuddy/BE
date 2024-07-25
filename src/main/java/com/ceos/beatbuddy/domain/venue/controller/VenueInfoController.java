@@ -1,9 +1,11 @@
 package com.ceos.beatbuddy.domain.venue.controller;
 
 import com.ceos.beatbuddy.domain.venue.application.VenueInfoService;
+import com.ceos.beatbuddy.domain.venue.dto.VenueInfoResponseDTO;
 import com.ceos.beatbuddy.domain.venue.dto.VenueRequestDTO;
 import com.ceos.beatbuddy.domain.venue.entity.Venue;
 import com.ceos.beatbuddy.global.ResponseTemplate;
+import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "VenueInfo Controller", description = "베뉴에 대한 정보를 제공하는 컨트롤러")
-@RequestMapping("/venueInfo")
+@RequestMapping("/venue-info")
 public class VenueInfoController {
     private final VenueInfoService venueInfoService;
 
@@ -51,13 +53,14 @@ public class VenueInfoController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "베뉴 정보 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Venue.class))),
+                            schema = @Schema(implementation = VenueInfoResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "요청한 베뉴가 존재하지 않습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<Venue> getVenueInfo(@PathVariable Long venueId) {
-        return ResponseEntity.ok(venueInfoService.getVenueInfo(venueId));
+    public ResponseEntity<VenueInfoResponseDTO> getVenueInfo(@PathVariable Long venueId) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(venueInfoService.getVenueInfo(venueId, memberId));
     }
 
     @PostMapping

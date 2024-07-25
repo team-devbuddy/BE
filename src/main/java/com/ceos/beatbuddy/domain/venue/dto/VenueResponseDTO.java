@@ -15,5 +15,6 @@ public class VenueResponseDTO {
     private String koreanName;
     private List<String> tagList;
     private Long heartbeatNum;
-    private boolean isHeartbeat;
+    private String logoUrl;
+    private Boolean isHeartbeat;
 }

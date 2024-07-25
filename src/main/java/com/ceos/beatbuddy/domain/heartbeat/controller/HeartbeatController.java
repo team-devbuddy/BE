@@ -75,7 +75,7 @@ public class HeartbeatController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "하트비트 전체 조회 성공"
                     , content = @Content(mediaType = "application/json"
-                    , array = @ArraySchema(schema = @Schema(implementation = HeartbeatResponseDTO.class)))),
+                    , array = @ArraySchema(schema = @Schema(implementation = VenueResponseDTO.class)))),
             @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))

@@ -5,6 +5,11 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
+import com.ceos.beatbuddy.domain.heartbeat.repository.HeartbeatRepository;
+import com.ceos.beatbuddy.domain.member.entity.Member;
+import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
+import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
+import com.ceos.beatbuddy.domain.venue.dto.VenueInfoResponseDTO;
 import com.ceos.beatbuddy.domain.venue.dto.VenueRequestDTO;
 import com.ceos.beatbuddy.domain.venue.entity.Venue;
 import com.ceos.beatbuddy.domain.venue.exception.VenueErrorCode;
@@ -32,15 +37,26 @@ public class VenueInfoService {
     private String bucketName;
 
     private final VenueRepository venueRepository;
+    private final HeartbeatRepository heartbeatRepository;
+    private final MemberRepository memberRepository;
+
     private final AmazonS3 amazonS3;
 
     public List<Venue> getVenueInfoList() {
         return venueRepository.findAll();
     }
 
-    public Venue getVenueInfo(Long venueId) {
-        return venueRepository.findById(venueId)
+    public VenueInfoResponseDTO getVenueInfo(Long venueId, Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
+                () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        Venue venue = venueRepository.findById(venueId)
                 .orElseThrow(() -> new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
+        boolean isHeartbeat = heartbeatRepository.findByMemberVenue(member, venue).isPresent();
+
+        return VenueInfoResponseDTO.builder()
+                .venue(venue)
+                .isHeartbeat(isHeartbeat)
+                .build();
     }
 
     @Transactional

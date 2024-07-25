@@ -110,6 +110,7 @@ public class HeartbeatService {
                             .koreanName(heartBeat.getVenue().getKoreanName())
                             .englishName(heartBeat.getVenue().getEnglishName())
                             .venueId(heartBeat.getVenue().getVenueId())
+                            .logoUrl(venue.getLogoUrl())
                             .tagList(tagList)
                             .heartbeatNum(heartBeat.getVenue().getHeartbeatNum())
                             .build();
@@ -153,6 +154,7 @@ public class HeartbeatService {
                             .koreanName(venue.getKoreanName())
                             .englishName(venue.getEnglishName())
                             .heartbeatNum(venue.getHeartbeatNum())
+                            .logoUrl(venue.getLogoUrl())
                             .isHeartbeat(heartbeatRepository.findByMemberVenue(member, venue).isPresent())
                             .build();
                 })
