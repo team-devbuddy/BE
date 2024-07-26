@@ -1,13 +1,11 @@
 package com.ceos.beatbuddy.global.config;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.*;
 
 import com.ceos.beatbuddy.global.config.jwt.JwtFilter;
 import com.ceos.beatbuddy.global.config.jwt.TokenProvider;
 import com.ceos.beatbuddy.global.config.oauth.CustomClientRegistrationRepo;
 import com.ceos.beatbuddy.global.config.oauth.OAuth2SuccessHandler;
-import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,9 +29,6 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final TokenProvider tokenProvider;
     private final CustomClientRegistrationRepo customClientRegistrationRepo;
-
-    private static final String BaseUri = "https://beatbuddy.world/**";
-    private static final String FE_LOCAL_URL = "http://localhost:3000";
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -72,12 +67,11 @@ public class SecurityConfig {
 
     private CorsConfiguration getDefaultCorsConfiguration() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(asList(FE_LOCAL_URL,BaseUri));
-        config.setAllowedHeaders(singletonList("*")); //모든 종류의 HTTP 헤더를 허용하도록 설정
-        config.setAllowedMethods(asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowCredentials(true); //인증 정보와 관련된 요청을 허용
+        config.addAllowedOriginPattern("*");
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
         config.setMaxAge(3600L);
-        config.setExposedHeaders(asList("Set-Cookie", "Authorization"));
 
         return config;
     }
