@@ -11,6 +11,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByMemberId(Long memberId);
     Boolean existsDistinctByNickname(String nickname);
     Optional<Member> findByNickname(String nickname);
-    @Query("SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END FROM Member m WHERE m.memberId = :memberId AND SIZE(m.regions) > 0")
     Boolean existsRegionsByMember(Member member);
 }
