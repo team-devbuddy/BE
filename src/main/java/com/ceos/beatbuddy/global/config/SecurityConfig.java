@@ -72,16 +72,12 @@ public class SecurityConfig {
 
     private CorsConfiguration getDefaultCorsConfiguration() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(asList(
-                FE_LOCAL_URL,
-                BaseUri));
+        config.setAllowedOrigins(asList(FE_LOCAL_URL,BaseUri));
         config.setAllowedHeaders(singletonList("*")); //모든 종류의 HTTP 헤더를 허용하도록 설정
-        config.setAllowedMethods(singletonList("*")); //모든 종류의 HTTP 메소드를 허용하도록 설정
+        config.setAllowedMethods(asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowCredentials(true); //인증 정보와 관련된 요청을 허용
         config.setMaxAge(3600L);
-
-        config.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-        config.setExposedHeaders(Collections.singletonList("Authorization"));
+        config.setExposedHeaders(asList("Set-Cookie", "Authorization"));
 
         return config;
     }
