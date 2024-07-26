@@ -251,7 +251,7 @@ public class MemberService {
         } else {
             return responseDto;
         }
-        if (memberRepository.existsRegionsByMember(member)) {
+        if (memberRepository.existsRegionsByMemberId(member.getMemberId())) {
             responseDto.setRegion();
         }
         return responseDto;
