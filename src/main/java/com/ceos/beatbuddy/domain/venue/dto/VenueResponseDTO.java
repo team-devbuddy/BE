@@ -16,5 +16,6 @@ public class VenueResponseDTO {
     private List<String> tagList;
     private Long heartbeatNum;
     private String logoUrl;
+    private List<String> backgroundUrl;
     private Boolean isHeartbeat;
 }
