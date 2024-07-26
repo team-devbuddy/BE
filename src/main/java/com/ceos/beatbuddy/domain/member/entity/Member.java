@@ -25,8 +25,6 @@ public class Member extends BaseTimeEntity {
 
     private Gender gender;
 
-    @ElementCollection
-    @CollectionTable(name = "member_regions", joinColumns = @JoinColumn(name = "member_id"))
     @Convert(converter = RegionConverter.class)
     private List<Region> regions;
 
