@@ -19,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @RequiredArgsConstructor
@@ -60,7 +62,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         ResponseCookie cookie = ResponseCookie.from("refresh", refresh)
                 .path("/")
-                .sameSite("None")
+                .httpOnly(true)
                 .maxAge(60 * 60 * 24 * 14)
                 .build();
 
@@ -74,11 +76,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         HttpSession session = request.getSession();
         session.setMaxInactiveInterval(600);
 
-        log.info("access: " + access);
-        String redirectUrl = "http://localhost:3000/login/oauth2/callback/kakao?access=" + access;
+        UriComponents uriComponents = UriComponentsBuilder.newInstance()
+                .scheme("http")
+                .host("localhost")
+                .port(3000)
+                .path("/login/oauth2/callback/kakao")
+                .queryParam("access", access)
+                .build(true);
 
         if (!response.isCommitted()) {
-            response.sendRedirect(redirectUrl);
+            response.sendRedirect(uriComponents.toString());
         }
     }
 
