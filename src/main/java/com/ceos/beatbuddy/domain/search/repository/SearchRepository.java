@@ -156,6 +156,7 @@ public class SearchRepository {
                     String region = component.getRegion().getText();
                     Venue componentVenue = venueRepository.findById(venueId).orElseThrow(()->new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
                     String logoUrl = componentVenue.getLogoUrl();
+                    List<String> backgroundUrl = componentVenue.getBackgroundUrl();
                     boolean isHeartbeat = heartbeatRepository.findByMemberVenue(member,componentVenue).isPresent();
 
                     List<String> trueGenreElements = Vector.getTrueGenreElements(Vector.fromString(genreVector));
@@ -173,7 +174,8 @@ public class SearchRepository {
                             tagList,
                             heartbeatNum,
                             isHeartbeat,
-                            logoUrl);
+                            logoUrl,
+                            backgroundUrl);
                 })
                 .collect(Collectors.toList());
 

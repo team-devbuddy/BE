@@ -9,11 +9,10 @@ on:
 permissions:
   contents: read
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
-  
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,6 +22,19 @@ jobs:
         with:
           java-version: "17"
           distribution: "corretto"
+
+      - name: Set Up Locales
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y locales
+          sudo locale-gen ko_KR.UTF-8
+          sudo update-locale LANG=ko_KR.UTF-8
+          export LANG=ko_KR.UTF-8
+          export LANGUAGE=ko_KR:en
+          export LC_ALL=ko_KR.UTF-8
+
+      - name: Verify Locale
+        run: locale
 
       - name: Build with Gradle
         run: |
@@ -37,8 +49,8 @@ jobs:
 
       - name: Docker Image Build and Push
         run: |
-            docker build -t ${{ secrets.DOCKER_REPO }}/beatbuddy .
-            docker push ${{ secrets.DOCKER_REPO }}/beatbuddy
+          docker build -t ${{ secrets.DOCKER_REPO }}/beatbuddy .
+          docker push ${{ secrets.DOCKER_REPO }}/beatbuddy
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master
@@ -48,7 +60,6 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd /home/ubuntu/
-            
             sudo touch .env
             echo "${{ secrets.ENV_VARS }}" | sudo tee .env > /dev/null
             
@@ -56,7 +67,7 @@ jobs:
             echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee docker-compose.yml > /dev/null
             
             sudo chmod 666 /var/run/docker.sock 
-            sudo docker rm -f $(docker ps -qa) | true
+            sudo docker rm -f $(docker ps -qa) || true
             sudo docker pull ${{ secrets.DOCKER_REPO }}/beatbuddy
             docker-compose -f docker-compose.yml --env-file ./.env up -d
             docker image prune -f

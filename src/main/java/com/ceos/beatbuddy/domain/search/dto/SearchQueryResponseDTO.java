@@ -20,9 +20,10 @@ public class SearchQueryResponseDTO {
     private Long heartbeatNum;
     private Boolean isHeartbeat;
     private String logoUrl;
+    private List<String> backgroundUrl;
 
     @QueryProjection
-    public SearchQueryResponseDTO(LocalDateTime currentDate, Long venueId, String englishName, String koreanName, List<String> tagList, Long heartbeatNum, boolean isHeartbeat, String logoUrl) {
+    public SearchQueryResponseDTO(LocalDateTime currentDate, Long venueId, String englishName, String koreanName, List<String> tagList, Long heartbeatNum, boolean isHeartbeat, String logoUrl, List<String> backgroundUrl) {
         this.currentDate = currentDate;
         this.venueId = venueId;
         this.englishName = englishName;
@@ -31,6 +32,7 @@ public class SearchQueryResponseDTO {
         this.heartbeatNum = heartbeatNum;
         this.isHeartbeat = isHeartbeat;
         this.logoUrl = logoUrl;
+        this.backgroundUrl = backgroundUrl;
     }
 
 

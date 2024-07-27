@@ -1,12 +1,9 @@
 package com.ceos.beatbuddy.domain.heartbeat.application;
 
-import com.ceos.beatbuddy.domain.archive.dto.ArchiveResponseDTO;
 import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
 import com.ceos.beatbuddy.domain.heartbeat.entity.Heartbeat;
 import com.ceos.beatbuddy.domain.heartbeat.exception.HeartbeatErrorCode;
 import com.ceos.beatbuddy.domain.heartbeat.repository.HeartbeatRepository;
-import com.ceos.beatbuddy.domain.member.constant.Region;
-import com.ceos.beatbuddy.domain.member.dto.MemberVectorResponseDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
@@ -28,10 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.ceos.beatbuddy.domain.archive.entity.QArchive.archive;
 
 @Service
 @Transactional(readOnly = true)
@@ -111,6 +106,7 @@ public class HeartbeatService {
                             .englishName(heartBeat.getVenue().getEnglishName())
                             .venueId(heartBeat.getVenue().getVenueId())
                             .logoUrl(venue.getLogoUrl())
+                            .backgroundUrl(venue.getBackgroundUrl())
                             .tagList(tagList)
                             .heartbeatNum(heartBeat.getVenue().getHeartbeatNum())
                             .build();
@@ -155,6 +151,7 @@ public class HeartbeatService {
                             .englishName(venue.getEnglishName())
                             .heartbeatNum(venue.getHeartbeatNum())
                             .logoUrl(venue.getLogoUrl())
+                            .backgroundUrl(venue.getBackgroundUrl())
                             .isHeartbeat(heartbeatRepository.findByMemberVenue(member, venue).isPresent())
                             .build();
                 })

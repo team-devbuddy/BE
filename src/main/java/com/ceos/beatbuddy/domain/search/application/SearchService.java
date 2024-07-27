@@ -30,8 +30,6 @@ public class SearchService {
 
     private final SearchRepository searchRepository;
     private final RedisTemplate<String, String> redisTemplate;
-    private final VenueRepository venueRepository;
-    private final VenueGenreRepository venueGenreRepository;
 
     @Transactional
     public List<SearchQueryResponseDTO> keywordSearch(SearchDTO.RequestDTO searchRequestDTO, Long memberId) {
