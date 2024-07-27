@@ -4,7 +4,6 @@ import com.ceos.beatbuddy.global.config.jwt.JwtFilter;
 import com.ceos.beatbuddy.global.config.jwt.TokenProvider;
 import com.ceos.beatbuddy.global.config.oauth.CustomClientRegistrationRepo;
 import com.ceos.beatbuddy.global.config.oauth.OAuth2SuccessHandler;
-import com.ceos.beatbuddy.global.config.oauth.Oauth2LogoutHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +27,6 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final TokenProvider tokenProvider;
     private final CustomClientRegistrationRepo customClientRegistrationRepo;
-    private final Oauth2LogoutHandler oauth2LogoutHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
