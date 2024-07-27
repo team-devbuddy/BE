@@ -38,7 +38,7 @@ public class ReissueController {
                     + "Access 토큰과 Refresh 토큰을 각각 본문과 헤더에 담아 반환합니다.\n"
                     + "Refresh 토큰이 만료됐거나 유효하지 않은 토큰일 경우 에러를 반환합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "토큰을 재발급하는데 성공했습니다."
+            @ApiResponse(responseCode = "200", description = "토큰을 재발급하는데 성공했습니다. 본문은 access 토큰의 값입니다."
                     , headers = {
                     @Header(name = "Set-Cookie", description = "새로운 Refresh 토큰입니다")
             }, content = @Content(mediaType = "application/json",
