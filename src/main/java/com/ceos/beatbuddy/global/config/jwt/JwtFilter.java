@@ -1,6 +1,6 @@
 package com.ceos.beatbuddy.global.config.jwt;
 
-import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
+import com.ceos.beatbuddy.global.config.oauth.dto.Oauth2MemberDto;
 import com.ceos.beatbuddy.global.config.oauth.CustomOAuth2User;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
