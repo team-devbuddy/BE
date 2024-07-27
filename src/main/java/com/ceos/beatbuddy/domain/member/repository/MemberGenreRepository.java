@@ -18,4 +18,6 @@ public interface MemberGenreRepository extends JpaRepository<MemberGenre, Long> 
     List<MemberGenre> findAllByMember(@Param("member") Member member);
 
     boolean existsByMember(Member member);
+
+    void deleteByMember(Member member);
 }
