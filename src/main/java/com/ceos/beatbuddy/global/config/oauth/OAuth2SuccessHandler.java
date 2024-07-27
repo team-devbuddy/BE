@@ -76,16 +76,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         HttpSession session = request.getSession();
         session.setMaxInactiveInterval(600);
 
-        UriComponents uriComponents = UriComponentsBuilder.newInstance()
-                .scheme("http")
-                .host("localhost")
-                .port(3000)
-                .path("/login/oauth2/callback/kakao")
-                .queryParam("access", access)
-                .build(true);
-
         if (!response.isCommitted()) {
-            response.sendRedirect(uriComponents.toString());
+            response.sendRedirect("http://localhost:3000/login/oauth2/callback/kakao?access=" + access);
         }
     }
 
