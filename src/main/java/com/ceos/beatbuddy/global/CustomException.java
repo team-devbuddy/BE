@@ -10,6 +10,7 @@ import com.ceos.beatbuddy.domain.vector.exception.VectorErrorCode;
 import com.ceos.beatbuddy.domain.venue.exception.VenueErrorCode;
 import com.ceos.beatbuddy.domain.venue.exception.VenueGenreErrorCode;
 import com.ceos.beatbuddy.domain.venue.exception.VenueMoodErrorCode;
+import com.ceos.beatbuddy.global.config.oauth.exception.OauthErrorCode;
 
 public class CustomException extends ResponseException {
 
@@ -51,5 +52,9 @@ public class CustomException extends ResponseException {
 
     public CustomException(SearchErrorCode searchErrorCode){
         super(searchErrorCode.getMessage(), searchErrorCode.getHttpStatus());
+    }
+
+    public CustomException(OauthErrorCode oauthErrorCode) {
+        super(oauthErrorCode.getMessage(), oauthErrorCode.getHttpStatus());
     }
 }
