@@ -10,10 +10,10 @@ import org.springframework.data.redis.core.index.Indexed;
 public class RefreshToken {
     @Id
     private String refreshToken;
-    private String accessToken;
+    private Long userId;
 
-    public RefreshToken(String refreshToken, String accessToken) {
+    public RefreshToken(String refreshToken, Long userId) {
         this.refreshToken = refreshToken;
-        this.accessToken = accessToken;
+        this.userId = userId;
     }
 }

@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReissueService {
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public void saveRefreshToken(String newAccess, String newRefresh) {
+    public void saveRefreshToken(Long userId, String newRefresh) {
 
-        RefreshToken refreshToken = new RefreshToken(newRefresh, newAccess);
+        RefreshToken refreshToken = new RefreshToken(newRefresh, userId);
 
         refreshTokenRepository.save(refreshToken);
     }

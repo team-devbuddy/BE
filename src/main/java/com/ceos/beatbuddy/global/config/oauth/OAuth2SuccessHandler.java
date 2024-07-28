@@ -50,7 +50,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String access = tokenProvider.createToken("access", memberId, username, role, 1000 * 60 * 60 * 2L);
         String refresh = tokenProvider.createToken("refresh", memberId, username, role, 1000 * 3600 * 24 * 14L);
 
-        saveRefreshToken(access, refresh);
+        saveRefreshToken(memberId, refresh);
 
         LoginResponseDto loginResponseDto = LoginResponseDto.builder()
                 .memberId(oAuth2User.getMemberId())
@@ -83,9 +83,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
     }
 
-    private void saveRefreshToken(String access, String refresh) {
+    private void saveRefreshToken(Long userId, String refresh) {
 
-        RefreshToken refreshToken = new RefreshToken(refresh, access);
+        RefreshToken refreshToken = new RefreshToken(refresh, userId);
 
         RefreshToken saved = refreshTokenRepository.save(refreshToken);
 

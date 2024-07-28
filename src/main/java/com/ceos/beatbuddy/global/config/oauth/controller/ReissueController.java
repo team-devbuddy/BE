@@ -1,10 +1,13 @@
 package com.ceos.beatbuddy.global.config.oauth.controller;
 
 import com.ceos.beatbuddy.domain.member.application.ReissueService;
+import com.ceos.beatbuddy.global.CustomException;
 import com.ceos.beatbuddy.global.ResponseTemplate;
+import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import com.ceos.beatbuddy.global.config.jwt.TokenProvider;
 import com.ceos.beatbuddy.global.config.jwt.redis.RefreshToken;
 import com.ceos.beatbuddy.global.config.jwt.redis.RefreshTokenRepository;
+import com.ceos.beatbuddy.global.config.oauth.exception.OauthErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,13 +56,7 @@ public class ReissueController {
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
     public ResponseEntity<String> reissue(HttpServletRequest request, HttpServletResponse response) {
-        String accessToken = request.getHeader("access");
-
-        // access token이 없을 경우
-        if (accessToken == null || !accessToken.startsWith("Bearer ")) {
-            return new ResponseEntity<>("access token null", HttpStatus.BAD_REQUEST);
-        }
-
+        Long userId = SecurityUtils.getCurrentMemberId();
         String refresh = null;
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
@@ -85,21 +82,21 @@ public class ReissueController {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-        RefreshToken savedRefresh = refreshTokenRepository.findByAccessToken(accessToken.split(" ")[1]);
+        RefreshToken savedRefresh = refreshTokenRepository.findById(refresh)
+                .orElseThrow(() -> new CustomException(OauthErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
-        if (!refresh.equals(savedRefresh.getRefreshToken())) {
-            return new ResponseEntity<>("refresh token not found", HttpStatus.NOT_FOUND);
+        if(!savedRefresh.getUserId().equals(userId)){
+            return new ResponseEntity<>("Not Token Owner", HttpStatus.BAD_REQUEST);
         }
 
         String username = tokenProvider.getUsername(refresh);
         String role = tokenProvider.getRole(refresh);
-        Long memberId = tokenProvider.getMemberId(refresh);
 
-        String newAccess = tokenProvider.createToken("access", memberId, username, role, 1000 * 60 * 60 * 2L);
-        String newRefresh = tokenProvider.createToken("refresh", memberId, username, role, 1000 * 3600 * 24 * 14L);
+        String newAccess = tokenProvider.createToken("access", userId, username, role, 1000 * 60 * 60 * 2L);
+        String newRefresh = tokenProvider.createToken("refresh", userId, username, role, 1000 * 3600 * 24 * 14L);
 
         reissueService.deleteRefresh(refresh);
-        reissueService.saveRefreshToken(newAccess, newRefresh);
+        reissueService.saveRefreshToken(userId, newRefresh);
 
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie cookie = ResponseCookie.from("refresh", newRefresh)
