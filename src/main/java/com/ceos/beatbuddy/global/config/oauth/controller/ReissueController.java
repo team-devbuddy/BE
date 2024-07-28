@@ -108,7 +108,7 @@ public class ReissueController {
                 .build();
         headers.add("Set-Cookie", cookie.toString());
 
-        return new ResponseEntity<>("Bearer " + newAccess, headers, HttpStatus.OK);
+        return new ResponseEntity<>(newAccess, headers, HttpStatus.OK);
     }
 
 }
