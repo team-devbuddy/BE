@@ -17,4 +17,6 @@ public interface MemberMoodRepository extends JpaRepository<MemberMood, Long> {
     List<MemberMood> findAllByMember(@Param("member") Member member);
 
     boolean existsByMember(Member member);
+
+    void deleteByMember(Member member);
 }

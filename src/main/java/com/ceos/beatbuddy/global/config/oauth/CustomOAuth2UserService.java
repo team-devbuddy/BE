@@ -1,8 +1,7 @@
 package com.ceos.beatbuddy.global.config.oauth;
 
 import com.ceos.beatbuddy.domain.member.application.MemberService;
-import com.ceos.beatbuddy.domain.member.dto.MemberDto;
-import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
+import com.ceos.beatbuddy.global.config.oauth.dto.Oauth2MemberDto;
 import com.ceos.beatbuddy.global.config.oauth.dto.KakaoResponse;
 import com.ceos.beatbuddy.global.config.oauth.dto.OAuth2Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
