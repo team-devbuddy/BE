@@ -20,6 +20,6 @@ public class ReissueService {
     }
 
     public void deleteRefreshToken(String refresh) {
-        refreshTokenRepository.deleteByRefreshToken(refresh);
+        refreshTokenRepository.deleteById(refresh);
     }
 }
