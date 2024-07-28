@@ -104,6 +104,8 @@ public class ReissueController {
         HttpHeaders headers = new HttpHeaders();
         ResponseCookie cookie = ResponseCookie.from("refresh", newRefresh)
                 .path("/")
+                .sameSite("None")
+                .secure(true)
                 .maxAge(60 * 60 * 24 * 14)
                 .build();
         headers.add("Set-Cookie", cookie.toString());
