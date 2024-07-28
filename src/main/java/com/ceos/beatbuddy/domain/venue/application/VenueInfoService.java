@@ -167,12 +167,12 @@ public class VenueInfoService {
             throw new CustomException(VenueErrorCode.INVALID_VENUE_IMAGE);
         }
 
-        String extension = fileName.substring(lastDotIndex + 1).toLowerCase();
-        List<String> allowedExtensions = List.of("jpg", "jpeg", "png", "heic", "mp4", "mov");
-
-        if (!allowedExtensions.contains(extension)) {
-            throw new CustomException(VenueErrorCode.INVALID_VENUE_IMAGE);
-        }
+//        String extension = fileName.substring(lastDotIndex + 1).toLowerCase();
+//        List<String> allowedExtensions = List.of("jpg", "jpeg", "png", "heic", "mp4", "mov");
+//
+//        if (!allowedExtensions.contains(extension)) {
+//            throw new CustomException(VenueErrorCode.INVALID_VENUE_IMAGE);
+//        }
     }
 
 }

@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReissueController {
 
     private final TokenProvider tokenProvider;
-    private final MemberService memberService;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @PostMapping("/reissue")
