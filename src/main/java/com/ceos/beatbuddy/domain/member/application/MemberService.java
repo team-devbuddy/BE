@@ -1,10 +1,12 @@
 package com.ceos.beatbuddy.domain.member.application;
 
+import com.ceos.beatbuddy.domain.archive.repository.ArchiveRepository;
+import com.ceos.beatbuddy.domain.heartbeat.repository.HeartbeatRepository;
 import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.member.dto.MemberConsentRequestDTO;
 import com.ceos.beatbuddy.domain.member.dto.MemberResponseDTO;
 import com.ceos.beatbuddy.domain.member.dto.NicknameDTO;
-import com.ceos.beatbuddy.domain.member.dto.Oauth2MemberDto;
+import com.ceos.beatbuddy.global.config.oauth.dto.Oauth2MemberDto;
 import com.ceos.beatbuddy.domain.member.dto.OnboardingResponseDto;
 import com.ceos.beatbuddy.domain.member.dto.RegionRequestDTO;
 import com.ceos.beatbuddy.domain.member.entity.Member;
@@ -44,6 +46,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberMoodRepository memberMoodRepository;
     private final MemberGenreRepository memberGenreRepository;
+    private final HeartbeatRepository heartbeatRepository;
+    private final ArchiveRepository archiveRepository;
     private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9가-힣._]*$");
 
     @Value("${iamport.api.key}")
@@ -70,18 +74,6 @@ public class MemberService {
         }
     }
 
-    /**
-     * TODO: 회원가입 처리
-     * 1. 서비스 약관 동의
-     * 2. 온보딩 취향 검사
-     * 3. 유저 생성
-     * 4. 유저 정보 저장
-     * 5. 유저 식별자 반환
-     *
-     * @param loginId
-     * @param name
-     * @return UserId
-     */
     private Member join(String loginId, String name) {
         return memberRepository.save(
                 Member.builder()
@@ -91,7 +83,6 @@ public class MemberService {
                         .nickname(name)
                         .build());
     }
-
 
     public Boolean isDuplicate(Long memberId, NicknameDTO nicknameDTO) {
         Member member = memberRepository.findByMemberId(memberId)
@@ -196,7 +187,7 @@ public class MemberService {
                 .toUriString();
 
         HttpHeaders certificationHeaders = new HttpHeaders();
-        certificationHeaders.set("Authorization", "Bearer "+token);
+        certificationHeaders.set("Authorization", "Bearer " + token);
 
         HttpEntity<String> certificationEntity = new HttpEntity<>(certificationHeaders);
         ResponseEntity<Map> exchange = restTemplate.exchange(certificationUrl, HttpMethod.GET, certificationEntity,
@@ -298,17 +289,28 @@ public class MemberService {
         member.setAdultUser();
     }
 
-    public List<String> getPreferences(Long memberId){
+    public List<String> getPreferences(Long memberId) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(
                 () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
 
-        MemberGenre memberGenre = memberGenreRepository.findLatestGenreByMember(member).orElseThrow(()->new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
-        MemberMood memberMood = memberMoodRepository.findLatestMoodByMember(member).orElseThrow(()->new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
+        MemberGenre memberGenre = memberGenreRepository.findLatestGenreByMember(member)
+                .orElseThrow(() -> new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
+        MemberMood memberMood = memberMoodRepository.findLatestMoodByMember(member)
+                .orElseThrow(() -> new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
         List<String> trueGenreElements = Vector.getTrueGenreElements(memberGenre.getGenreVector());
         List<String> trueMoodElements = Vector.getTrueMoodElements(memberMood.getMoodVector());
         List<String> preferenceList = new ArrayList<>(trueGenreElements);
         preferenceList.addAll(trueMoodElements);
 
         return preferenceList;
+    }
+
+    public void deleteMember(Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
+                () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        memberMoodRepository.deleteByMember(member);
+        memberGenreRepository.deleteByMember(member);
+        heartbeatRepository.deleteByMember(member);
+        archiveRepository.deleteByMember(member);
     }
 }

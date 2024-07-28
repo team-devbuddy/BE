@@ -1,4 +1,4 @@
-package com.ceos.beatbuddy.domain.member.dto;
+package com.ceos.beatbuddy.global.config.oauth.dto;
 
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,6 @@
 package com.ceos.beatbuddy.domain.archive.repository;
 
 import com.ceos.beatbuddy.domain.archive.entity.Archive;
-import com.ceos.beatbuddy.domain.heartbeat.entity.Heartbeat;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.entity.MemberGenre;
 import com.ceos.beatbuddy.domain.member.entity.MemberMood;
@@ -17,4 +16,6 @@ public interface ArchiveRepository extends JpaRepository<Archive, Long> {
     List<Archive> findByMember(@Param("member") Member member);
 
     boolean existsByMemberAndMemberMoodAndMemberGenre(Member member, MemberMood memberMood, MemberGenre memberGenre);
+
+    void deleteByMember(Member member);
 }

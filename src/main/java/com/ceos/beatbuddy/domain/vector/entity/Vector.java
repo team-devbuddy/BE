@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class Vector {
     private static final List<String> ALL_GENRES = Arrays.asList(
-            "EDM", "HIPHOP", "HOUSE", "SOUL&FUNK", "TECHNO", "K-POP", "POP", "LATIN", "R&B", "ROCK"
+            "HIPHOP", "R&B", "EDM", "HOUSE", "TECHNO", "SOUL&FUNK", "ROCK", "LATIN", "K-POP", "POP"
     );
     private static final List<String> ALL_MOODS = Arrays.asList(
-            "PUB", "CLUB", "DEEP", "CHILL", "LIGHT", "HUNTING", "EXOTIC", "ROOFTOP"
+            "CLUB", "PUB", "ROOFTOP", "DEEP", "COMMERCIAL", "CHILL", "EXOTIC", "HUNTING"
     );
     private final List<Double> elements;
 
@@ -148,7 +148,7 @@ public class Vector {
         }
     }
 
-    public static int getMoodIndex (String mood) {
+    public static int getMoodIndex(String mood) {
         int idx = ALL_MOODS.indexOf(mood);
         if (idx == -1) {
             throw new CustomException(VectorErrorCode.MOOD_INDEX_NOT_EXIST);

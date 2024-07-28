@@ -4,6 +4,7 @@ import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.venue.dto.VenueRequestDTO;
 import com.ceos.beatbuddy.global.BaseTimeEntity;
 import jakarta.persistence.*;
+import java.util.Map;
 import lombok.*;
 
 import java.util.List;
@@ -23,10 +24,14 @@ public class Venue extends BaseTimeEntity {
 
     @Enumerated
     private Region region;
+    private boolean isSmokingAllowed;
     private String description;
     private String address;
-    private String insta;
-    private String operationHours;
+    private String instaId;
+    private String instaUrl;
+
+    @ElementCollection
+    private Map<String,String> operationHours;
 
     private String logoUrl;
     @ElementCollection
@@ -50,15 +55,17 @@ public class Venue extends BaseTimeEntity {
 
     public static Venue of(VenueRequestDTO request, String  logoUrl, List<String> backgroundUrl){
         return Venue.builder()
+                .isSmokingAllowed(request.isSmokingAllowed())
                 .englishName(request.getEnglishName())
                 .koreanName(request.getKoreanName())
                 .region(request.getRegion())
                 .address(request.getAddress())
                 .description(request.getDescription())
                 .logoUrl(logoUrl)
+                .instaId(request.getInstaId())
+                .instaUrl(request.getInstaUrl())
                 .backgroundUrl(backgroundUrl)
-                .operationHours(request.getOperationHours())
-                .insta(request.getInsta())
+                .operationHours(request.getWeeklyOperationHours())
                 .build();
     }
 }
