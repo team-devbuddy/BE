@@ -86,7 +86,7 @@ public class Vector {
         for (int i = 0; i < vector.elements.size(); i++) {
             if (vector.elements.get(i) == 1.0) {
                 if (i < ALL_GENRES.size()) {
-                    trueGenres.add(ALL_MOODS.get(i));
+                    trueGenres.add(ALL_GENRES.get(i));
                 } else {
                     break;
                 }
@@ -157,6 +157,12 @@ public class Vector {
         }
     }
 
+    public static Vector mergeVectors(Vector genreVector, Vector moodVector) {
+        List<Double> mergedElements = new ArrayList<>();
+        mergedElements.addAll(genreVector.getElements());
+        mergedElements.addAll(moodVector.getElements());
+        return new Vector(mergedElements);
+    }
 
 }
 

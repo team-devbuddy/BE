@@ -198,7 +198,7 @@ public class MemberController {
     }
 
     @GetMapping("/preferences")
-    @Operation(summary = "사용자 취향 리스트 반환", description = "사용자가 가장 최근에 설정한 장르, 무드 취향 리스트를 반환")
+    @Operation(summary = "사용자 관심 리스트 반환", description = "사용자가 가장 최근에 설정한 관심지역, 장르, 무드 취향 리스트를 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자 취향 리스트 조회에 성공했습니다."
                     , content = @Content(mediaType = "application/json"

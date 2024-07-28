@@ -299,8 +299,17 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
         List<String> trueGenreElements = Vector.getTrueGenreElements(memberGenre.getGenreVector());
         List<String> trueMoodElements = Vector.getTrueMoodElements(memberMood.getMoodVector());
+
+        List<String> memberRegion =  member.getRegions().stream()
+                .map(region -> region.getText())
+                .collect(Collectors.toList());
+
+        if(memberRegion.isEmpty()){
+            throw new CustomException(MemberErrorCode.REGION_FIELD_EMPTY);
+        }
         List<String> preferenceList = new ArrayList<>(trueGenreElements);
         preferenceList.addAll(trueMoodElements);
+        preferenceList.addAll(memberRegion);
 
         return preferenceList;
     }

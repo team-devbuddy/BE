@@ -9,7 +9,7 @@ public enum Region {
     TYPE1(0, "HONGDAE", "홍대"),
     TYPE2(1, "ITAEWON", "이태원"),
     TYPE3(2, "APGUJEONG", "압구정"),
-    TYPE4(3, "GANGNAM&SINSA", "강남&신사"),
+    TYPE4(3, "GANGNAM/SINSA", "강남/신사"),
     TYPE5(4, "OTHERS", "기타");
 
     private Integer idx;
@@ -41,7 +41,7 @@ public enum Region {
         return text;
     }
 
-    private String getKorText() {
+    public String getKorText() {
         return korText;
     }
 
