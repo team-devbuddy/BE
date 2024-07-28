@@ -95,7 +95,7 @@ public class ReissueController {
         String newAccess = tokenProvider.createToken("access", userId, username, role, 1000 * 60 * 60 * 2L);
         String newRefresh = tokenProvider.createToken("refresh", userId, username, role, 1000 * 3600 * 24 * 14L);
 
-        reissueService.deleteRefresh(refresh);
+        reissueService.deleteRefreshToken(refresh);
         reissueService.saveRefreshToken(userId, newRefresh);
 
         HttpHeaders headers = new HttpHeaders();
