@@ -9,10 +9,17 @@ import com.ceos.beatbuddy.domain.heartbeat.repository.HeartbeatRepository;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
+import com.ceos.beatbuddy.domain.vector.entity.Vector;
 import com.ceos.beatbuddy.domain.venue.dto.VenueInfoResponseDTO;
 import com.ceos.beatbuddy.domain.venue.dto.VenueRequestDTO;
 import com.ceos.beatbuddy.domain.venue.entity.Venue;
+import com.ceos.beatbuddy.domain.venue.entity.VenueGenre;
+import com.ceos.beatbuddy.domain.venue.entity.VenueMood;
 import com.ceos.beatbuddy.domain.venue.exception.VenueErrorCode;
+import com.ceos.beatbuddy.domain.venue.exception.VenueGenreErrorCode;
+import com.ceos.beatbuddy.domain.venue.exception.VenueMoodErrorCode;
+import com.ceos.beatbuddy.domain.venue.repository.VenueGenreRepository;
+import com.ceos.beatbuddy.domain.venue.repository.VenueMoodRepository;
 import com.ceos.beatbuddy.domain.venue.repository.VenueRepository;
 import com.ceos.beatbuddy.global.CustomException;
 import java.io.ByteArrayInputStream;
@@ -39,6 +46,8 @@ public class VenueInfoService {
     private final VenueRepository venueRepository;
     private final HeartbeatRepository heartbeatRepository;
     private final MemberRepository memberRepository;
+    private final VenueGenreRepository venueGenreRepository;
+    private final VenueMoodRepository venueMoodRepository;
 
     private final AmazonS3 amazonS3;
 
@@ -53,9 +62,21 @@ public class VenueInfoService {
                 .orElseThrow(() -> new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
         boolean isHeartbeat = heartbeatRepository.findByMemberVenue(member, venue).isPresent();
 
+        VenueGenre venueGenre = venueGenreRepository.findByVenue(venue).orElseThrow(()->new CustomException(VenueGenreErrorCode.VENUE_GENRE_NOT_EXIST));
+        List<String> trueGenreElements = Vector.getTrueGenreElements(venueGenre.getGenreVector());
+
+        VenueMood venueMood = venueMoodRepository.findByVenue(venue).orElseThrow(()->new CustomException(VenueMoodErrorCode.VENUE_MOOD_NOT_EXIST));
+        List<String> trueMoodElements = Vector.getTrueMoodElements(venueMood.getMoodVector());
+        String region = venue.getRegion().getText();
+
+        List<String> tagList = new ArrayList<>(trueGenreElements);
+        tagList.addAll(trueMoodElements);
+        tagList.add(region);
+
         return VenueInfoResponseDTO.builder()
                 .venue(venue)
                 .isHeartbeat(isHeartbeat)
+                .tagList(tagList)
                 .build();
     }
 
