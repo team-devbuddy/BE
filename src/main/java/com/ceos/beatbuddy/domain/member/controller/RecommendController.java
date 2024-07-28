@@ -3,6 +3,7 @@ package com.ceos.beatbuddy.domain.member.controller;
 
 import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
 import com.ceos.beatbuddy.domain.member.application.RecommendService;
+import com.ceos.beatbuddy.domain.search.dto.SearchQueryResponseDTO;
 import com.ceos.beatbuddy.domain.search.dto.SearchRankResponseDTO;
 import com.ceos.beatbuddy.domain.venue.dto.RecommendFilterDTO;
 import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
@@ -36,7 +37,7 @@ public class RecommendController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "추천 베뉴를 조회하는데 성공했습니다."
                     , content = @Content(mediaType = "application/json"
-                    , schema = @Schema(implementation = VenueResponseDTO.class))),
+                    , array = @ArraySchema(schema = @Schema(implementation = VenueResponseDTO.class)))),
             @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다 or 유저의 취향이 존재하지 않습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
@@ -53,7 +54,7 @@ public class RecommendController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "추천 베뉴 필터링을 조회하는데 성공했습니다."
                     , content = @Content(mediaType = "application/json"
-                    , schema = @Schema(implementation = VenueResponseDTO.class))),
+                    , array = @ArraySchema(schema = @Schema(implementation = VenueResponseDTO.class)))),
             @ApiResponse(responseCode = "404", description = "요청한 유저가 존재하지 않습니다 or 유저의 취향이 존재하지 않습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class))),

@@ -3,6 +3,7 @@ package com.ceos.beatbuddy.domain.search.controller;
 import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.search.application.SearchService;
 import com.ceos.beatbuddy.domain.search.dto.*;
+import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
 import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +35,7 @@ public class SearchController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "검색어로 베뉴 조회 성공"
                     , content = @Content(mediaType = "application/json"
-                    , schema = @Schema(implementation = SearchResultDTO.class))),
+                    , array = @ArraySchema(schema = @Schema(implementation = SearchQueryResponseDTO.class)))),
             @ApiResponse(responseCode = "400", description = "검색어가 입력되지 않아서 검색 실패"
                     , content = @Content(mediaType = "application/json"
                     , schema = @Schema(implementation = ResponseTemplate.class)))
