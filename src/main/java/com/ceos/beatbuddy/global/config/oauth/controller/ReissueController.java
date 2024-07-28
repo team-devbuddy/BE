@@ -105,6 +105,7 @@ public class ReissueController {
         ResponseCookie cookie = ResponseCookie.from("refresh", newRefresh)
                 .path("/")
                 .sameSite("None")
+                .httpOnly(true)
                 .secure(true)
                 .maxAge(60 * 60 * 24 * 14)
                 .build();
