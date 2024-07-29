@@ -75,5 +75,22 @@ public class SearchController {
         return ResponseEntity.ok(searchService.searchDropDown(memberId, searchDropDownDTO));
     }
 
+    @PostMapping("/sort")
+    @Operation(summary = "검색 결과 정렬 기능", description = "사용자가 검색바에 입력한 검색어로 검색한 결과에서 인기순 또는 관련도순으로 베뉴 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "검색결과에서 베뉴 정렬 조회 성공"
+                    , content = @Content(mediaType = "application/json"
+                    , array = @ArraySchema(schema = @Schema(implementation = SearchQueryResponseDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "검색어 또는 정렬기준이 입력되지 않아서 검색 실패 or 정렬기준으로 인기순 또는 관련도순이 아닌 것이 입력돼서 검색 실패"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ResponseTemplate.class))),
+            @ApiResponse(responseCode = "404", description = "유저가 존재하지 않습니다 or 멤버장르/무드가 존재하지 않습니다 등"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<List<SearchQueryResponseDTO>> sortSearchResult(@RequestBody SearchSortDTO searchSortDTO){
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(searchService.sortSearchResult(memberId, searchSortDTO));
+    }
 
 }

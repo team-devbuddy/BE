@@ -4,12 +4,15 @@ package com.ceos.beatbuddy.domain.search.application;
 import com.ceos.beatbuddy.domain.heartbeat.repository.HeartbeatRepository;
 import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.member.entity.Member;
+import com.ceos.beatbuddy.domain.member.entity.MemberGenre;
+import com.ceos.beatbuddy.domain.member.entity.MemberMood;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
+import com.ceos.beatbuddy.domain.member.exception.MemberGenreErrorCode;
+import com.ceos.beatbuddy.domain.member.exception.MemberMoodErrorCode;
+import com.ceos.beatbuddy.domain.member.repository.MemberGenreRepository;
+import com.ceos.beatbuddy.domain.member.repository.MemberMoodRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
-import com.ceos.beatbuddy.domain.search.dto.SearchDTO;
-import com.ceos.beatbuddy.domain.search.dto.SearchDropDownDTO;
-import com.ceos.beatbuddy.domain.search.dto.SearchQueryResponseDTO;
-import com.ceos.beatbuddy.domain.search.dto.SearchRankResponseDTO;
+import com.ceos.beatbuddy.domain.search.dto.*;
 import com.ceos.beatbuddy.domain.search.exception.SearchErrorCode;
 import com.ceos.beatbuddy.domain.search.repository.SearchRepository;
 import com.ceos.beatbuddy.domain.vector.entity.Vector;
@@ -33,10 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +51,8 @@ public class SearchService {
     private final VenueGenreRepository venueGenreRepository;
     private final VenueMoodRepository venueMoodRepository;
     private final HeartbeatRepository heartbeatRepository;
+    private final MemberMoodRepository memberMoodRepository;
+    private final MemberGenreRepository memberGenreRepository;
 
     @Transactional
     public List<SearchQueryResponseDTO> keywordSearch(SearchDTO.RequestDTO searchRequestDTO, Long memberId) {
@@ -181,6 +183,53 @@ public class SearchService {
         }
 
         return filteredList;
+    }
+
+    public List<SearchQueryResponseDTO> sortSearchResult(Long memberId, SearchSortDTO searchSortDTO) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        String criteria = searchSortDTO.getCriteria();
+        List<String> keyword = searchSortDTO.getKeyword();
+        SearchDTO.RequestDTO searchRequestDTO = SearchDTO.RequestDTO.builder().keyword(keyword).build();
+        List<SearchQueryResponseDTO> venueList = searchRepository.keywordFilter(searchRequestDTO, memberId);
+        List<SearchQueryResponseDTO> sortedVenueList = new ArrayList<>(venueList);
+
+        if(keyword.isEmpty()) throw new CustomException(SearchErrorCode.KEYWORD_IS_EMPTY);
+        if(criteria.isBlank()) throw new CustomException(SearchErrorCode.SORT_CRITERIA_EMPTY);
+        else if(criteria.equals("인기순")) {
+            sortedVenueList = venueList.stream()
+                    .sorted(Comparator.comparingLong(SearchQueryResponseDTO::getHeartbeatNum).reversed())
+                    .collect(Collectors.toList());
+        }
+        else if(criteria.equals("관련도순")) {
+
+            MemberMood latestMemberMood = memberMoodRepository.findLatestMoodByMember(member).orElseThrow(() -> new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
+            MemberGenre latestMemberGenre = memberGenreRepository.findLatestGenreByMember(member).orElseThrow(() -> new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
+            Vector memberVector = Vector.mergeVectors(latestMemberGenre.getGenreVector(), latestMemberMood.getMoodVector());
+
+            Map<Long, Vector> venueVectors = new HashMap<>();
+            for (SearchQueryResponseDTO venueDTO : venueList) {
+                Venue venue = venueRepository.findById(venueDTO.getVenueId()).orElseThrow(() -> new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
+                VenueGenre venueGenre = venueGenreRepository.findByVenue(venue).orElseThrow(() -> new CustomException(VenueGenreErrorCode.VENUE_GENRE_NOT_EXIST));
+                VenueMood venueMood = venueMoodRepository.findByVenue(venue).orElseThrow(() -> new CustomException(VenueMoodErrorCode.VENUE_MOOD_NOT_EXIST));
+                Vector venueVector = Vector.mergeVectors(venueGenre.getGenreVector(), venueMood.getMoodVector());
+                venueVectors.put(venueDTO.getVenueId(), venueVector);
+            }
+
+            sortedVenueList = venueList.stream()
+                    .sorted(Comparator.comparingDouble(venue -> {
+                        try {
+                            return -memberVector.cosineSimilarity(venueVectors.get(venue.getVenueId()));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return Double.MIN_VALUE;
+                        }
+                    }))
+                    .collect(Collectors.toList());
+
+        }
+        else throw new CustomException(SearchErrorCode.UNAVAILABLE_SORT_CRITERIA);
+
+        return sortedVenueList;
     }
 
 }
