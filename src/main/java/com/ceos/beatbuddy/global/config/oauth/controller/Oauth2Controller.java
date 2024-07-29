@@ -43,6 +43,7 @@ public class Oauth2Controller {
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
     public ResponseEntity<String> kakaoLogout(HttpSession session) {
+        session.invalidate();
         Long memberId = SecurityUtils.getCurrentMemberId();
         ResponseEntity<String> result = oauth2Service.logout(memberId);
         return result;
@@ -67,9 +68,12 @@ public class Oauth2Controller {
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
     public ResponseEntity<String> kakaoResign(HttpSession session) {
+        session.invalidate();
         Long memberId = SecurityUtils.getCurrentMemberId();
         ResponseEntity<String> result = oauth2Service.resign(memberId);
         return result;
     }
+
+
 
 }
