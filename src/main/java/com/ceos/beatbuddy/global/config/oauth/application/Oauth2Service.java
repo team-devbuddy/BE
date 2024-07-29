@@ -31,17 +31,17 @@ public class Oauth2Service {
     private static final String logOutUrl = "https://kapi.kakao.com/v1/user/logout";
     private static final String unlinkUrl = "https://kapi.kakao.com/v1/user/unlink";
 
-    public ResponseEntity<String> logout(Long memberId) {
+    public String logout(Long memberId) {
         return getResponseEntity(memberId, logOutUrl);
     }
 
-    public ResponseEntity<String> resign(Long memberId) {
+    public String resign(Long memberId) {
         memberService.deleteMember(memberId);
         return getResponseEntity(memberId, unlinkUrl);
     }
 
 
-    private ResponseEntity<String> getResponseEntity(Long memberId, String logOutUrl) {
+    private String getResponseEntity(Long memberId, String logOutUrl) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -58,6 +58,6 @@ public class Oauth2Service {
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(logOutUrl, HttpMethod.POST, entity, String.class);
 
-        return responseEntity;
+        return responseEntity.getBody();
     }
 }
