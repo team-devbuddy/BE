@@ -6,6 +6,7 @@ import com.ceos.beatbuddy.domain.archive.dto.ArchiveDTO;
 import com.ceos.beatbuddy.domain.archive.dto.ArchiveRequestDTO;
 import com.ceos.beatbuddy.domain.archive.dto.ArchiveResponseDTO;
 import com.ceos.beatbuddy.domain.archive.dto.ArchiveUpdateDTO;
+import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
 import com.ceos.beatbuddy.global.ResponseTemplate;
 import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -92,4 +93,18 @@ public class ArchiveController {
         return ResponseEntity.ok(archiveService.getArchives(memberId));
     }
 
+    @GetMapping("/history/{archiveId}")
+    @Operation(summary = "아카이브 클릭 시 추천 히스토리 조회", description = "아카이브를 클릭하면 해당 취향을 기반으로 추천했던 히스토리를 조회합니다")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "아카이브 추천 히스토리 조회 성공"
+                    , content = @Content(mediaType = "application/json"
+                    , array = @ArraySchema(schema = @Schema(implementation = ArchiveResponseDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "요청한 아카이브가 존재하지 않습니다 or 유저가 존재하지 않습니다",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<List<VenueResponseDTO>> getHistory(@PathVariable Long archiveId) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(archiveService.getHistory(memberId, archiveId));
+    }
 }

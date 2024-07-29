@@ -9,6 +9,7 @@ import com.ceos.beatbuddy.domain.archive.exception.ArchiveErrorCode;
 import com.ceos.beatbuddy.domain.archive.repository.ArchiveRepository;
 import com.ceos.beatbuddy.domain.heartbeat.dto.HeartbeatResponseDTO;
 import com.ceos.beatbuddy.domain.heartbeat.entity.Heartbeat;
+import com.ceos.beatbuddy.domain.member.application.RecommendService;
 import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.entity.MemberGenre;
@@ -20,6 +21,7 @@ import com.ceos.beatbuddy.domain.member.repository.MemberGenreRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberMoodRepository;
 import com.ceos.beatbuddy.domain.member.repository.MemberRepository;
 import com.ceos.beatbuddy.domain.vector.entity.Vector;
+import com.ceos.beatbuddy.domain.venue.dto.VenueResponseDTO;
 import com.ceos.beatbuddy.global.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class ArchiveService {
     private final MemberRepository memberRepository;
     private final MemberMoodRepository memberMoodRepository;
     private final MemberGenreRepository memberGenreRepository;
+    private final RecommendService recommendService;
 
     @Transactional
     public ArchiveDTO addPreferenceInArchive(Long memberId, Long memberMoodId, Long memberGenreId) {
@@ -147,6 +150,13 @@ public class ArchiveService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<VenueResponseDTO> getHistory(Long memberId, Long archiveId){
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        Archive archive = archiveRepository.findById(archiveId).orElseThrow(()->new CustomException(ArchiveErrorCode.ARCHIVE_NOT_EXIST));
+        List<VenueResponseDTO> venueList= recommendService.recommendVenuesByArchive(memberId, 5L, archiveId);
+        return venueList;
     }
 
 }

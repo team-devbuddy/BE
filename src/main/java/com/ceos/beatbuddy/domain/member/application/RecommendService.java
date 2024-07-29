@@ -1,5 +1,8 @@
 package com.ceos.beatbuddy.domain.member.application;
 
+import com.ceos.beatbuddy.domain.archive.entity.Archive;
+import com.ceos.beatbuddy.domain.archive.exception.ArchiveErrorCode;
+import com.ceos.beatbuddy.domain.archive.repository.ArchiveRepository;
 import com.ceos.beatbuddy.domain.heartbeat.repository.HeartbeatRepository;
 import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.domain.member.entity.Member;
@@ -46,6 +49,7 @@ public class RecommendService {
     private static final List<String> REGIONS = Arrays.asList(
             "HONGDAE","ITAEWON","GANGNAM/SINSA","APGUJEONG","OTHERS"
     );
+    private final ArchiveRepository archiveRepository;
 
     public List<VenueResponseDTO> recommendVenuesByGenre(Long memberId, Long num) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
@@ -322,6 +326,71 @@ public class RecommendService {
                 .collect(Collectors.toList());
     }
 
+    public List<VenueResponseDTO> recommendVenuesByArchive(Long memberId, Long num, Long archiveId) {
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        Archive archive = archiveRepository.findById(archiveId).orElseThrow(()->new CustomException(ArchiveErrorCode.ARCHIVE_NOT_EXIST));
+        MemberMood archiveMood = memberMoodRepository.findById(archive.getMemberMood().getMemberMoodId()).orElseThrow(() -> new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
+        MemberGenre archiveGenre = memberGenreRepository.findById(archive.getMemberGenre().getMemberGenreId()).orElseThrow(() -> new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
+        Vector memberVector = Vector.mergeVectors(archiveGenre.getGenreVector(), archiveMood.getMoodVector());
 
+        if(archive.getRegions().isEmpty()){
+            throw new CustomException(MemberErrorCode.REGION_FIELD_EMPTY);
+        }
+
+        List<Venue> allVenues = venueRepository.findByVenueRegion(archive.getRegions());
+        List<Vector> allVenueVectors = new ArrayList<>();
+
+        for(Venue venue : allVenues){
+            VenueGenre venueGenre = venueGenreRepository.findByVenue(venue).orElseThrow(()->new CustomException(VenueGenreErrorCode.VENUE_GENRE_NOT_EXIST));
+            VenueMood venueMood = venueMoodRepository.findByVenue(venue).orElseThrow(()->new CustomException(VenueMoodErrorCode.VENUE_MOOD_NOT_EXIST));
+            Vector totalVector = Vector.mergeVectors(venueGenre.getGenreVector(), venueMood.getMoodVector());
+            allVenueVectors.add(totalVector);
+        }
+        List<Vector> recommendVenueVectors = allVenueVectors.stream()
+                .sorted(Comparator.comparingDouble(v -> {
+                    try {
+                        return -memberVector.cosineSimilarity(v);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Double.MIN_VALUE;
+                    }
+                }))
+                .limit(num)
+                .collect(Collectors.toList());
+
+        return recommendVenueVectors.stream()
+                .map(venueVector -> {
+                    int index = allVenueVectors.indexOf(venueVector);
+                    Venue venue = allVenues.get(index);
+
+                    List<Double> genreElements = venueVector.getElements().subList(0, 10);
+                    List<Double> moodElements = venueVector.getElements().subList(10, 18);
+
+                    Vector genreVector = new Vector(genreElements);
+                    Vector moodVector = new Vector(moodElements);
+
+                    List<String> trueGenreElements = Vector.getTrueGenreElements(genreVector);
+                    List<String> trueMoodElements = Vector.getTrueMoodElements(moodVector);
+                    String region = venue.getRegion().getText();
+
+                    List<String> tagList = new ArrayList<>(trueGenreElements);
+                    tagList.addAll(trueMoodElements);
+                    tagList.add(region);
+
+                    return VenueResponseDTO.builder()
+                            .tagList(tagList)
+                            .venueId(venue.getVenueId())
+                            .koreanName(venue.getKoreanName())
+                            .englishName(venue.getEnglishName())
+                            .heartbeatNum(venue.getHeartbeatNum())
+                            .backgroundUrl(venue.getBackgroundUrl())
+                            .logoUrl(venue.getLogoUrl())
+                            .isHeartbeat(heartbeatRepository.findByMemberVenue(member,venue).isPresent())
+                            .heartbeatNum(venue.getHeartbeatNum())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+    }
 
 }
