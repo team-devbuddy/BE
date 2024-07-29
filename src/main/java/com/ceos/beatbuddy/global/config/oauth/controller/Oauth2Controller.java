@@ -45,8 +45,8 @@ public class Oauth2Controller {
     public ResponseEntity<String> kakaoLogout(HttpSession session) {
         session.invalidate();
         Long memberId = SecurityUtils.getCurrentMemberId();
-        ResponseEntity<String> result = oauth2Service.logout(memberId);
-        return result;
+        String result = oauth2Service.logout(memberId);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/resign")
@@ -70,8 +70,8 @@ public class Oauth2Controller {
     public ResponseEntity<String> kakaoResign(HttpSession session) {
         session.invalidate();
         Long memberId = SecurityUtils.getCurrentMemberId();
-        ResponseEntity<String> result = oauth2Service.resign(memberId);
-        return result;
+        String result = oauth2Service.resign(memberId);
+        return ResponseEntity.ok(result);
     }
 
 
