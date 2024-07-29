@@ -19,4 +19,7 @@ public interface VenueGenreRepository extends JpaRepository<VenueGenre, Long> {
 
     @Query("SELECT vg FROM VenueGenre vg JOIN vg.venue v WHERE vg.venue = :venue")
     Optional<VenueGenre> findByVenue(@Param("venue")Venue venue);
+
+    @Query("SELECT vg FROM VenueGenre vg WHERE vg.venue.venueId = :venueId")
+    Optional<VenueGenre> findByVenueId(@Param("venueId") Long venueId);
 }

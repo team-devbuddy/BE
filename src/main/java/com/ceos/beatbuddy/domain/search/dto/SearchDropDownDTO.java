@@ -6,10 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchGenreDTO {
-    private String genre;
+public class SearchDropDownDTO {
+    private List<String> keyword;
+    private String genreTag;
+    private String regionTag;
 }

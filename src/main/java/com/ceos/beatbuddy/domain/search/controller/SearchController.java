@@ -57,4 +57,23 @@ public class SearchController {
     }
 
 
+    @PostMapping("/drop-down")
+    @Operation(summary = "검색 드롭다운 기능", description = "사용자가 검색바에 입력한 검색어로 검색한 결과에서 드롭다운으로 필터링한 베뉴 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "드롭다운 필터링 베뉴 조회 성공"
+                    , content = @Content(mediaType = "application/json"
+                    , array = @ArraySchema(schema = @Schema(implementation = SearchQueryResponseDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "검색어가 입력되지 않아서 검색 실패 or 리스트에 없는 장르명이나 지역명 입력 시 에러 반환"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ResponseTemplate.class))),
+            @ApiResponse(responseCode = "404", description = "유저가 존재하지 않습니다 or 베뉴 장르가 존재하지 않습니다"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<List<SearchQueryResponseDTO>> searchDropDown(@RequestBody SearchDropDownDTO searchDropDownDTO) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(searchService.searchDropDown(memberId, searchDropDownDTO));
+    }
+
+
 }
