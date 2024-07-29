@@ -1,5 +1,7 @@
 package com.ceos.beatbuddy.global.config;
 
+import static java.util.Arrays.asList;
+
 import com.ceos.beatbuddy.global.config.jwt.JwtFilter;
 import com.ceos.beatbuddy.global.config.jwt.TokenProvider;
 import com.ceos.beatbuddy.global.config.oauth.CustomClientRegistrationRepo;
@@ -66,8 +68,7 @@ public class SecurityConfig {
 
     private CorsConfiguration getDefaultCorsConfiguration() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:3000");
-        config.addAllowedOrigin("https://api.beatbuddy.world");
+        config.setAllowedOrigins(asList("http://localhost:3000", "https://beatbuddy.world"));
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
