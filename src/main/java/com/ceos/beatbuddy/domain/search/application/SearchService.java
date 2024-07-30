@@ -57,14 +57,40 @@ public class SearchService {
     @Transactional
     public List<SearchQueryResponseDTO> keywordSearch(SearchDTO.RequestDTO searchRequestDTO, Long memberId) {
 
-        List<SearchQueryResponseDTO> venueList= searchRepository.keywordFilter(searchRequestDTO, memberId);
+        List<SearchQueryResponseDTO> venueList = searchRepository.keywordFilter(searchRequestDTO, memberId);
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+
+        MemberMood latestMemberMood = memberMoodRepository.findLatestMoodByMember(member).orElseThrow(() -> new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
+        MemberGenre latestMemberGenre = memberGenreRepository.findLatestGenreByMember(member).orElseThrow(() -> new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
+        Vector memberVector = Vector.mergeVectors(latestMemberGenre.getGenreVector(), latestMemberMood.getMoodVector());
+
+        Map<Long, Vector> venueVectors = new HashMap<>();
+        for (SearchQueryResponseDTO venueDTO : venueList) {
+            Venue venue = venueRepository.findById(venueDTO.getVenueId()).orElseThrow(() -> new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
+            VenueGenre venueGenre = venueGenreRepository.findByVenue(venue).orElseThrow(() -> new CustomException(VenueGenreErrorCode.VENUE_GENRE_NOT_EXIST));
+            VenueMood venueMood = venueMoodRepository.findByVenue(venue).orElseThrow(() -> new CustomException(VenueMoodErrorCode.VENUE_MOOD_NOT_EXIST));
+            Vector venueVector = Vector.mergeVectors(venueGenre.getGenreVector(), venueMood.getMoodVector());
+            venueVectors.put(venueDTO.getVenueId(), venueVector);
+        }
+
+        List<SearchQueryResponseDTO> sortedVenueList = venueList.stream()
+                .sorted(Comparator.comparingDouble(venue -> {
+                    try {
+                        return -memberVector.cosineSimilarity(venueVectors.get(venue.getVenueId()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return Double.MIN_VALUE;
+                    }
+                }))
+                .collect(Collectors.toList());
+
         List<String> keywords = searchRequestDTO.getKeyword();
 
-        for(String keyword: keywords){
-            Double score =0.0;
+        for (String keyword : keywords) {
+            Double score = 0.0;
             try {
                 // 검색을하면 해당검색어를 value에 저장하고, score를 1 준다
-                score = redisTemplate.opsForZSet().incrementScore("ranking", keyword,1.0);
+                score = redisTemplate.opsForZSet().incrementScore("ranking", keyword, 1.0);
 
                 // 만료 시간 설정 (현재 시간 + 24시간)
                 long expireAt = Instant.now().getEpochSecond() + 86400;
@@ -77,7 +103,7 @@ public class SearchService {
             }
         }
 
-        return venueList;
+        return sortedVenueList;
     }
 
     // 인기검색어 리스트 1위~10위까지
@@ -115,7 +141,7 @@ public class SearchService {
         String regionTag = searchDropDownDTO.getRegionTag();
         List<String> keyword = searchDropDownDTO.getKeyword();
 
-        if(keyword.isEmpty()) throw new CustomException(SearchErrorCode.KEYWORD_IS_EMPTY);
+        if (keyword.isEmpty()) throw new CustomException(SearchErrorCode.KEYWORD_IS_EMPTY);
         if (genreTag.isEmpty() && regionTag.isEmpty()) throw new CustomException(VectorErrorCode.TAGS_EMPTY);
 
         if (!genreTag.isEmpty()) {
@@ -147,8 +173,8 @@ public class SearchService {
                     .filter(vg -> (vg.getGenreVector().getElements().get(genreIndex) == 1.0))
                     .map(vg -> {
                         Venue venue = vg.getVenue();
-                        VenueMood venueMood = venueMoodRepository.findByVenue(venue).orElseThrow(()->new CustomException(VenueMoodErrorCode.VENUE_MOOD_NOT_EXIST));
-                        boolean isHeartbeat = heartbeatRepository.findByMemberVenue(member,venue).isPresent();
+                        VenueMood venueMood = venueMoodRepository.findByVenue(venue).orElseThrow(() -> new CustomException(VenueMoodErrorCode.VENUE_MOOD_NOT_EXIST));
+                        boolean isHeartbeat = heartbeatRepository.findByMemberVenue(member, venue).isPresent();
 
                         List<String> trueGenreElements = Vector.getTrueGenreElements(vg.getGenreVector());
                         List<String> trueMoodElements = Vector.getTrueMoodElements(venueMood.getMoodVector());
@@ -175,10 +201,10 @@ public class SearchService {
         if (region != null) {
             filteredList = filteredList.stream()
                     .filter(v -> {
-                Venue venue = venueRepository.findById(v.getVenueId())
-                        .orElseThrow(() -> new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
-                return venue.getRegion() == region;
-            })
+                        Venue venue = venueRepository.findById(v.getVenueId())
+                                .orElseThrow(() -> new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
+                        return venue.getRegion() == region;
+                    })
                     .collect(Collectors.toList());
         }
 
@@ -193,14 +219,13 @@ public class SearchService {
         List<SearchQueryResponseDTO> venueList = searchRepository.keywordFilter(searchRequestDTO, memberId);
         List<SearchQueryResponseDTO> sortedVenueList = new ArrayList<>(venueList);
 
-        if(keyword.isEmpty()) throw new CustomException(SearchErrorCode.KEYWORD_IS_EMPTY);
-        if(criteria.isBlank()) throw new CustomException(SearchErrorCode.SORT_CRITERIA_EMPTY);
-        else if(criteria.equals("인기순")) {
+        if (keyword.isEmpty()) throw new CustomException(SearchErrorCode.KEYWORD_IS_EMPTY);
+        if (criteria.isBlank()) throw new CustomException(SearchErrorCode.SORT_CRITERIA_EMPTY);
+        else if (criteria.equals("인기순")) {
             sortedVenueList = venueList.stream()
                     .sorted(Comparator.comparingLong(SearchQueryResponseDTO::getHeartbeatNum).reversed())
                     .collect(Collectors.toList());
-        }
-        else if(criteria.equals("관련도순")) {
+        } else if (criteria.equals("관련도순")) {
 
             MemberMood latestMemberMood = memberMoodRepository.findLatestMoodByMember(member).orElseThrow(() -> new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
             MemberGenre latestMemberGenre = memberGenreRepository.findLatestGenreByMember(member).orElseThrow(() -> new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
@@ -226,10 +251,10 @@ public class SearchService {
                     }))
                     .collect(Collectors.toList());
 
-        }
-        else throw new CustomException(SearchErrorCode.UNAVAILABLE_SORT_CRITERIA);
+        } else throw new CustomException(SearchErrorCode.UNAVAILABLE_SORT_CRITERIA);
 
         return sortedVenueList;
     }
+
 
 }
