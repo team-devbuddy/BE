@@ -16,4 +16,5 @@ public class SearchDropDownDTO {
     private List<String> keyword;
     private String genreTag;
     private String regionTag;
+    private String sortCriteria;
 }
