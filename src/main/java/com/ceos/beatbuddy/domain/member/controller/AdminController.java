@@ -40,15 +40,16 @@ public class AdminController {
         ResponseCookie cookie = ResponseCookie.from("refresh", responseDto.getRefresh())
                 .path("/")
                 .httpOnly(true)
-                .secure(true)
                 .sameSite("None")
+                .secure(true)
                 .maxAge(60 * 60 * 24 * 14)
                 .build();
 
         String jsonResponse = responseDto.getAccess().toString();
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
-        return ResponseEntity.ok(jsonResponse);
+        ResponseEntity responseEntity = ResponseEntity.ok().headers(headers).body(jsonResponse);
+        return responseEntity;
     }
 
     @PostMapping("/join")
