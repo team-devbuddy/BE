@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AdminResponseDto {
     private String access;
-    private String refresh;
 }

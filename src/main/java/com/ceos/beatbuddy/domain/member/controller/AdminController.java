@@ -9,8 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,23 +31,9 @@ public class AdminController {
     @ApiResponse(responseCode = "200", description = "로그인 성공",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = AdminResponseDto.class)))
-    public ResponseEntity<String> login(@RequestBody String id) {
+    public ResponseEntity<AdminResponseDto> login(@RequestBody String id) {
         Long adminId = adminService.findAdmin(id);
-        AdminResponseDto responseDto = adminService.createAdminToken(adminId, id);
-
-        ResponseCookie cookie = ResponseCookie.from("refresh", responseDto.getRefresh())
-                .path("/")
-                .httpOnly(true)
-                .sameSite("None")
-                .secure(true)
-                .maxAge(60 * 60 * 24 * 14)
-                .build();
-
-        String jsonResponse = responseDto.getAccess().toString();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
-        ResponseEntity responseEntity = ResponseEntity.ok().headers(headers).body(jsonResponse);
-        return responseEntity;
+        return adminService.createAdminToken(adminId, id);
     }
 
     @PostMapping("/join")

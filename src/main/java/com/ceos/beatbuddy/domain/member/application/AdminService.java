@@ -9,6 +9,9 @@ import com.ceos.beatbuddy.global.config.jwt.TokenProvider;
 import com.ceos.beatbuddy.global.config.jwt.redis.RefreshToken;
 import com.ceos.beatbuddy.global.config.jwt.redis.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,11 +39,11 @@ public class AdminService {
     }
 
     @Transactional
-    public AdminResponseDto createAdminToken(Long memberId, String loginId) {
+    public ResponseEntity<AdminResponseDto> createAdminToken(Long memberId, String loginId) {
 
         RefreshToken byUserId = refreshTokenRepository.findByUserId(memberId);
 
-        if(byUserId != null){
+        if (byUserId != null) {
             refreshTokenRepository.delete(byUserId);
         }
 
@@ -50,10 +53,20 @@ public class AdminService {
         RefreshToken refreshToken = new RefreshToken(refresh, memberId);
         refreshTokenRepository.save(refreshToken);
 
-        return AdminResponseDto.builder()
-                .access(access)
-                .refresh(refresh)
+        ResponseCookie cookie = ResponseCookie.from("refresh", refresh)
+                .path("/")
+                .httpOnly(true)
+                .sameSite("None")
+                .secure(true)
+                .maxAge(60 * 60 * 24 * 14)
                 .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok().headers(headers).body(AdminResponseDto.builder()
+                .access(access)
+                .build());
     }
 
     public Long findAdmin(String id) {
