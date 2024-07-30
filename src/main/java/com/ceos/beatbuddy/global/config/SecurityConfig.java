@@ -76,8 +76,8 @@ public class SecurityConfig {
 
     private CorsConfiguration getDefaultCorsConfiguration() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(asList("http://localhost:3000", "https://beatbuddy.world"));
-        config.setAllowedMethods(asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.addAllowedOriginPattern("*");
+        config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
