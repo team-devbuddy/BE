@@ -58,7 +58,9 @@ public class ArchiveService {
                 .member(member)
                 .regions(member.getRegions())
                 .build();
-        Archive test = archiveRepository.save(archive);
+        Archive newArchive = archiveRepository.save(archive);
+        member.saveLatestArchiveId(newArchive.getArchiveId());
+        memberRepository.save(member);
 
         ArchiveDTO newarchive = ArchiveDTO.builder()
                 .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
@@ -72,9 +74,12 @@ public class ArchiveService {
     }
 
     @Transactional
-    public ArchiveDTO deletePreferenceInArchive(Long archiveId) {
+    public ArchiveDTO deletePreferenceInArchive(Long memberId, Long archiveId) {
         Archive archive = archiveRepository.findById(archiveId).orElseThrow(()->new CustomException(ArchiveErrorCode.ARCHIVE_NOT_EXIST));
         archiveRepository.delete(archive);
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        member.saveLatestArchiveId(null);
+        memberRepository.save(member);
 
         return ArchiveDTO.builder()
                 .memberGenreList(Vector.getTrueGenreElements(archive.getMemberGenre().getGenreVector()))
@@ -88,10 +93,13 @@ public class ArchiveService {
 
 
     @Transactional
-    public ArchiveDTO updatePreferenceInArchive(Long archiveId, ArchiveUpdateDTO archiveUpdateDTO) {
+    public ArchiveDTO updatePreferenceInArchive(Long memberId, Long archiveId, ArchiveUpdateDTO archiveUpdateDTO) {
         Archive archive = archiveRepository.findById(archiveId).orElseThrow(()->new CustomException(ArchiveErrorCode.ARCHIVE_NOT_EXIST));
         Vector genreVector = Vector.fromString(archiveUpdateDTO.getMemberGenreVector());
         Vector moodVector = Vector.fromString(archiveUpdateDTO.getMemberMoodVector());
+
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        member.saveLatestArchiveId(archiveId);
 
         MemberGenre newMemberGenre = MemberGenre.builder()
                 .member(archive.getMember())
@@ -152,11 +160,14 @@ public class ArchiveService {
                 .collect(Collectors.toList());
     }
 
-    public List<VenueResponseDTO> getHistory(Long memberId, Long archiveId){
+    @Transactional
+    public Long toGetHistory(Long memberId, Long archiveId){
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         Archive archive = archiveRepository.findById(archiveId).orElseThrow(()->new CustomException(ArchiveErrorCode.ARCHIVE_NOT_EXIST));
-        List<VenueResponseDTO> venueList= recommendService.recommendVenuesByArchive(memberId, 5L, archiveId);
-        return venueList;
+        if(archive.getMember().getMemberId() != member.getMemberId()) throw new CustomException(ArchiveErrorCode.ARCHIVE_MEMBER_NOT_MATCH);
+        member.saveLatestArchiveId(archiveId);
+        memberRepository.save(member);
+        return member.getLatestArchiveId();
     }
 
 }

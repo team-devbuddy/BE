@@ -61,7 +61,8 @@ public class ArchiveController {
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
     public ResponseEntity<ArchiveDTO> deleteArchive(@PathVariable Long archiveId){
-        return ResponseEntity.ok(archiveService.deletePreferenceInArchive(archiveId));
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(archiveService.deletePreferenceInArchive(memberId, archiveId));
     }
 
     @PatchMapping("/{archiveId}")
@@ -75,7 +76,8 @@ public class ArchiveController {
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
     public ResponseEntity<ArchiveDTO> updateArchive(@PathVariable Long archiveId, @RequestBody ArchiveUpdateDTO archiveUpdateDTO) {
-        return ResponseEntity.ok(archiveService.updatePreferenceInArchive(archiveId, archiveUpdateDTO));
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(archiveService.updatePreferenceInArchive(memberId, archiveId, archiveUpdateDTO));
     }
 
     @GetMapping("/all")
@@ -93,18 +95,18 @@ public class ArchiveController {
         return ResponseEntity.ok(archiveService.getArchives(memberId));
     }
 
-    @GetMapping("/history/{archiveId}")
+    @PostMapping("/history/{archiveId}")
     @Operation(summary = "아카이브 클릭 시 추천 히스토리 조회", description = "아카이브를 클릭하면 해당 취향을 기반으로 추천했던 히스토리를 조회합니다")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "아카이브 추천 히스토리 조회 성공"
+            @ApiResponse(responseCode = "200", description = "아카이브 추천 히스토리 조회 성공 시 추천 로직의 기반이 되는 취향 archiveId를 반환"
                     , content = @Content(mediaType = "application/json"
-                    , array = @ArraySchema(schema = @Schema(implementation = ArchiveResponseDTO.class)))),
+                    , schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "404", description = "요청한 아카이브가 존재하지 않습니다 or 유저가 존재하지 않습니다",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<List<VenueResponseDTO>> getHistory(@PathVariable Long archiveId) {
+    public ResponseEntity<Long> toGetHistory(@PathVariable Long archiveId) {
         Long memberId = SecurityUtils.getCurrentMemberId();
-        return ResponseEntity.ok(archiveService.getHistory(memberId, archiveId));
+        return ResponseEntity.ok(archiveService.toGetHistory(memberId, archiveId));
     }
 }

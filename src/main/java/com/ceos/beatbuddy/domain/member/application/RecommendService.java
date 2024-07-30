@@ -148,11 +148,27 @@ public class RecommendService {
     }
 
 
+    @Transactional
     public List<VenueResponseDTO> recommendVenues(Long memberId, Long num) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
-        MemberMood latestMemberMood = memberMoodRepository.findLatestMoodByMember(member).orElseThrow(() -> new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
-        MemberGenre latestMemberGenre = memberGenreRepository.findLatestGenreByMember(member).orElseThrow(() -> new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
-        Vector memberVector = Vector.mergeVectors(latestMemberGenre.getGenreVector(), latestMemberMood.getMoodVector());
+        MemberMood memberMood;
+        MemberGenre memberGenre;
+        Archive archive;
+
+        if(member.getLatestArchiveId()==null){
+            archive = archiveRepository.findLatestArchiveByMember(member).orElseThrow(()->new CustomException(ArchiveErrorCode.ARCHIVE_NOT_EXIST));
+            member.saveLatestArchiveId(archive.getArchiveId());
+            memberRepository.save(member);
+            memberGenre= memberGenreRepository.findLatestGenreByMember(member).orElseThrow(() -> new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
+            memberMood= memberMoodRepository.findLatestMoodByMember(member).orElseThrow(() -> new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
+        }
+        else{
+            archive = archiveRepository.findById(member.getLatestArchiveId()).orElseThrow(()->new CustomException(ArchiveErrorCode.ARCHIVE_NOT_EXIST));
+            memberGenre = memberGenreRepository.findById(archive.getMemberGenre().getMemberGenreId()).orElseThrow(() -> new CustomException(MemberGenreErrorCode.MEMBER_GENRE_NOT_EXIST));
+            memberMood = memberMoodRepository.findById(archive.getMemberMood().getMemberMoodId()).orElseThrow(() -> new CustomException(MemberMoodErrorCode.MEMBER_MOOD_NOT_EXIST));
+        }
+
+        Vector memberVector = Vector.mergeVectors(memberGenre.getGenreVector(), memberMood.getMoodVector());
 
         if(member.getRegions().isEmpty()){
             throw new CustomException(MemberErrorCode.REGION_FIELD_EMPTY);

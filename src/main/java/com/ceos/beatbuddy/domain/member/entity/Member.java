@@ -41,6 +41,8 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     private Boolean isMarketingConsent = false;
 
+    private Long latestArchiveId;
+
     public void saveConsents(Boolean isLocationConsent, Boolean isMarketingConsent) {
         this.isLocationConsent = isLocationConsent;
         this.isMarketingConsent = isMarketingConsent;
@@ -58,5 +60,7 @@ public class Member extends BaseTimeEntity {
     public void setAdultUser(){
         this.isAdult = true;
     }
+
+    public void saveLatestArchiveId(Long latestArchiveId) {this.latestArchiveId = latestArchiveId;}
 
 }

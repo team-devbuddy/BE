@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ArchiveRepository extends JpaRepository<Archive, Long> {
 
@@ -18,4 +19,7 @@ public interface ArchiveRepository extends JpaRepository<Archive, Long> {
     boolean existsByMemberAndMemberMoodAndMemberGenre(Member member, MemberMood memberMood, MemberGenre memberGenre);
 
     void deleteByMember(Member member);
+
+    @Query("SELECT a FROM Archive a WHERE a.member = :member ORDER BY a.updatedAt DESC LIMIT 1")
+    Optional<Archive> findLatestArchiveByMember(@Param("member") Member member);
 }
