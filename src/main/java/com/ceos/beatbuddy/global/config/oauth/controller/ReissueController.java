@@ -85,9 +85,12 @@ public class ReissueController {
         RefreshToken savedRefresh = refreshTokenRepository.findById(refresh)
                 .orElseThrow(() -> new CustomException(OauthErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
-        if(!savedRefresh.getUserId().equals(userId)){
-            return new ResponseEntity<>("Not Token Owner", HttpStatus.BAD_REQUEST);
-        }
+        /**
+         * QA기간 동안만 주석처리 예정
+         */
+//        if(!savedRefresh.getUserId().equals(userId)){
+//            return new ResponseEntity<>("Not Token Owner", HttpStatus.BAD_REQUEST);
+//        }
 
         String username = tokenProvider.getUsername(refresh);
         String role = tokenProvider.getRole(refresh);
