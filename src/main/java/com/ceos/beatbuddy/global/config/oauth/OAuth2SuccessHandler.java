@@ -79,7 +79,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         session.setMaxInactiveInterval(600);
 
         if (!response.isCommitted()) {
-            response.sendRedirect("http://localhost:3000/login/oauth2/callback/kakao?access=" + access);
+            response.sendRedirect("https://beatbuddy.world/login/oauth2/callback/kakao?access=" + access);
         }
     }
 
