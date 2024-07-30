@@ -1,6 +1,7 @@
 package com.ceos.beatbuddy.global.config.oauth.controller;
 
 import com.ceos.beatbuddy.domain.member.application.ReissueService;
+import com.ceos.beatbuddy.domain.member.dto.AdminResponseDto;
 import com.ceos.beatbuddy.global.CustomException;
 import com.ceos.beatbuddy.global.ResponseTemplate;
 import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
@@ -20,7 +21,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,7 +55,7 @@ public class ReissueController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ResponseTemplate.class)))
     })
-    public ResponseEntity<String> reissue(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<AdminResponseDto> reissue(HttpServletRequest request, HttpServletResponse response) {
         Long userId = SecurityUtils.getCurrentMemberId();
         String refresh = null;
         Cookie[] cookies = request.getCookies();
@@ -67,19 +67,19 @@ public class ReissueController {
         }
 
         if (refresh == null) {
-            return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
+            throw new CustomException(OauthErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         try {
             tokenProvider.isExpired(refresh);
         } catch (Exception e) {
-            return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
+            throw new CustomException(OauthErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
         String category = tokenProvider.getCategory(refresh);
 
         if (!category.equals("refresh")) {
-            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+            throw new CustomException(OauthErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         RefreshToken savedRefresh = refreshTokenRepository.findById(refresh)
@@ -111,7 +111,10 @@ public class ReissueController {
                 .build();
         headers.add("Set-Cookie", cookie.toString());
 
-        return new ResponseEntity<>(newAccess, headers, HttpStatus.OK);
+        AdminResponseDto adminResponseDto = AdminResponseDto.builder()
+                .access(newAccess)
+                .build();
+        return ResponseEntity.ok().headers(headers).body(adminResponseDto);
     }
 
 }
