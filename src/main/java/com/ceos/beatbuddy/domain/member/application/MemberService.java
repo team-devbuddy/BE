@@ -321,5 +321,6 @@ public class MemberService {
         memberGenreRepository.deleteByMember(member);
         heartbeatRepository.deleteByMember(member);
         archiveRepository.deleteByMember(member);
+        memberRepository.delete(member);
     }
 }
