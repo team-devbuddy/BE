@@ -287,6 +287,7 @@ public class MemberService {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(
                 () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         member.setAdultUser();
+        memberRepository.save(member);
     }
 
     public List<String> getPreferences(Long memberId) {
