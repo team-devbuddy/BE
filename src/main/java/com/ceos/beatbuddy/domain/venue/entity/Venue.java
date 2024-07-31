@@ -29,6 +29,7 @@ public class Venue extends BaseTimeEntity {
     private String address;
     private String instaId;
     private String instaUrl;
+    private String phoneNum;
 
     @ElementCollection
     private Map<String,String> operationHours;
@@ -61,11 +62,12 @@ public class Venue extends BaseTimeEntity {
                 .region(request.getRegion())
                 .address(request.getAddress())
                 .description(request.getDescription())
-                .logoUrl(logoUrl)
+                .phoneNum(request.getPhoneNum())
                 .instaId(request.getInstaId())
                 .instaUrl(request.getInstaUrl())
-                .backgroundUrl(backgroundUrl)
                 .operationHours(request.getWeeklyOperationHours())
+                .logoUrl(logoUrl)
+                .backgroundUrl(backgroundUrl)
                 .build();
     }
 }
