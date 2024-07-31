@@ -143,7 +143,6 @@ public class SearchService {
         String criteria = searchDropDownDTO.getSortCriteria();
 
         if (keyword.isEmpty()) throw new CustomException(SearchErrorCode.KEYWORD_IS_EMPTY);
-        if (genreTag.isEmpty() && regionTag.isEmpty()) throw new CustomException(VectorErrorCode.TAGS_EMPTY);
 
         if (!genreTag.isEmpty()) {
             int index = Vector.getGenreIndex(genreTag);
