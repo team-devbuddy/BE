@@ -66,12 +66,12 @@ public class SearchRepository {
         KOREAN_TO_ENGLISH_MOODS.put("딥한", "DEEP");
         KOREAN_TO_ENGLISH_MOODS.put("마이너한", "DEEP");
         KOREAN_TO_ENGLISH_MOODS.put("마이너", "DEEP");
-        KOREAN_TO_ENGLISH_MOODS.put("밝은", "LIGHT");
-        KOREAN_TO_ENGLISH_MOODS.put("라이트", "LIGHT");
-        KOREAN_TO_ENGLISH_MOODS.put("라이트한", "LIGHT");
-        KOREAN_TO_ENGLISH_MOODS.put("신나는", "LIGHT");
-        KOREAN_TO_ENGLISH_MOODS.put("유쾌한", "LIGHT");
-        KOREAN_TO_ENGLISH_MOODS.put("유쾌", "LIGHT");
+        KOREAN_TO_ENGLISH_MOODS.put("밝은", "COMMERCIAL");
+        KOREAN_TO_ENGLISH_MOODS.put("대중적인", "COMMERCIAL");
+        KOREAN_TO_ENGLISH_MOODS.put("커머셜", "COMMERCIAL");
+        KOREAN_TO_ENGLISH_MOODS.put("커머셜한", "COMMERCIAL");
+        KOREAN_TO_ENGLISH_MOODS.put("편한", "COMMERCIAL");
+        KOREAN_TO_ENGLISH_MOODS.put("흥", "COMMERCIAL");
         KOREAN_TO_ENGLISH_MOODS.put("이국적인", "EXOTIC");
         KOREAN_TO_ENGLISH_MOODS.put("이국적", "EXOTIC");
         KOREAN_TO_ENGLISH_MOODS.put("이색적인", "EXOTIC");
@@ -104,6 +104,9 @@ public class SearchRepository {
         KOREAN_TO_ENGLISH_REGIONS.put("신사역", "GANGNAM/SINSA");
         KOREAN_TO_ENGLISH_REGIONS.put("강남/신사", "GANGNAM/SINSA");
         KOREAN_TO_ENGLISH_REGIONS.put("신사/강남", "GANGNAM/SINSA");
+        KOREAN_TO_ENGLISH_REGIONS.put("기타", "OTHERS");
+        KOREAN_TO_ENGLISH_REGIONS.put("그외", "OTHERS");
+        KOREAN_TO_ENGLISH_REGIONS.put("그 외", "OTHERS");
     }
 
     private final HeartbeatRepository heartbeatRepository;
