@@ -75,4 +75,22 @@ public class SearchController {
         return ResponseEntity.ok(searchService.searchDropDown(memberId, searchDropDownDTO));
     }
 
+    @PostMapping("/map/drop-down")
+    @Operation(summary = "지도 드롭다운 기능", description = "입력받은 베뉴 리스트를 필터링/정렬하는 로직")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "드롭다운 필터링 베뉴 조회 성공"
+                    , content = @Content(mediaType = "application/json"
+                    , array = @ArraySchema(schema = @Schema(implementation = SearchQueryResponseDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "리스트에 없는 장르명이나 지역명 입력 시 에러 반환"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ResponseTemplate.class))),
+            @ApiResponse(responseCode = "404", description = "유저가 존재하지 않습니다 or 베뉴 장르가 존재하지 않습니다"
+                    , content = @Content(mediaType = "application/json"
+                    , schema = @Schema(implementation = ResponseTemplate.class)))
+    })
+    public ResponseEntity<List<SearchQueryResponseDTO>> mapSearchDropDown(@RequestBody SearchMapDTO searchMapDTO) {
+        Long memberId = SecurityUtils.getCurrentMemberId();
+        return ResponseEntity.ok(searchService.mapSearchDropDown(memberId, searchMapDTO));
+    }
+
 }
