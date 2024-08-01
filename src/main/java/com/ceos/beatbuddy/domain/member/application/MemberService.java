@@ -228,8 +228,6 @@ public class MemberService {
 
         if (member.getIsAdult()) {
             responseDto.setAdultCert();
-        } else {
-            return responseDto;
         }
 
         if (memberGenreRepository.existsByMember(member)) {
