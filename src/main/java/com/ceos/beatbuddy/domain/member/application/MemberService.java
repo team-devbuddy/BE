@@ -315,13 +315,15 @@ public class MemberService {
         return preferenceList;
     }
 
-    public void deleteMember(Long memberId) {
+    public String deleteMember(Long memberId) {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(
                 () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        String loginId = member.getLoginId().split("_")[1];
         memberMoodRepository.deleteByMember(member);
         memberGenreRepository.deleteByMember(member);
         heartbeatRepository.deleteByMember(member);
         archiveRepository.deleteByMember(member);
         memberRepository.delete(member);
+        return loginId;
     }
 }

@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -32,29 +34,29 @@ public class Oauth2Service {
     private static final String unlinkUrl = "https://kapi.kakao.com/v1/user/unlink";
 
     public String logout(Long memberId) {
-        return getResponseEntity(memberId, logOutUrl);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
+        return getResponseEntity(member.getLoginId(), logOutUrl);
     }
 
     public String resign(Long memberId) {
-        memberService.deleteMember(memberId);
-        return getResponseEntity(memberId, unlinkUrl);
+        String loginId = memberService.deleteMember(memberId);
+        return getResponseEntity(loginId, unlinkUrl);
     }
 
 
-    private String getResponseEntity(Long memberId, String logOutUrl) {
+    private String getResponseEntity(String loginId, String logOutUrl) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.set("Authorization", "KakaoAK " + adminKey);
 
-        Member member = memberRepository.findByMemberId(memberId).orElseThrow(
-                () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST)
-        );
-        String targetId = member.getLoginId().split("_")[1];
-        String requestBody = "target_id_type=user_id&target_id=" + targetId;
+        MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<>();
+        tokenRequest.add("target_id_type", "user_id");
+        tokenRequest.add("target_id", loginId);
 
-        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+        HttpEntity<MultiValueMap<String, String> > entity = new HttpEntity<>(tokenRequest,headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(logOutUrl, HttpMethod.POST, entity, String.class);
 
