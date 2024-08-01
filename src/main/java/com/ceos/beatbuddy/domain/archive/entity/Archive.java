@@ -10,6 +10,7 @@ import com.ceos.beatbuddy.global.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -41,5 +42,11 @@ public class Archive extends BaseTimeEntity {
         this.memberGenre = memberGenre;
         this.memberMood = memberMood;
         this.regions = regions;
+        updateTheUpdatedAt(LocalDateTime.now());
     }
+
+    public void updateToGetHistory(LocalDateTime updatedAt){
+        updateTheUpdatedAt(updatedAt);
+    }
+
 }

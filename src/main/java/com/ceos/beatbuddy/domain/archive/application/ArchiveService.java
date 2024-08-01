@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -165,6 +166,10 @@ public class ArchiveService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST));
         Archive archive = archiveRepository.findById(archiveId).orElseThrow(()->new CustomException(ArchiveErrorCode.ARCHIVE_NOT_EXIST));
         if(archive.getMember().getMemberId() != member.getMemberId()) throw new CustomException(ArchiveErrorCode.ARCHIVE_MEMBER_NOT_MATCH);
+
+        archive.updateToGetHistory(LocalDateTime.now());
+        archiveRepository.save(archive);
+
         member.saveLatestArchiveId(archiveId);
         memberRepository.save(member);
         return member.getLatestArchiveId();
