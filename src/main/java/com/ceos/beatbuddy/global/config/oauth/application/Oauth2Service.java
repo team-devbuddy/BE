@@ -54,6 +54,7 @@ public class Oauth2Service {
 
         MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<>();
         tokenRequest.add("target_id_type", "user_id");
+        loginId = loginId.split("_")[1];
         tokenRequest.add("target_id", loginId);
 
         HttpEntity<MultiValueMap<String, String> > entity = new HttpEntity<>(tokenRequest,headers);
