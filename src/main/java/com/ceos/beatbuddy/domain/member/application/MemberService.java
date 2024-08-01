@@ -232,14 +232,11 @@ public class MemberService {
 
         if (memberGenreRepository.existsByMember(member)) {
             responseDto.setGenre();
-        } else {
-            return responseDto;
         }
         if (memberMoodRepository.existsByMember(member)) {
             responseDto.setMood();
-        } else {
-            return responseDto;
         }
+
         if (memberRepository.existsRegionsByMemberId(member.getMemberId())) {
             responseDto.setRegion();
         }
