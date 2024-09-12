@@ -38,7 +38,7 @@ iamport:
 cloud:
   aws:
     s3:
-      bucket: beatbuddy-image
+      bucket: beatbuddy-venue
     credentials:
       access-key: ${S3_ACCESS}
       secret-key: ${S3_SECRET}
