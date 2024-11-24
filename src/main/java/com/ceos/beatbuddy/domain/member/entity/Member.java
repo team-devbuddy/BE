@@ -1,5 +1,6 @@
 package com.ceos.beatbuddy.domain.member.entity;
 
+import com.ceos.beatbuddy.domain.member.constant.Category;
 import com.ceos.beatbuddy.domain.member.constant.Gender;
 import com.ceos.beatbuddy.domain.member.constant.Region;
 import com.ceos.beatbuddy.global.BaseTimeEntity;
@@ -24,6 +25,7 @@ public class Member extends BaseTimeEntity {
     private String realName;
 
     private Gender gender;
+    private Category category;
 
     @Convert(converter = RegionConverter.class)
     private List<Region> regions;

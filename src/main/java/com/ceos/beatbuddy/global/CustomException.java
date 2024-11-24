@@ -5,6 +5,7 @@ import com.ceos.beatbuddy.domain.heartbeat.exception.HeartbeatErrorCode;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
 import com.ceos.beatbuddy.domain.member.exception.MemberGenreErrorCode;
 import com.ceos.beatbuddy.domain.member.exception.MemberMoodErrorCode;
+import com.ceos.beatbuddy.domain.post.exception.PostErrorCode;
 import com.ceos.beatbuddy.domain.search.exception.SearchErrorCode;
 import com.ceos.beatbuddy.domain.vector.exception.VectorErrorCode;
 import com.ceos.beatbuddy.domain.venue.exception.VenueErrorCode;
@@ -56,5 +57,9 @@ public class CustomException extends ResponseException {
 
     public CustomException(OauthErrorCode oauthErrorCode) {
         super(oauthErrorCode.getMessage(), oauthErrorCode.getHttpStatus());
+    }
+
+    public CustomException(PostErrorCode postErrorCode) {
+        super(postErrorCode.getMessage(), postErrorCode.getHttpStatus());
     }
 }

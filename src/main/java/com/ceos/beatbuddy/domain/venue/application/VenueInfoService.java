@@ -1,10 +1,6 @@
 package com.ceos.beatbuddy.domain.venue.application;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.util.IOUtils;
 import com.ceos.beatbuddy.domain.heartbeat.repository.HeartbeatRepository;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
@@ -22,13 +18,10 @@ import com.ceos.beatbuddy.domain.venue.repository.VenueGenreRepository;
 import com.ceos.beatbuddy.domain.venue.repository.VenueMoodRepository;
 import com.ceos.beatbuddy.domain.venue.repository.VenueRepository;
 import com.ceos.beatbuddy.global.CustomException;
-import java.io.ByteArrayInputStream;
+import com.ceos.beatbuddy.global.UploadUtil;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -62,10 +55,12 @@ public class VenueInfoService {
                 .orElseThrow(() -> new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
         boolean isHeartbeat = heartbeatRepository.findByMemberVenue(member, venue).isPresent();
 
-        VenueGenre venueGenre = venueGenreRepository.findByVenue(venue).orElseThrow(()->new CustomException(VenueGenreErrorCode.VENUE_GENRE_NOT_EXIST));
+        VenueGenre venueGenre = venueGenreRepository.findByVenue(venue)
+                .orElseThrow(() -> new CustomException(VenueGenreErrorCode.VENUE_GENRE_NOT_EXIST));
         List<String> trueGenreElements = Vector.getTrueGenreElements(venueGenre.getGenreVector());
 
-        VenueMood venueMood = venueMoodRepository.findByVenue(venue).orElseThrow(()->new CustomException(VenueMoodErrorCode.VENUE_MOOD_NOT_EXIST));
+        VenueMood venueMood = venueMoodRepository.findByVenue(venue)
+                .orElseThrow(() -> new CustomException(VenueMoodErrorCode.VENUE_MOOD_NOT_EXIST));
         List<String> trueMoodElements = Vector.getTrueMoodElements(venueMood.getMoodVector());
         String region = venue.getRegion().getText();
 
@@ -97,12 +92,12 @@ public class VenueInfoService {
         List<String> backgroundImageUrls = new ArrayList<>();
 
         if (logoImage != null) {
-            logoImageUrl = this.upload(logoImage);
+            logoImageUrl = UploadUtil.upload(logoImage);
         }
 
         if (!backgroundImage.isEmpty()) {
             for (MultipartFile multipartFile : backgroundImage) {
-                backgroundImageUrls.add(this.upload(multipartFile));
+                backgroundImageUrls.add(UploadUtil.upload(multipartFile));
             }
         }
 
@@ -132,68 +127,29 @@ public class VenueInfoService {
         }
     }
 
-    public String upload(MultipartFile image) throws IOException {
-        if (image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
-            throw new CustomException(VenueErrorCode.INVALID_VENUE_IMAGE);
+    @Transactional
+    public Venue updateVenueInfo(Long venueId, VenueRequestDTO venueRequestDTO, MultipartFile logoImage, List<MultipartFile> backgroundImage)
+            throws IOException {
+        Venue venue = venueRepository.findById(venueId)
+                .orElseThrow(() -> new CustomException(VenueErrorCode.VENUE_NOT_EXIST));
+
+        String logoImageUrl = venue.getLogoUrl();
+        List<String> backgroundImageUrls = venue.getBackgroundUrl();
+
+        if (logoImage != null) {
+            this.deleteImage(logoImageUrl);
+            logoImageUrl = UploadUtil.upload(logoImage);
         }
 
-        this.validationImage(image.getOriginalFilename());
-        return this.uploadImageS3(image);
-    }
-
-    private String uploadImageS3(MultipartFile image) throws IOException {
-        String s3FileName = generateFileName(image.getOriginalFilename()); //변경된 파일 명
-
-        InputStream is = image.getInputStream();
-        byte[] bytes = IOUtils.toByteArray(is); //image를 byte[]로 변환
-
-        ObjectMetadata metadata = getObjectMetadata(image);
-
-        //S3에 요청할 때 사용할 byteInputStream 생성
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-
-        try {
-            //S3로 putObject 할 때 사용할 요청 객체
-            //생성자 : bucket 이름, 파일 명, byteInputStream, metadata
-            PutObjectRequest putObjectRequest =
-                    new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata)
-                            .withCannedAcl(CannedAccessControlList.PublicRead);
-            //실제로 S3에 이미지 데이터를 넣는 부분이다.
-            amazonS3.putObject(putObjectRequest); // put image to S3
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new CustomException(VenueErrorCode.IMAGE_UPLOAD_FAILED);
-        } finally {
-            byteArrayInputStream.close();
-            is.close();
+        if (!backgroundImage.isEmpty()) {
+            this.deleteImage(backgroundImageUrls);
+            backgroundImageUrls = new ArrayList<>();
+            for (MultipartFile multipartFile : backgroundImage) {
+                backgroundImageUrls.add(UploadUtil.upload(multipartFile));
+            }
         }
 
-        return amazonS3.getUrl(bucketName, s3FileName).toString();
+        venue.update(venueRequestDTO, logoImageUrl, backgroundImageUrls);
+        return venueRepository.save(venue);
     }
-
-    private static String generateFileName(String originalFilename) {
-        return UUID.randomUUID().toString().substring(0, 10) + originalFilename;
-    }
-
-    private static ObjectMetadata getObjectMetadata(MultipartFile image) {
-        ObjectMetadata metadata = new ObjectMetadata(); //metadata 생성
-        metadata.setContentType(image.getContentType());
-        metadata.setContentLength(image.getSize());
-        return metadata;
-    }
-
-    private void validationImage(String fileName) {
-        int lastDotIndex = fileName.lastIndexOf(".");
-        if (lastDotIndex == -1) {
-            throw new CustomException(VenueErrorCode.INVALID_VENUE_IMAGE);
-        }
-
-//        String extension = fileName.substring(lastDotIndex + 1).toLowerCase();
-//        List<String> allowedExtensions = List.of("jpg", "jpeg", "png", "heic", "mp4", "mov");
-//
-//        if (!allowedExtensions.contains(extension)) {
-//            throw new CustomException(VenueErrorCode.INVALID_VENUE_IMAGE);
-//        }
-    }
-
 }

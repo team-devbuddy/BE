@@ -54,6 +54,21 @@ public class Venue extends BaseTimeEntity {
         }
     }
 
+    public void update(VenueRequestDTO venueRequestDTO, String logoImageUrl, List<String> backgroundImageUrls){
+        this.isSmokingAllowed = venueRequestDTO.isSmokingAllowed();
+        this.englishName = venueRequestDTO.getEnglishName();
+        this.koreanName = venueRequestDTO.getKoreanName();
+        this.region = venueRequestDTO.getRegion();
+        this.description = venueRequestDTO.getDescription();
+        this.address = venueRequestDTO.getAddress();
+        this.instaId = venueRequestDTO.getInstaId();
+        this.instaUrl = venueRequestDTO.getInstaUrl();
+        this.phoneNum = venueRequestDTO.getPhoneNum();
+        this.operationHours = venueRequestDTO.getWeeklyOperationHours();
+        this.logoUrl = logoImageUrl;
+        this.backgroundUrl = backgroundImageUrls;
+    }
+
     public static Venue of(VenueRequestDTO request, String  logoUrl, List<String> backgroundUrl){
         return Venue.builder()
                 .isSmokingAllowed(request.isSmokingAllowed())
