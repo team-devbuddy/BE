@@ -2,6 +2,7 @@ package com.ceos.beatbuddy.domain.comment.entity;
 
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.post.entity.Post;
+import com.ceos.beatbuddy.global.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,7 +21,7 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 @Getter
 @Builder
-public class Comment {
+public class Comment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,6 +45,12 @@ public class Comment {
 
     private int likes;
 
-    private int replyCount;
+    public void increaseLike(){
+        likes++;
+    }
+
+    public void decreaseLike(){
+        likes--;
+    }
 
 }

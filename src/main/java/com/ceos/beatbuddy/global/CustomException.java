@@ -1,6 +1,7 @@
 package com.ceos.beatbuddy.global;
 
 import com.ceos.beatbuddy.domain.archive.exception.ArchiveErrorCode;
+import com.ceos.beatbuddy.domain.comment.exception.CommentErrorCode;
 import com.ceos.beatbuddy.domain.heartbeat.exception.HeartbeatErrorCode;
 import com.ceos.beatbuddy.domain.member.exception.MemberErrorCode;
 import com.ceos.beatbuddy.domain.member.exception.MemberGenreErrorCode;
@@ -61,5 +62,9 @@ public class CustomException extends ResponseException {
 
     public CustomException(PostErrorCode postErrorCode) {
         super(postErrorCode.getMessage(), postErrorCode.getHttpStatus());
+    }
+
+    public CustomException(CommentErrorCode commentErrorCode){
+        super(commentErrorCode.getMessage(), commentErrorCode.getHttpStatus());
     }
 }
