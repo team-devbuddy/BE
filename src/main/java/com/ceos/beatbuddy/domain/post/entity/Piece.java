@@ -3,6 +3,7 @@ package com.ceos.beatbuddy.domain.post.entity;
 import com.ceos.beatbuddy.domain.member.entity.Member;
 import com.ceos.beatbuddy.domain.venue.entity.Venue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,12 +32,9 @@ public class Piece {
     @JoinColumn(name = "venue_id")
     private Venue venue;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @OneToMany(mappedBy = "piece")
-    private List<Member> joinedMembers;
 
     private LocalDateTime eventDate;
     private int totalPrice;
