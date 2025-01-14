@@ -103,6 +103,8 @@ dependencies {
     //CSV Reader
     implementation 'com.opencsv:opencsv:5.7.1'
 
+    implementation 'net.bytebuddy:byte-buddy:1.14.11'
+
 }
 
 test {
