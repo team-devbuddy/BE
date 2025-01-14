@@ -1,10 +1,13 @@
 package com.ceos.beatbuddy.domain.venue.controller;
 
+import com.ceos.beatbuddy.domain.member.dto.AdminResponseDto;
+import com.ceos.beatbuddy.domain.venue.application.AdminService;
 import com.ceos.beatbuddy.domain.venue.application.VenueInfoService;
 import com.ceos.beatbuddy.domain.venue.dto.VenueRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
@@ -26,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AdminController {
     private VenueInfoService venueInfoService;
+    private AdminService adminService;
 
     @PostMapping
     @Operation(summary = "베뉴 정보 등록", description = "베뉴 정보를 등록합니다.")
@@ -75,5 +79,26 @@ public class AdminController {
             throws IOException {
         return ResponseEntity.ok(
                 venueInfoService.updateVenueInfo(venueId, venueRequestDTO, logoImage, backgroundImage).getVenueId());
+    }
+
+    @PostMapping("/join")
+    public ResponseEntity<String> join(@RequestBody String id) {
+        Long adminId = adminService.createAdmin(id);
+
+        String result = "id : " + id;
+        return ResponseEntity.ok(result + "\n join success!\n");
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "id를 통한 토큰 발급", description = "기존에 생성된 id를 통해 토큰을 발급받습니다.")
+    @Parameter(description = "미리 생성된 id"
+            , content = @Content(mediaType = "text/plain")
+            , schema = @Schema(implementation = String.class))
+    @ApiResponse(responseCode = "200", description = "로그인 성공",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = AdminResponseDto.class)))
+    public ResponseEntity<AdminResponseDto> login(@RequestBody String id) {
+        Long adminId = adminService.findAdmin(id);
+        return adminService.createAdminToken(adminId, id);
     }
 }
