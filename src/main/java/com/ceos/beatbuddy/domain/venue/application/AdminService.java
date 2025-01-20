@@ -74,6 +74,10 @@ public class AdminService {
                 () -> new CustomException(MemberErrorCode.MEMBER_NOT_EXIST)
         );
 
+        if(!member.getRole().equals("ADMIN")) {
+            throw new CustomException(MemberErrorCode.NOT_ADMIN);
+        }
+
         return member.getMemberId();
     }
 }

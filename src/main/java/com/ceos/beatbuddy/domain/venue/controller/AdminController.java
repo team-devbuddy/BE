@@ -3,6 +3,7 @@ package com.ceos.beatbuddy.domain.venue.controller;
 import com.ceos.beatbuddy.domain.member.dto.AdminResponseDto;
 import com.ceos.beatbuddy.domain.venue.application.AdminService;
 import com.ceos.beatbuddy.domain.venue.application.VenueInfoService;
+import com.ceos.beatbuddy.domain.venue.dto.LoginRequest;
 import com.ceos.beatbuddy.domain.venue.dto.VenueRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -97,8 +98,8 @@ public class AdminController {
     @ApiResponse(responseCode = "200", description = "로그인 성공",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = AdminResponseDto.class)))
-    public ResponseEntity<AdminResponseDto> login(@RequestBody String id) {
-        Long adminId = adminService.findAdmin(id);
-        return adminService.createAdminToken(adminId, id);
+    public ResponseEntity<AdminResponseDto> login(@RequestBody LoginRequest request) {
+        Long adminId = adminService.findAdmin(request.getId());
+        return adminService.createAdminToken(adminId, request.getId());
     }
 }
