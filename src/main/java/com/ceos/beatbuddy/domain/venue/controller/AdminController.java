@@ -28,8 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
-    private VenueInfoService venueInfoService;
-    private AdminService adminService;
+    private final VenueInfoService venueInfoService;
+    private final AdminService adminService;
 
     @PostMapping
     @Operation(summary = "베뉴 정보 등록", description = "베뉴 정보를 등록합니다.")
