@@ -94,7 +94,7 @@ public class AdminController {
     @Operation(summary = "id를 통한 토큰 발급", description = "기존에 생성된 id를 통해 토큰을 발급받습니다.")
     @Parameter(description = "미리 생성된 id"
             , content = @Content(mediaType = "text/plain")
-            , schema = @Schema(implementation = String.class))
+            , schema = @Schema(implementation = LoginRequest.class))
     @ApiResponse(responseCode = "200", description = "로그인 성공",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = AdminResponseDto.class)))
