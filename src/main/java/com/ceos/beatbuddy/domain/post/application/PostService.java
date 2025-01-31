@@ -111,6 +111,7 @@ public class PostService {
                 .content(requestDto.content())
                 .imageUrls(imageUrls)
                 .member(member)
+                .anonymous(requestDto.anonymous())
                 .build();
         return freePostRepository.save(post);
     }
@@ -133,6 +134,7 @@ public class PostService {
                 .content(requestDto.content())
                 .imageUrls(imageUrls)
                 .member(member)
+                .anonymous(requestDto.anonymous())
                 .piece(piece)
                 .build();
         return piecePostRepository.save(post);

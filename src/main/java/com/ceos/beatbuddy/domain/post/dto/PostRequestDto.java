@@ -25,6 +25,8 @@ public sealed interface PostRequestDto {
 
     Long venueId();
 
+    Boolean anonymous();
+
     @Builder
     record PiecePostRequestDto(
             String title,
@@ -33,6 +35,7 @@ public sealed interface PostRequestDto {
             Long venueId,
             int totalPrice,
             int totalMembers,
+            Boolean anonymous,
             LocalDateTime eventDate
     ) implements PostRequestDto {
     }
@@ -42,6 +45,7 @@ public sealed interface PostRequestDto {
             String title,
             String content,
             List<MultipartFile> images,
+            Boolean anonymous,
             Long venueId
     ) implements PostRequestDto {
     }

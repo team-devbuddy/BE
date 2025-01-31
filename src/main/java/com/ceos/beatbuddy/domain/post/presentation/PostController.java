@@ -5,6 +5,7 @@ import com.ceos.beatbuddy.domain.post.dto.ResponsePostDto;
 import com.ceos.beatbuddy.domain.post.entity.Post;
 import com.ceos.beatbuddy.global.config.jwt.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +24,9 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/{type}")
-    @Operation(summary = "게시물 생성", description = "게시물을 생성합니다 (type: free/piece)")
+    @Operation(summary = "게시물 생성", description = "게시물을 생성합니다 (type: free/piece), 밑의 Post 관련 RequestDto들을 참고해"
+            + "타입에 맞는 request를 채워주세요.")
+    @Parameter()
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시물 생성 성공"),
             @ApiResponse(responseCode = "400", description = "게시물 생성 실패")
@@ -54,7 +57,9 @@ public class PostController {
     })
     public ResponseEntity<Page<ResponsePostDto>> readAllPosts(
             @PathVariable String type,
+            @Parameter(description = "페이지 번호")
             @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "페이지 당 요청할 게시물 개수")
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(postService.readAllPosts(type, page, size));
     }
